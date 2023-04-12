@@ -38,19 +38,6 @@ const UsersPage = ({ parentRoute }: any) => {
   });
 
   const columns = [
-    // {
-    //   field: "name",
-    //   headerName: "Name",
-    //   flex: 0.3,
-    //   renderCell: (params: any) => {
-    //     const row = params.row;
-    //     return (
-    //       <div>
-    //         {row.first_name}&nbsp;{row.last_name}
-    //       </div>
-    //     );
-    //   },
-    // },
     { field: "name", headerName: "Name", minWidth: 250 },
 
     { field: "email", headerName: "Email", minWidth: 250 },
@@ -141,52 +128,6 @@ const UsersPage = ({ parentRoute }: any) => {
   const [selectedUsers, setSelectedUsers] = useState<GridSelectionModel>();
 
   const { dataUsers, isLoadingUsers, isSuccess } = useGetAllUsers({});
-
-  const handleUserEdit = () => {};
-
-  // const {
-  //   userSearchData,
-  //   // userSearchIsLoading,
-  //   userSearchIsSuccess,
-  //   userSearchRefetch
-  // } = useGetUserSearch({search_value: searchValue});
-
-  // useEffect(() => {
-  //   if(searchValue === ""){
-  //     if (dataAssets) {
-  //       const tableData: UserTableRow[] = [];
-  //       dataUsers?.results.forEach((data: any) => {
-  //         tableData.push({
-  //           assets: "",
-  //           id: data.id,
-  //           user: `${data.first_name} ${data.last_name}`,
-  //           email: data.email,
-  //           role: data.type,
-  //           updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
-  //           user_assets: data.user_assets.toString(),
-  //         });
-  //       });
-  //       setTableRows(tableData);
-  //     }
-  //   }
-  //   if(userSearchIsSuccess === true && userSearchData !== undefined){
-  //     if (userSearchData?.data.results) {
-  //       const tableData: UserTableRow[] = [];
-  //       userSearchData?.data.results.forEach((data: any) => {
-  //         tableData.push({
-  //           assets: "",
-  //           id: data.id,
-  //           user: `${data.first_name} ${data.last_name}`,
-  //           email: data.email,
-  //           role: data.type,
-  //           updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
-  //           user_assets: data.user_assets.toString(),
-  //         });
-  //       });
-  //       setTableRows(tableData);
-  //     }
-  //   }
-  // }, [userSearchIsSuccess, userSearchData, dataAssets, searchValue, dataUsers]);
 
   const onSelectionChangeHandler = (
     selectionModel: GridSelectionModel,
@@ -282,49 +223,6 @@ const UsersPage = ({ parentRoute }: any) => {
       setRowHeight(60);
     }
   }, [windowSize]);
-
-  const users: UserTableRow[] = [
-    {
-      id: 1,
-      name: "Abebe Tesfa",
-      email: "abebe@gmail.com",
-      role: "Admin",
-      updated_at: "April 9, 2019",
-      edited_by: "Abebe Tesfa",
-    },
-    {
-      id: 2,
-      name: "Kebede Atnafu",
-      email: "kebede@gmail.com",
-      role: "Admin",
-      updated_at: "April 9, 2019",
-      edited_by: "Abebe Tesfa",
-    },
-    {
-      id: 3,
-      name: "Gezachew Aschenaki",
-      email: "geza@gmail.com",
-      role: "Hospital Admin",
-      updated_at: "April 9, 2019",
-      edited_by: "Abebe Tesfa",
-    },
-    {
-      id: 4,
-      name: "Kurabachew Getahun",
-      email: "kura@gmail.com",
-      role: "User",
-      updated_at: "April 9, 2019",
-      edited_by: "Abebe Tesfa",
-    },
-    {
-      id: 5,
-      name: "Genet Meshesha",
-      email: "geni@gmail.com",
-      role: "User",
-      updated_at: "April 9, 2019",
-      edited_by: "Abebe Tesfa",
-    },
-  ];
 
   return (
     <>

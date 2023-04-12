@@ -21,7 +21,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useEditCampaignStatus } from "../../hooks/useEditCampaignStatus";
 import { useGetCampaigns } from "../../hooks/useGetCampaigns";
 
-const SubmittedForms = ({ parentRoute }: any) => {
+const TerminatedCampaigns = ({ parentRoute }: any) => {
   const dataGridStyles = useStyles();
   const [searchValue, setSearchValue] = useState("");
   const [tableRows, setTableRows] = useState<SubmittedFormsTableRow[]>([]);
@@ -42,6 +42,10 @@ const SubmittedForms = ({ parentRoute }: any) => {
     isLoading: campaignStatusUpdateLoading,
     isSuccess: campaignStatusUpdateSuccess,
   } = useEditCampaignStatus({});
+
+  useEffect(() => {
+    dataCampaigns();
+  }, [campaignStatusUpdateSuccess]);
 
   const { dataAssetsSubmittedForms, isDataAssetsSubmittedFormsLoading } =
     useGetAssetsSubmittedForms({
@@ -123,78 +127,17 @@ const SubmittedForms = ({ parentRoute }: any) => {
     toast(txt);
   };
 
-  const handleFormDataDownload = async (formId: any, buildingName: string) => {
-    notify("Form Data Downloading");
-
-    fetch(``, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-      .then((response) => {
-        if (response.status === 500 || response.status === 400) {
-          throw new Error(`${response.status}`);
-        }
-        return response.blob();
-      })
-      .then((blob: any) => {
-        setImageDownloadLoading(false);
-        const downloadLink = document.createElement("a");
-        downloadLink.href = URL.createObjectURL(blob);
-        downloadLink.download = `${buildingName}.csv`;
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-      })
-      .catch((error) => {
-        if (error === "Error: 500") {
-          notify(`Failed to Download Form Data ${buildingName}`);
-        } else {
-          notify(`Failed to Download Form Data ${buildingName}`);
-        }
-      });
-  };
-
-  const handleAssetImageDownload = async (
-    assetId: any,
-    buildingName: string
-  ) => {
-    setImageDownloadLoading(true);
-    notify("Asset Image Downloading");
-    fetch(``, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-      .then((response) => {
-        if (response.status === 500) {
-          throw new Error(`${response.status}`);
-        }
-        return response.blob();
-      })
-      .then((blob: any) => {
-        setImageDownloadLoading(false);
-        const downloadLink = document.createElement("a");
-        downloadLink.href = URL.createObjectURL(blob);
-        downloadLink.download = `${buildingName}.zip`;
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-      })
-      .catch((error) => {
-        if (error === "Error: 500") {
-          notify(`Failed to Download Asset Image ${buildingName}`);
-        } else {
-          notify(`Failed to Download Asset Image ${buildingName}`);
-        }
-      });
-  };
-
   const columns = [
     {
       field: "campaign_name",
       headerName: "Campaign Name",
       minWidth: 270,
+      flex: 1,
+    },
+    {
+      field: "status",
+      headerName: "Status",
+      minWidth: 100,
       flex: 1,
     },
     {
@@ -215,11 +158,15 @@ const SubmittedForms = ({ parentRoute }: any) => {
       sortable: false,
       disableColumnMenu: true,
       renderCell: (params: any) => {
-        const onPendingCampaign = () => {
+        const onCampaignActive = () => {
           campaignStatusMutate({ status: "Pending", id: params.row.id });
         };
-        const onCampaignTerminate = () => {
-          campaignStatusMutate({ status: "Suspended", id: params.row.id });
+        const onCampaignPending = () => {
+          campaignStatusMutate({ status: "Active", id: params.row.id });
+        };
+
+        const onCampaignArchive = () => {
+          campaignStatusMutate({ status: "Archived", id: params.row.id });
         };
 
         return (
@@ -236,19 +183,27 @@ const SubmittedForms = ({ parentRoute }: any) => {
                   <MenuItem
                     onClick={() => {
                       popupState.close();
-                      onPendingCampaign();
+                      onCampaignPending();
                     }}
                   >
-                    Pending
+                    Active
                   </MenuItem>
 
                   <MenuItem
                     onClick={() => {
                       popupState.close();
-                      onCampaignTerminate();
+                      onCampaignPending();
                     }}
                   >
-                    Suspend
+                    Pending
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      popupState.close();
+                      onCampaignArchive();
+                    }}
+                  >
+                    Archive
                   </MenuItem>
                 </Menu>
               </React.Fragment>
@@ -265,19 +220,20 @@ const SubmittedForms = ({ parentRoute }: any) => {
       const tableData: any[] = [];
 
       dataCampaigns?.data.forEach((data: any) => {
-        if (data.status === "Active") {
+        if (data.status !== "Active" && data.status !== "Pending") {
           tableData.push({
             campaign_name: data.campaignDescription,
             created_at: data.createdAt,
             updated_at: moment(data.updatedAt).format("MMM D, YYYY HH:mm"),
             id: data._id,
+            status: data.status,
           });
         }
       });
 
       setTableRows(tableData);
     }
-  }, [dataCampaigns, campaignStatusUpdateSuccess]);
+  }, [dataCampaigns, campaignStatusUpdateSuccess, campaignStatusUpdateLoading]);
 
   useEffect(() => {
     if (windowSize.innerHeight <= 660 || windowSize.innerWidth <= 1200) {
@@ -341,4 +297,4 @@ const SubmittedForms = ({ parentRoute }: any) => {
   );
 };
 
-export default SubmittedForms;
+export default TerminatedCampaigns;

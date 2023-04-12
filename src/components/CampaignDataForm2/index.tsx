@@ -49,7 +49,7 @@ const CampaignDataForm2 = ({
       dataUsers?.data.forEach((data: any) => {
         if (data?.role?.roleName === "user") {
           tableData.push({
-            id: data.id,
+            id: data._id,
             name: `${data.firstName} ${data.lastName}`,
             email: data.email,
           });

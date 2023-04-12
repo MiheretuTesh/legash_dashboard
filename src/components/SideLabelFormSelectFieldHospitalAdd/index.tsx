@@ -19,6 +19,7 @@ interface SideLabelFormSelectFieldHospitalAddProps {
   };
   isFormName?: string;
   setHospitalAdminId: Function;
+  hospitalAdminId?: string;
 }
 
 const SideLabelFormSelectFieldHospitalAdd = ({

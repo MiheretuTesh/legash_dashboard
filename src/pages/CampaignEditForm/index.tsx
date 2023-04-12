@@ -5,7 +5,6 @@ import * as Yup from "yup";
 import { useLocation, useNavigate } from "react-router-dom";
 import FormButton from "../../components/FormButton";
 import IconUnderlinedButton from "../../components/IconUnderlinedButton";
-import { AssumtionFormValues } from "../../types";
 import CampaignDataForm from "../../components/CampaignDataForm";
 import CampaignDataForm2 from "../../components/CampaignDataForm2";
 import ProgressBar from "../../components/ProgressBar";
@@ -13,9 +12,9 @@ import { AssumptionFormContext } from "../../contexts/AssumptionFormContext";
 import ErrorModal from "../../components/ErrorModal";
 import { useUpdateAssumptionFrom } from "../../hooks/useAssumptionForm";
 import { useAddCampaign } from "../../hooks/useAddCampaign";
-import { useGetFormData } from "../../hooks/useGetFormData";
+import { useEditCampaign } from "../../hooks/useEditCampaign";
+import { useGetCampaign } from "../../hooks/useGetCampaign";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import { useGetAssetsDraftForms } from "../../hooks/useGetAssetsDraftForms";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -49,7 +48,7 @@ const CampaignSchema3 = Yup.object().shape({
 
 const schemas = [CampaignSchema1, CampaignSchema2, CampaignSchema3];
 
-const AddCampaignForm = ({ parentRoute }: { parentRoute: any }) => {
+const CampaignEditForm = ({ parentRoute }: { parentRoute: any }) => {
   const styles = useStyles();
   const location = useLocation();
 
@@ -62,6 +61,59 @@ const AddCampaignForm = ({ parentRoute }: { parentRoute: any }) => {
     setAssetLastPage,
   } = useContext(AssumptionFormContext);
 
+  const voidFunction = () => {};
+
+  const [savedValues, setSavedValues]: any = useState("");
+
+  const [patientId, setPatientId] = useState(null);
+  const [hospitalId, setHospitalId] = useState(null);
+
+  const [imageUrlGenerated, setImageUrlGenerated] = useState(false);
+  const [imgUploadUrl, setImagUploadUrl] = useState("");
+
+  const [imageUrls, setImageUrls] = useState<any[]>([]);
+
+  const { dataCampaign, isDataCampaignLoading, isDataCampaignSuccess } =
+    useGetCampaign({
+      id: location.state.id,
+      onGetCampaignSuccess: voidFunction,
+    });
+
+  useEffect(() => {
+    if (isDataCampaignSuccess === true) {
+      console.log(
+        dataCampaign?.data,
+        "dataCampaign dataCampaign dataCampaign dataCampaign"
+      );
+
+      setImagUploadUrl(dataCampaign?.data?.coverImage);
+      setImageUrls(dataCampaign?.data?.images);
+      setPatientId(dataCampaign?.data.patientId._id);
+      setHospitalId(dataCampaign?.data.hospitalId._id);
+
+      const values = {
+        campaignTitle: dataCampaign?.data.en_us.campaignTitle,
+        campaignDescription: dataCampaign?.data.en_us.campaignDescription,
+        treatmentRequired: dataCampaign?.data.en_us.treatmentRequired.join(""),
+        diagnosis: dataCampaign?.data.en_us.diagnosis.join(""),
+        am_campaignTitle: dataCampaign?.data.am_et.campaignTitle,
+        am_campaignDescription: dataCampaign?.data.am_et.campaignDescription,
+        am_treatmentRequired:
+          dataCampaign?.data.am_et.treatmentRequired.join(""),
+        am_diagnosis: dataCampaign?.data.am_et.diagnosis.join(""),
+        targetFunding: dataCampaign?.data.targetFunding,
+        endDate: dataCampaign?.data.endDate,
+        startDate: dataCampaign?.data.startDate,
+        hasExplicitContent:
+          dataCampaign?.data.hasExplicitContent === true ? "Yes" : "No",
+      };
+
+      console.log(values, "values valuesvalues");
+
+      setSavedValues(values);
+    }
+  }, [dataCampaign]);
+
   const navigate = useNavigate();
   const initialStep: number = location?.state?.initialStep;
   const draftId: any = location?.state?.draftId;
@@ -71,34 +123,12 @@ const AddCampaignForm = ({ parentRoute }: { parentRoute: any }) => {
   const fromDraft: any = location?.state?.fromDraft
     ? location?.state?.fromDraft
     : false;
-  const [savedValues, setSavedValues]: any = useState("");
-  const [savedAsset, setSavedAsset]: any = useState("");
-
-  const { dataForm, isDataFormSuccess } = useGetFormData({
-    onGetFormSuccess: function () {},
-    id: draftId,
-  });
-
-  useEffect(() => {
-    if (isDataFormSuccess) {
-      setSavedValues(dataForm.data);
-      setSavedAsset(dataForm.asset);
-    }
-  }, [isDataFormSuccess, dataForm]);
 
   const [step, setStep] = useState(1);
   const [selectedBuildingId, setSelectedBuildingId] = useState(null);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData]: any = useState(null);
-
-  const [patientId, setPatientId] = useState(null);
-  const [hospitalId, setHospitalId] = useState(null);
-
-  const [imageUrlGenerated, setImageUrlGenerated] = useState(false);
-  const [imgUploadUrl, setImagUploadUrl] = useState("");
-
-  const [imageUrls, setImageUrls] = useState<any[]>([]);
 
   const [lastFormData, setLastFormData] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -123,16 +153,11 @@ const AddCampaignForm = ({ parentRoute }: { parentRoute: any }) => {
     onError: onAddCampaignError,
   });
 
-  useEffect(() => {
-    const formData: any =
-      localStorage.getItem("AssumptionForm") !== null &&
-      JSON.parse(localStorage.getItem("AssumptionForm") as string);
-    if ((fromDraft === false || fromSubmitted === false) && formData) {
-      setStep(1);
-      setSelectedBuildingId(formData?.asset);
-      setSavedValues(formData?.data);
-    }
-  }, [fromDraft, fromSubmitted]);
+  const {
+    mutate: updateCampaignMutate,
+    isLoading: updateCampaignLoading,
+    isSuccess: updateCampaignSuccess,
+  } = useEditCampaign({});
 
   const {
     mutate: draftMutate,
@@ -143,27 +168,11 @@ const AddCampaignForm = ({ parentRoute }: { parentRoute: any }) => {
     onSuccess: (data) => console.log("draft saved"),
   });
 
-  const { dataAssetsDraftForms } = useGetAssetsDraftForms({
-    isDraft: true,
-  });
-
   useEffect(() => {
-    if (isSuccess === true || draftIsSuccess === true) {
+    if (updateCampaignSuccess === true) {
       navigate(`/${parentRoute}/campaigns`);
     }
-  }, [isSuccess, draftIsSuccess, navigate, parentRoute]);
-
-  useEffect(() => {
-    if ((isError === true || isErrorUpdate === true) && isSubmitted === true) {
-      notify();
-
-      formData.last_step = lastFormData ? 2 : formData?.last_step;
-
-      const store = JSON.stringify(formData);
-      localStorage.setItem("AssumptionForm", store);
-      navigate(`/${parentRoute}/hospitals`);
-    }
-  }, [isSubmitted, isError, isErrorUpdate, formData, navigate, parentRoute]);
+  }, [updateCampaignSuccess, navigate, parentRoute]);
 
   const initialValues = {
     campaignDescription: "",
@@ -210,14 +219,14 @@ const AddCampaignForm = ({ parentRoute }: { parentRoute: any }) => {
         patientId: patientId,
         hospitalId: hospitalId,
         targetFunding: data.targetFunding,
+        endDate: data.endDate,
+        startDate: data.startDate,
+        images: imageUrls,
         coverImage: imgUploadUrl,
         hasExplicitContent: data.hasExplicitContent === "Yes" ? true : false,
-        startDate: data.startDate,
-        endDate: data.endDate,
-        images: imageUrls,
       };
 
-      mutate(formData);
+      updateCampaignMutate({ obj: formData, id: location.state.id });
 
       setAssetLastPage(1);
       setAssetValue(null);
@@ -240,64 +249,6 @@ const AddCampaignForm = ({ parentRoute }: { parentRoute: any }) => {
 
   const onBackButtonClickHandler = () => {
     setStep((prevState) => prevState - 1);
-  };
-
-  const onSaveAndExitClickHandler = (data: AssumtionFormValues) => {
-    setAssetCurrentFormSavedAt(new Date());
-
-    let draftedBuilding: any = null;
-
-    dataAssetsDraftForms?.results.forEach((result: any) => {
-      if (
-        result.building_name === data.company &&
-        result.type === "ASSUMPTIONS"
-      ) {
-        draftedBuilding = result;
-      }
-    });
-
-    if (draftId) {
-      const formData: any = {
-        data: data,
-        asset: selectedBuildingId !== null ? selectedBuildingId : assetValue,
-        type: "ASSUMPTIONS",
-        last_step: step,
-        is_draft: true,
-        id: draftId,
-      };
-      draftMutate(formData);
-
-      setFormData(formData);
-      setIsSubmitted(true);
-    } else if (draftedBuilding !== null) {
-      const formData: any = {
-        asset: draftedBuilding?.asset,
-        data: data,
-        type: "ASSUMPTIONS",
-        last_step: step,
-        is_draft: true,
-        id: draftedBuilding?.id,
-      };
-
-      draftMutate(formData);
-
-      setFormData(formData);
-      setIsSubmitted(true);
-    } else {
-      const formData: any = {
-        data: data,
-        asset: selectedBuildingId !== null ? selectedBuildingId : assetValue,
-        type: "ASSUMPTIONS",
-        last_step: step,
-        is_draft: true,
-      };
-      mutate(formData);
-
-      setFormData(formData);
-      setIsSubmitted(true);
-    }
-    setAssetCurrentForm(null);
-    setAssetLastPage(1);
   };
 
   return (
@@ -341,7 +292,7 @@ const AddCampaignForm = ({ parentRoute }: { parentRoute: any }) => {
                         buttonType="button"
                         onButtonClick={onBackButtonClickHandler}
                         customStyle={styles.backBtn}
-                        disabled={isLoading || draftIsLoading}
+                        disabled={updateCampaignLoading}
                       >
                         Back
                       </FormButton>
@@ -351,16 +302,16 @@ const AddCampaignForm = ({ parentRoute }: { parentRoute: any }) => {
                       buttonVariant="contained"
                       key={step === 3 ? "finish" : "next"}
                       buttonType="submit"
-                      disabled={isLoading || draftIsLoading}
+                      disabled={updateCampaignLoading}
                     >
                       {step === 2 ? (
-                        (isLoading || draftIsLoading) && formSubmitted ? (
+                        updateCampaignLoading ? (
                           <LoadingSpinner
                             customStyle={styles.loaderStyle}
                             type="button"
                           />
                         ) : (
-                          "Submit"
+                          "Update"
                         )
                       ) : (
                         "Save & Next"
@@ -371,7 +322,7 @@ const AddCampaignForm = ({ parentRoute }: { parentRoute: any }) => {
                     <IconUnderlinedButton
                       onClick={onCancelClickHandler}
                       customStyle={styles.cancelBtn}
-                      disabled={isLoading || draftIsLoading}
+                      disabled={updateCampaignLoading}
                     >
                       Cancel
                     </IconUnderlinedButton>
@@ -399,4 +350,4 @@ const AddCampaignForm = ({ parentRoute }: { parentRoute: any }) => {
   );
 };
 
-export default AddCampaignForm;
+export default CampaignEditForm;

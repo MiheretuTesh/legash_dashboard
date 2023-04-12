@@ -78,6 +78,8 @@ const AddHospitalForm = ({ parentRoute }: { parentRoute: any }) => {
     : false;
   const [savedValues, setSavedValues]: any = useState("");
   const [savedAsset, setSavedAsset]: any = useState("");
+  const [imageUrlGenerated, setImageUrlGenerated] = useState(false);
+  const [imgUploadUrl, setImagUploadUrl] = useState("");
 
   const { dataForm, isDataFormSuccess } = useGetFormData({
     onGetFormSuccess: function () {},
@@ -337,192 +339,89 @@ const AddHospitalForm = ({ parentRoute }: { parentRoute: any }) => {
 
   return (
     <>
-      {fromDraft || fromSubmitted ? (
-        isDataFormSuccess ? (
-          <Formik
-            initialValues={savedValues || initialValues}
-            onSubmit={onSubmitHandler}
-            enableReinitialize={true}
-            validationSchema={schemas[step - 1]}
-            validateOnChange={false}
-            validateOnBlur={false}
-          >
-            {({ handleChange, values, setFieldValue }) => {
-              return (
-                <>
-                  <ErrorModal
-                    open={isError}
-                    setIsOpen={setIsError}
-                    errorText={errorText}
+      <Formik
+        initialValues={savedValues || initialValues}
+        onSubmit={onSubmitHandler}
+        enableReinitialize={true}
+        validationSchema={schemas[step - 1]}
+        validateOnChange={false}
+        validateOnBlur={false}
+      >
+        {({ handleChange, values, setFieldValue }) => {
+          return (
+            <>
+              <Form>
+                <ProgressBar numberOfSteps={3} currentStep={step} />
+                {step === 1 && (
+                  <HospitalsDataForm
+                    formikChangeHandler={handleChange}
+                    assumptionFormValues={values}
+                    setImagUploadUrl={setImagUploadUrl}
+                    setImageUrlGenerated={setImageUrlGenerated}
                   />
-                  <Form>
-                    <ProgressBar numberOfSteps={3} currentStep={step} />
-                    {step === 1 && (
-                      <HospitalsDataForm
-                        formikChangeHandler={handleChange}
-                        assumptionFormValues={values}
-                      />
-                    )}
-                    {step === 2 && (
-                      <HospitalAdminForm
-                        formikChangeHandler={handleChange}
-                        assumptionFormValues={values}
-                      />
-                    )}
-                    {step === 3 && (
-                      <HospitalAdminForm2
-                        formikChangeHandler={handleChange}
-                        assumptionFormValues={values}
-                        setHospitalAdminId={setHospitalAdminId}
-                      />
-                    )}
-                    <div className={styles.btnsContainer}>
-                      <div>
-                        {step !== 1 && (
-                          <FormButton
-                            buttonVariant="outlined"
-                            buttonType="button"
-                            onButtonClick={onBackButtonClickHandler}
-                            customStyle={styles.backBtn}
-                            disabled={isLoading || draftIsLoading}
-                          >
-                            Back
-                          </FormButton>
-                        )}
-                        <FormButton
-                          customStyle={styles.saveBtn}
-                          buttonVariant="contained"
-                          key={step === 2 ? "finish" : "next"}
-                          buttonType="submit"
-                          disabled={isLoading || draftIsLoading}
-                        >
-                          {step === 2 ? (
-                            (isLoading || draftIsLoading) && formSubmitted ? (
-                              <LoadingSpinner
-                                customStyle={styles.loaderStyle}
-                                type="button"
-                              />
-                            ) : (
-                              "Submit"
-                            )
-                          ) : (
-                            "Save & Next"
-                          )}
-                        </FormButton>
-                      </div>
-                      <div className={styles.rightBtnsContainer}>
-                        <IconUnderlinedButton
-                          onClick={onCancelClickHandler}
-                          customStyle={styles.cancelBtn}
-                          disabled={isLoading || draftIsLoading}
-                        >
-                          Cancel
-                        </IconUnderlinedButton>
-                      </div>
-                    </div>
-                  </Form>
-                </>
-              );
-            }}
-          </Formik>
-        ) : (
-          <LoadingSpinner />
-        )
-      ) : (
-        <Formik
-          initialValues={savedValues || initialValues}
-          onSubmit={onSubmitHandler}
-          enableReinitialize={true}
-          validationSchema={schemas[step - 1]}
-          validateOnChange={false}
-          validateOnBlur={false}
-        >
-          {({ handleChange, values, setFieldValue }) => {
-            return (
-              <>
-                <Form>
-                  <ProgressBar numberOfSteps={3} currentStep={step} />
-                  {step === 1 && (
-                    <HospitalsDataForm
-                      formikChangeHandler={handleChange}
-                      assumptionFormValues={values}
-                    />
-                  )}
-                  {step === 2 && (
-                    <HospitalAdminForm
-                      formikChangeHandler={handleChange}
-                      assumptionFormValues={values}
-                    />
-                  )}
-                  {step === 3 && (
-                    <HospitalAdminForm2
-                      formikChangeHandler={handleChange}
-                      assumptionFormValues={values}
-                      setHospitalAdminId={setHospitalAdminId}
-                    />
-                  )}
-                  <div className={styles.btnsContainer}>
-                    <div>
-                      {step !== 1 && (
-                        <FormButton
-                          buttonVariant="outlined"
-                          buttonType="button"
-                          onButtonClick={onBackButtonClickHandler}
-                          customStyle={styles.backBtn}
-                          disabled={isLoading || draftIsLoading}
-                        >
-                          Back
-                        </FormButton>
-                      )}
+                )}
+                {step === 2 && (
+                  <HospitalAdminForm
+                    formikChangeHandler={handleChange}
+                    assumptionFormValues={values}
+                  />
+                )}
+                {step === 3 && (
+                  <HospitalAdminForm2
+                    formikChangeHandler={handleChange}
+                    assumptionFormValues={values}
+                    setHospitalAdminId={setHospitalAdminId}
+                  />
+                )}
+                <div className={styles.btnsContainer}>
+                  <div>
+                    {step !== 1 && (
                       <FormButton
-                        customStyle={styles.saveBtn}
-                        buttonVariant="contained"
-                        key={step === 3 ? "finish" : "next"}
-                        buttonType="submit"
+                        buttonVariant="outlined"
+                        buttonType="button"
+                        onButtonClick={onBackButtonClickHandler}
+                        customStyle={styles.backBtn}
                         disabled={isLoading || draftIsLoading}
                       >
-                        {step === 3 ? (
-                          (isLoading || draftIsLoading) && formSubmitted ? (
-                            <LoadingSpinner
-                              customStyle={styles.loaderStyle}
-                              type="button"
-                            />
-                          ) : (
-                            "Submit"
-                          )
-                        ) : (
-                          "Save & Next"
-                        )}
+                        Back
                       </FormButton>
-                    </div>
-                    <div className={styles.rightBtnsContainer}>
-                      <IconUnderlinedButton
-                        onClick={onCancelClickHandler}
-                        customStyle={styles.cancelBtn}
-                        disabled={isLoading || draftIsLoading}
-                      >
-                        Cancel
-                      </IconUnderlinedButton>
-                    </div>
+                    )}
+                    <FormButton
+                      customStyle={styles.saveBtn}
+                      buttonVariant="contained"
+                      key={step === 3 ? "finish" : "next"}
+                      buttonType="submit"
+                      disabled={isLoading || draftIsLoading}
+                    >
+                      {step === 3 ? (
+                        (isLoading || draftIsLoading) && formSubmitted ? (
+                          <LoadingSpinner
+                            customStyle={styles.loaderStyle}
+                            type="button"
+                          />
+                        ) : (
+                          "Submit"
+                        )
+                      ) : (
+                        "Save & Next"
+                      )}
+                    </FormButton>
                   </div>
-                </Form>
-              </>
-            );
-          }}
-        </Formik>
-      )}
-      <ToastContainer
-        position="bottom-right"
-        autoClose={2000}
-        hideProgressBar={true}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
+                  <div className={styles.rightBtnsContainer}>
+                    <IconUnderlinedButton
+                      onClick={onCancelClickHandler}
+                      customStyle={styles.cancelBtn}
+                      disabled={isLoading || draftIsLoading}
+                    >
+                      Cancel
+                    </IconUnderlinedButton>
+                  </div>
+                </div>
+              </Form>
+            </>
+          );
+        }}
+      </Formik>
     </>
   );
 };

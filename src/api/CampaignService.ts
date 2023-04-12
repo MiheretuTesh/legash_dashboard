@@ -6,7 +6,7 @@ export const getAllCampaigns = async () => {
 };
 
 export const getCampaign = async (obj: { id: number }) => {
-  const { data } = await AxiosInstance.get(`campaigns/${obj.id}`);
+  const { data } = await AxiosInstance.get(`campaigns/fetchCampaign/${obj.id}`);
   return data;
 };
 
@@ -15,7 +15,13 @@ export const addCampaign = (obj: any) => {
 };
 
 export const editCampaign = ({ obj, id }: any) => {
+  console.log(obj, "obj", id, "ID");
   return AxiosInstance.patch(`campaigns/${id}`, obj);
+};
+
+export const editCampaignStatus = ({ status, id }: any) => {
+  console.log(status, "obj", id, "ID");
+  return AxiosInstance.post(`campaigns/${id}`, { status: status });
 };
 
 export const deleteCampaign = (obj: { ids: number[] }) => {

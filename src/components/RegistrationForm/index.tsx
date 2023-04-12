@@ -14,7 +14,6 @@ import ErrorModal from "../ErrorModal";
 import {
   getAuth,
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
   sendEmailVerification,
 } from "firebase/auth";
 import firebase from "../../utils/firebaseConfig";

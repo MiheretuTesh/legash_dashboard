@@ -9,7 +9,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ProtectedRoutes from "./components/ProtectedRoutes";
 import SelectRolePage from "./pages/SelectRolePage";
 import firebase from "./utils/firebaseConfig";
-// import Landing from "./Landing/src/screens/Landing";
 
 const RootRouter = React.lazy(() => import("./routers/RootRouter"));
 const AccountRouter = React.lazy(() => import("./routers/AccountRouter"));
@@ -21,20 +20,25 @@ const UserPage = React.lazy(() => import("./pages/UsersPage"));
 const DashboardsPage = React.lazy(() => import("./pages/DashboardsPage"));
 const AdminHomePage = React.lazy(() => import("./pages/AdminHomePage"));
 
-const AddNewHospital = React.lazy(() => import("./pages/AddNewHospital"));
-const AddNewCampaign = React.lazy(() => import("./pages/AddNewCampaign"));
+// Add
 const AddCampaignForm = React.lazy(() => import("./pages/AddCampaignForm"));
-
 const AddHospitalForm = React.lazy(() => import("./pages/AddHospitalForm"));
+
+const ArchivePage = React.lazy(() => import("./pages/ArchivePage"));
+
+//Edit
+const CampaignEditForm = React.lazy(() => import("./pages/CampaignEditForm"));
+const HospitalEditForm = React.lazy(() => import("./pages/HospitalEditForm"));
 
 const FundAssetManagerHomePage = React.lazy(
   () => import("./pages/FundAssetManagerHomePage")
 );
 const HelpPage = React.lazy(() => import("./pages/HelpPage"));
 const SettingsPage = React.lazy(() => import("./pages/SettingsPage"));
-const HospitalDetailsPage = React.lazy(
-  () => import("./pages/HospitalDetailsPage")
-);
+
+// const HospitalDetailsPage = React.lazy(
+//   () => import("./pages/HospitalDetailsPage")
+// );
 const CampaignDetailsPage = React.lazy(
   () => import("./pages/CampaignDetailsPage")
 );
@@ -286,7 +290,7 @@ function App() {
                       path="hospital-detail/:id"
                       element={
                         <Suspense fallback={<LoadingSpinner type="page" />}>
-                          <HospitalDetailsPage userType="account-admin" />
+                          <HospitalEditForm parentRoute="account-admin" />
                         </Suspense>
                       }
                       errorElement={<ErrorPage />}
@@ -304,7 +308,7 @@ function App() {
                       path="campaign/:id"
                       element={
                         <Suspense fallback={<LoadingSpinner type="page" />}>
-                          <CampaignDetailsPage userType="account-admin" />
+                          <CampaignEditForm parentRoute="account-admin" />
                         </Suspense>
                       }
                       errorElement={<ErrorPage />}
@@ -340,7 +344,7 @@ function App() {
                       path="archive"
                       element={
                         <Suspense fallback={<LoadingSpinner type="page" />}>
-                          <AssumptionsFormPage parentRoute="account-admin" />
+                          <ArchivePage parentRoute="account-admin" />
                         </Suspense>
                       }
                       errorElement={<ErrorPage />}
@@ -442,7 +446,7 @@ function App() {
                       path="hospital-detail/:id"
                       element={
                         <Suspense fallback={<LoadingSpinner type="page" />}>
-                          <HospitalDetailsPage userType="hospital-admin" />
+                          <HospitalEditForm parentRoute="hospital-admin" />
                         </Suspense>
                       }
                       errorElement={<ErrorPage />}
@@ -469,7 +473,8 @@ function App() {
                       path="campaign/:id"
                       element={
                         <Suspense fallback={<LoadingSpinner type="page" />}>
-                          <CampaignDetailsPage userType="account-admin" />
+                          <CampaignEditForm parentRoute="hospital-admin" />
+                          {/* <CampaignDetailsPage userType="account-admin" /> */}
                         </Suspense>
                       }
                       errorElement={<ErrorPage />}
@@ -478,7 +483,7 @@ function App() {
                       path="new-campaign"
                       element={
                         <Suspense fallback={<LoadingSpinner type="page" />}>
-                          <AddCampaignForm parentRoute="account-admin" />
+                          <AddCampaignForm parentRoute="hospital-admin" />
                         </Suspense>
                       }
                       errorElement={<ErrorPage />}
@@ -496,7 +501,7 @@ function App() {
                       path="archive"
                       element={
                         <Suspense fallback={<LoadingSpinner type="page" />}>
-                          <AssumptionsFormPage parentRoute="hospital-admin" />
+                          <ArchivePage parentRoute="hospital-admin" />
                         </Suspense>
                       }
                       errorElement={<ErrorPage />}
@@ -571,7 +576,7 @@ function App() {
                       path="archive"
                       element={
                         <Suspense fallback={<LoadingSpinner type="page" />}>
-                          <DashboardsPage />
+                          <ArchivePage parentRoute="report-admin" />
                         </Suspense>
                       }
                       errorElement={<ErrorPage />}
@@ -664,7 +669,7 @@ function App() {
                       path="archive"
                       element={
                         <Suspense fallback={<LoadingSpinner type="page" />}>
-                          <AssumptionsFormPage parentRoute="user" />
+                          <ArchivePage parentRoute="user" />
                         </Suspense>
                       }
                       errorElement={<ErrorPage />}

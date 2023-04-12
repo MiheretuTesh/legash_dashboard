@@ -6,20 +6,26 @@ import { useLocation, useNavigate } from "react-router-dom";
 import FormButton from "../../components/FormButton";
 import IconUnderlinedButton from "../../components/IconUnderlinedButton";
 import { AssumtionFormValues } from "../../types";
-import CampaignDataForm from "../../components/CampaignDataForm";
-import CampaignDataForm2 from "../../components/CampaignDataForm2";
+import HospitalsDataForm from "../../components/HospitalsDataForm";
+import HospitalAdminForm from "../../components/HospitalAdminForm";
+import HospitalAdminForm2 from "../../components/HospitalAdminForm2";
 import ProgressBar from "../../components/ProgressBar";
 import { AssumptionFormContext } from "../../contexts/AssumptionFormContext";
 import ErrorModal from "../../components/ErrorModal";
-import { useUpdateAssumptionFrom } from "../../hooks/useAssumptionForm";
-import { useAddCampaign } from "../../hooks/useAddCampaign";
+import {
+  // useAssumptionForm,
+  useUpdateAssumptionFrom,
+} from "../../hooks/useAssumptionForm";
+import { useAddHospital } from "../../hooks/useAddHospital";
 import { useGetFormData } from "../../hooks/useGetFormData";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { useGetAssetsDraftForms } from "../../hooks/useGetAssetsDraftForms";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useGetHospital } from "../../hooks/useGetHospital";
+import { useEditHospital } from "../../hooks/useEditHospital";
 
-const CampaignSchema1 = Yup.object().shape({
+const HospitalSchema1 = Yup.object().shape({
   name: Yup.string().required("*Required"),
   address: Yup.string().required("*Required"),
   city: Yup.string().required("*Required"),
@@ -28,7 +34,7 @@ const CampaignSchema1 = Yup.object().shape({
   phone: Yup.string().required("*Required"),
   email: Yup.string().required("*Required"),
   website: Yup.string().required("*Required"),
-  bankAccounts: Yup.string().required("*Required"),
+  // bankAccounts: Yup.string().required("*Required"),
   am_name: Yup.string().required("*Required"),
   am_address: Yup.string().required("*Required"),
   am_city: Yup.string().required("*Required"),
@@ -36,20 +42,20 @@ const CampaignSchema1 = Yup.object().shape({
   am_country: Yup.string().required("*Required"),
 });
 
-const CampaignSchema2 = Yup.object().shape({
-  accountNumber: Yup.string().required("*Required"),
-  accountHolderName: Yup.string().required("*Required"),
-  bankName: Yup.string().required("*Required"),
-  bankCountry: Yup.string().required("*Required"),
+const HospitalSchema2 = Yup.object().shape({
+  // accountNumber: Yup.string().required("*Required"),
+  // accountHolderName: Yup.string().required("*Required"),
+  // bankName: Yup.string().required("*Required"),
+  // bankCountry: Yup.string().required("*Required"),
 });
 
-const CampaignSchema3 = Yup.object().shape({
+const HospitalSchema3 = Yup.object().shape({
   hospitalAdmins: Yup.string().required("*Required"),
 });
 
-const schemas = [CampaignSchema1, CampaignSchema2, CampaignSchema3];
+const schemas = [HospitalSchema1, HospitalSchema2, HospitalSchema3];
 
-const AddCampaignForm = ({ parentRoute }: { parentRoute: any }) => {
+const HospitalEditForm = ({ parentRoute }: { parentRoute: any }) => {
   const styles = useStyles();
   const location = useLocation();
 
@@ -58,7 +64,6 @@ const AddCampaignForm = ({ parentRoute }: { parentRoute: any }) => {
     setAssetValue,
     setAssetCurrentForm,
     setAssetCurrentFormSavedAt,
-    assetLastPage,
     setAssetLastPage,
   } = useContext(AssumptionFormContext);
 
@@ -73,6 +78,9 @@ const AddCampaignForm = ({ parentRoute }: { parentRoute: any }) => {
     : false;
   const [savedValues, setSavedValues]: any = useState("");
   const [savedAsset, setSavedAsset]: any = useState("");
+
+  const [imageUrlGenerated, setImageUrlGenerated] = useState(false);
+  const [imgUploadUrl, setImagUploadUrl] = useState("");
 
   const { dataForm, isDataFormSuccess } = useGetFormData({
     onGetFormSuccess: function () {},
@@ -91,14 +99,7 @@ const AddCampaignForm = ({ parentRoute }: { parentRoute: any }) => {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData]: any = useState(null);
-
-  const [patientId, setPatientId] = useState(null);
-  const [hospitalId, setHospitalId] = useState(null);
-
-  const [imageUrlGenerated, setImageUrlGenerated] = useState(false);
-  const [imgUploadUrl, setImagUploadUrl] = useState("");
-
-  const [imageUrls, setImageUrls] = useState<any[]>([]);
+  const [hospitalAdminId, setHospitalAdminId] = useState(null);
 
   const [lastFormData, setLastFormData] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -111,28 +112,52 @@ const AddCampaignForm = ({ parentRoute }: { parentRoute: any }) => {
     setIsError(true);
   };
 
-  const onAddCampaignError = () => {
-    setErrorText("Incorrect Phone Number or URL");
-    setIsError(true);
-  };
-
-  const campaignAddHandler = () => {};
-
-  const { mutate, data, isLoading, isSuccess } = useAddCampaign({
-    onSuccess: campaignAddHandler,
-    onError: onAddCampaignError,
+  const { mutate, data, isLoading, isSuccess } = useAddHospital({
+    onSuccess: hospitalHandler,
+    onError: onAddHospitalError,
   });
 
+  const {
+    mutate: updateHospital,
+    isLoading: updateHospitalLoading,
+    isSuccess: updateHospitalSuccess,
+  } = useEditHospital({});
+
+  const voidFunction = () => {};
+
+  const { dataHospital, isDataHospitalLoading, isDataHospitalSuccess } =
+    useGetHospital({
+      id: location.state.hospital.id,
+      onGetHospitalSuccess: voidFunction,
+    });
+
   useEffect(() => {
-    const formData: any =
-      localStorage.getItem("AssumptionForm") !== null &&
-      JSON.parse(localStorage.getItem("AssumptionForm") as string);
-    if ((fromDraft === false || fromSubmitted === false) && formData) {
-      setStep(1);
-      setSelectedBuildingId(formData?.asset);
-      setSavedValues(formData?.data);
+    if (isDataHospitalSuccess === true) {
+      setHospitalAdminId(dataHospital?.data.hospitalAdmins[0]);
+      const values = {
+        name: dataHospital?.data.en_us.name,
+        address: dataHospital?.data.en_us?.location?.address,
+        city: dataHospital?.data.en_us?.location?.city,
+        state: dataHospital?.data.en_us?.location?.state,
+        country: dataHospital?.data.en_us?.location?.country,
+        // bankAccounts: dataHospital?.data.en_us?.bankAccounts,
+
+        phone: dataHospital?.data.phone.join(""),
+        email: dataHospital?.data.email,
+        website: dataHospital?.data.website,
+        hospitalAdmins: dataHospital?.data.hospitalAdmins.join(""),
+        id: dataHospital?.data._id,
+
+        am_name: dataHospital?.data.am_et.name,
+        am_address: dataHospital?.data.am_et?.location?.address,
+        am_city: dataHospital?.data.am_et?.location?.city,
+        am_state: dataHospital?.data.am_et?.location?.state,
+        am_country: dataHospital?.data.am_et?.location?.country,
+      };
+
+      setSavedValues(values);
     }
-  }, [fromDraft, fromSubmitted]);
+  }, [dataHospital]);
 
   const {
     mutate: draftMutate,
@@ -143,43 +168,32 @@ const AddCampaignForm = ({ parentRoute }: { parentRoute: any }) => {
     onSuccess: (data) => console.log("draft saved"),
   });
 
-  const { dataAssetsDraftForms } = useGetAssetsDraftForms({
-    isDraft: true,
-  });
-
   useEffect(() => {
-    if (isSuccess === true || draftIsSuccess === true) {
-      navigate(`/${parentRoute}/campaigns`);
-    }
-  }, [isSuccess, draftIsSuccess, navigate, parentRoute]);
-
-  useEffect(() => {
-    if ((isError === true || isErrorUpdate === true) && isSubmitted === true) {
-      notify();
-
-      formData.last_step = lastFormData ? 2 : formData?.last_step;
-
-      const store = JSON.stringify(formData);
-      localStorage.setItem("AssumptionForm", store);
+    if (updateHospitalSuccess === true) {
       navigate(`/${parentRoute}/hospitals`);
     }
-  }, [isSubmitted, isError, isErrorUpdate, formData, navigate, parentRoute]);
+  }, [updateHospitalSuccess, navigate, parentRoute]);
 
   const initialValues = {
-    campaignDescription: "",
-    treatmentRequired: "",
-    diagnosis: "",
-    am_campaignDescription: "",
-    am_treatmentRequired: "",
-    am_diagnosis: "",
-    patientId: "",
-    hospitalId: "",
-    targetFunding: "",
-    images: "",
-    coverImage: "",
-    hasExplicitContent: "",
-    startDate: "",
-    endDate: "",
+    name: "",
+    address: "",
+    city: "",
+    state: "",
+    country: "",
+    phone: "",
+    email: "",
+    website: "",
+    bankAccounts: "1000255336437",
+    am_name: "",
+    am_address: "",
+    am_city: "",
+    am_state: "",
+    am_country: "",
+    accountHolderName: "Abebe Kebede",
+    bankName: "",
+    bankCountry: "",
+    accountNumber: "1000255336437",
+    hospitalAdmins: "",
   };
 
   const notify = () => {
@@ -187,37 +201,53 @@ const AddCampaignForm = ({ parentRoute }: { parentRoute: any }) => {
   };
 
   const onSubmitHandler = (data: any) => {
-    if (step === 2) {
-      setStep(2);
+    console.log(imgUploadUrl, data, "data data data data");
+    if (step === 3) {
+      setStep(3);
     } else {
       setStep((prevState) => prevState + 1);
     }
 
-    if (step === 2) {
+    if (step === 3) {
       const formData: any = {
         en_us: {
-          campaignTitle: data.campaignTitle,
-          campaignDescription: data.campaignDescription,
-          treatmentRequired: [data.treatmentRequired],
-          diagnosis: [data.diagnosis],
+          name: data.name,
+          location: {
+            address: data.address,
+            city: data.city,
+            state: data.state,
+            country: data.country,
+          },
+          services: ["Treating Patient"],
+          bankAccounts: [],
         },
         am_et: {
-          campaignTitle: data.am_campaignTitle,
-          campaignDescription: data.am_campaignDescription,
-          treatmentRequired: [data.am_treatmentRequired],
-          diagnosis: [data.am_diagnosis],
+          name: data.am_name,
+          location: {
+            address: data.am_address,
+            city: data.am_city,
+            state: data.am_state,
+            country: data.am_country,
+          },
+          services: ["Treating Patient"],
+          bankAccounts: [],
         },
-        patientId: patientId,
-        hospitalId: hospitalId,
-        targetFunding: data.targetFunding,
-        coverImage: imgUploadUrl,
-        hasExplicitContent: data.hasExplicitContent === "Yes" ? true : false,
-        startDate: data.startDate,
-        endDate: data.endDate,
-        images: imageUrls,
+        phone: data.phone,
+        email: data.email,
+        website: data.website,
+        hospitalAdmins: [hospitalAdminId],
+        images: [imgUploadUrl],
+        bankAccounts: [
+          {
+            accountNumber: data.accountNumber,
+            accountHolderName: data.accountHolderName,
+            bankName: data.bankName,
+            bankCountry: data.bankCountry,
+          },
+        ],
       };
-
-      mutate(formData);
+      
+      updateHospital({ obj: formData, id: location.state.hospital.id });
 
       setAssetLastPage(1);
       setAssetValue(null);
@@ -242,97 +272,42 @@ const AddCampaignForm = ({ parentRoute }: { parentRoute: any }) => {
     setStep((prevState) => prevState - 1);
   };
 
-  const onSaveAndExitClickHandler = (data: AssumtionFormValues) => {
-    setAssetCurrentFormSavedAt(new Date());
-
-    let draftedBuilding: any = null;
-
-    dataAssetsDraftForms?.results.forEach((result: any) => {
-      if (
-        result.building_name === data.company &&
-        result.type === "ASSUMPTIONS"
-      ) {
-        draftedBuilding = result;
-      }
-    });
-
-    if (draftId) {
-      const formData: any = {
-        data: data,
-        asset: selectedBuildingId !== null ? selectedBuildingId : assetValue,
-        type: "ASSUMPTIONS",
-        last_step: step,
-        is_draft: true,
-        id: draftId,
-      };
-      draftMutate(formData);
-
-      setFormData(formData);
-      setIsSubmitted(true);
-    } else if (draftedBuilding !== null) {
-      const formData: any = {
-        asset: draftedBuilding?.asset,
-        data: data,
-        type: "ASSUMPTIONS",
-        last_step: step,
-        is_draft: true,
-        id: draftedBuilding?.id,
-      };
-
-      draftMutate(formData);
-
-      setFormData(formData);
-      setIsSubmitted(true);
-    } else {
-      const formData: any = {
-        data: data,
-        asset: selectedBuildingId !== null ? selectedBuildingId : assetValue,
-        type: "ASSUMPTIONS",
-        last_step: step,
-        is_draft: true,
-      };
-      mutate(formData);
-
-      setFormData(formData);
-      setIsSubmitted(true);
-    }
-    setAssetCurrentForm(null);
-    setAssetLastPage(1);
-  };
-
   return (
     <>
       <Formik
         initialValues={savedValues || initialValues}
         onSubmit={onSubmitHandler}
         enableReinitialize={true}
-        // validationSchema={schemas[step - 1]}
-        // validateOnChange={false}
-        // validateOnBlur={false}
+        validationSchema={schemas[step - 1]}
+        validateOnChange={false}
+        validateOnBlur={false}
       >
         {({ handleChange, values, setFieldValue }) => {
           return (
             <>
               <Form>
-                <ProgressBar numberOfSteps={2} currentStep={step} />
+                <ProgressBar numberOfSteps={3} currentStep={step} />
                 {step === 1 && (
-                  <CampaignDataForm
+                  <HospitalsDataForm
                     formikChangeHandler={handleChange}
                     assumptionFormValues={values}
                     setImagUploadUrl={setImagUploadUrl}
                     setImageUrlGenerated={setImageUrlGenerated}
-                    setImageUrls={setImageUrls}
                   />
                 )}
                 {step === 2 && (
-                  <CampaignDataForm2
+                  <HospitalAdminForm
                     formikChangeHandler={handleChange}
                     assumptionFormValues={values}
-                    setPatientId={setPatientId}
-                    setHospitalId={setHospitalId}
                   />
                 )}
-
+                {step === 3 && (
+                  <HospitalAdminForm2
+                    formikChangeHandler={handleChange}
+                    assumptionFormValues={values}
+                    setHospitalAdminId={setHospitalAdminId}
+                  />
+                )}
                 <div className={styles.btnsContainer}>
                   <div>
                     {step !== 1 && (
@@ -353,7 +328,7 @@ const AddCampaignForm = ({ parentRoute }: { parentRoute: any }) => {
                       buttonType="submit"
                       disabled={isLoading || draftIsLoading}
                     >
-                      {step === 2 ? (
+                      {step === 3 ? (
                         (isLoading || draftIsLoading) && formSubmitted ? (
                           <LoadingSpinner
                             customStyle={styles.loaderStyle}
@@ -382,21 +357,8 @@ const AddCampaignForm = ({ parentRoute }: { parentRoute: any }) => {
           );
         }}
       </Formik>
-
-      <ToastContainer
-        position="bottom-right"
-        autoClose={2000}
-        hideProgressBar={true}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
     </>
   );
 };
 
-export default AddCampaignForm;
+export default HospitalEditForm;

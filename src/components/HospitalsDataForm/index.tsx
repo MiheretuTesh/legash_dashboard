@@ -23,14 +23,16 @@ interface HospitalsDataFormProps {
       : (e: string | React.ChangeEvent<any>) => void;
   };
   assumptionFormValues?: AssumtionFormValues;
+  setImagUploadUrl: Function;
+  setImageUrlGenerated: Function;
 }
 
 const HospitalsDataForm = ({
   formikChangeHandler,
   assumptionFormValues,
+  setImagUploadUrl,
+  setImageUrlGenerated,
 }: HospitalsDataFormProps) => {
-  const [imageUrlGenerated, setImageUrlGenerated] = useState(false);
-  const [imgUploadUrl, setImagUploadUrl] = useState("");
   const styles = useStyles();
   return (
     <div

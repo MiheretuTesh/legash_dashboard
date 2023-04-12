@@ -20,7 +20,6 @@ export const transformRoleName = (roleName: string) => {
 };
 
 export const reverseTransformRole = (roleName: string) => {
-  console.log(roleName, "roleName roleName roleName roleName");
   switch (roleName) {
     case "645e44069e60637d858a265f": {
       return "Admin";

@@ -7,14 +7,9 @@ import SubmittedForms from "../../components/SubmittedForms";
 import TerminatedCampaigns from "../../components/TerminatedCampaigns";
 import { useLocation } from "react-router";
 
-const TABS = [
-  // "Campaigns Review",
-  "Draft Campaigns",
-  "Submitted Campaigns",
-  "Suspended Campaigns",
-];
+const TABS = ["Suspended Campaigns"];
 
-const AddNewHospital = ({ parentRoute }: { parentRoute: string }) => {
+const ArchivePage = ({ parentRoute }: { parentRoute: string }) => {
   const styles = useStyles();
   const [selectedTab, setSelectedTab] = useState(TABS[0]);
 
@@ -35,10 +30,10 @@ const AddNewHospital = ({ parentRoute }: { parentRoute: string }) => {
     switch (selectedTab) {
       // case "Campaigns Review":
       //   return <StartANewForm parentRoute={parentRoute} />;
-      case "Draft Campaigns":
-        return <DraftForms parentRoute={parentRoute} />;
-      case "Submitted Campaigns":
-        return <SubmittedForms parentRoute={parentRoute} />;
+      // case "Draft Campaigns":
+      //   return <DraftForms parentRoute={parentRoute} />;
+      // case "Submitted Campaigns":
+      //   return <SubmittedForms parentRoute={parentRoute} />;
       case "Suspended Campaigns":
         return <TerminatedCampaigns parentRoute={parentRoute} />;
     }
@@ -56,4 +51,4 @@ const AddNewHospital = ({ parentRoute }: { parentRoute: string }) => {
   );
 };
 
-export default AddNewHospital;
+export default ArchivePage;

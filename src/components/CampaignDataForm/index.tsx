@@ -4,6 +4,7 @@ import SideLabelFormField from "../SideLabelFormField";
 import SideLabelFormSelectField from "../SideLabelFormSelectField";
 import { useStyles } from "./index.style";
 import ImageUpload from "../ImageUpload";
+import ImageUploads from "../ImageUploads";
 import {
   CITIES,
   STATES,
@@ -25,6 +26,7 @@ interface CampaignDataFormProps {
   assumptionFormValues?: AssumtionFormValues;
   setImagUploadUrl: Function;
   setImageUrlGenerated: Function;
+  setImageUrls: any;
 }
 
 const CampaignDataForm = ({
@@ -32,6 +34,7 @@ const CampaignDataForm = ({
   assumptionFormValues,
   setImagUploadUrl,
   setImageUrlGenerated,
+  setImageUrls,
 }: CampaignDataFormProps) => {
   const styles = useStyles();
   return (
@@ -49,9 +52,10 @@ const CampaignDataForm = ({
             setImageUrlGenerated={setImageUrlGenerated}
             setImagUploadUrl={setImagUploadUrl}
           />
+          <ImageUploads setImageUrls={setImageUrls} />
           <SideLabelFormField
             fieldLabel="Title"
-            fieldName="title"
+            fieldName="campaignTitle"
             fieldPlaceholder="Help Simon"
           />
           <SideLabelFormField
@@ -92,6 +96,11 @@ const CampaignDataForm = ({
       <div className={styles.container}>
         <div className={styles.fieldsContainer}>
           <h3>Amharic</h3>
+          <SideLabelFormField
+            fieldLabel="ርዕስ"
+            fieldName="am_campaignTitle"
+            fieldPlaceholder="ሳምሶንን እርዱት"
+          />
           <SideLabelFormField
             fieldLabel="ማብራሪያ"
             fieldName="am_campaignDescription"
