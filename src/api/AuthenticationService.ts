@@ -3,18 +3,20 @@ import { transformRoleName } from "../utils/functions";
 import AxiosInstance from "./AxiosInstance";
 
 export const register = (obj: RegistrationFormValues) => {
-  return AxiosInstance.post("users/registration/", {
+  return AxiosInstance.post("auth/signup", {
     email: obj.email,
-    first_name: obj.firstName,
-    last_name: obj.lastName,
-    type: transformRoleName(obj.role),
+    firstName: obj.firstName,
+    lastName: obj.lastName,
+    role: transformRoleName(obj.role),
     password: obj.password,
-    company: obj.company,
+    phonenumber: obj.phonenumber,
+    gender: obj.gender,
+    dateOfBirth: obj.dateOfBirth,
   });
 };
 
 export const login = (obj: LoginFormValues) => {
-  return AxiosInstance.post("users/token/", {
+  return AxiosInstance.post("auth/login", {
     email: obj.email,
     password: obj.password,
   });

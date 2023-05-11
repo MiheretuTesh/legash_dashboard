@@ -1,4 +1,4 @@
-import AxiosInstance, {AxiosDynamicContentType} from "./AxiosInstance";
+import AxiosInstance, { AxiosDynamicContentType } from "./AxiosInstance";
 
 export const getUsers = async (obj: { limit?: number; offset?: number }) => {
   const { data } = await AxiosInstance.get(
@@ -56,8 +56,10 @@ export const editUser = ({
   });
 };
 export const userProfileEdit = (obj: any) => {
-  return AxiosDynamicContentType("multipart/form-data").patch(`users/profile/`, obj);
-
+  return AxiosDynamicContentType("multipart/form-data").patch(
+    `users/profile/`,
+    obj
+  );
 };
 export const deleteUsers = (obj: { ids: number[] }) => {
   return AxiosInstance.post(`users/delete/`, { ids: obj.ids });

@@ -6,9 +6,10 @@ import { OptionsIcon } from "../../assets";
 import { UserTableRow } from "../../types";
 import UserModal from "../../components/UserModal";
 import { useGetUsers } from "../../hooks/useGetUsers";
-import { useGetAssets } from "../../hooks/useGetAssets";
+import { useGetCampaigns } from "../../hooks/useGetCampaigns";
 import { Roles, TABLE_LIMIT } from "../../constants";
 import DeleteModal from "../../components/DeleteModal";
+import { useNavigate } from "react-router-dom";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import TablePagination from "../../components/Pagination";
@@ -21,7 +22,8 @@ import moment from "moment";
 // import { useGetUserSearch } from "../../hooks/useGetUserSearch"
 
 const CampaignPage = ({ parentRoute }: any) => {
-  const dataGridStyles = useStyles();
+  const styles = useStyles();
+  const navigate = useNavigate();
   const [currentOffset, setCurrentOffset] = useState(0);
   const [totalSelected, setTotalSelected] = useState(0);
   const [searchValue, setSearchValue] = useState("");
@@ -62,9 +64,7 @@ const CampaignPage = ({ parentRoute }: any) => {
         const row = params.row;
         return (
           <div>
-            {row.role === Roles.FundAssetManager
-              ? "Fund Asset Manager"
-              : "Engineer"}
+            {row.role === Roles.Admin ? "Super Admin" : "Hospital Admin"}
           </div>
         );
       },
@@ -138,11 +138,10 @@ const CampaignPage = ({ parentRoute }: any) => {
 
   const [selectedUsers, setSelectedUsers] = useState<GridSelectionModel>();
 
-  const { dataAssets, isLoadingAssets } = useGetAssets({});
-  const { dataUsers, isLoadingUsers } = useGetUsers({
-    limit: TABLE_LIMIT,
-    offset: currentOffset,
-  });
+  const { dataCampaigns, isLoadingCampaigns } = useGetCampaigns({});
+
+  console.log(dataCampaigns, "dataCampaigns dataCampaigns dataCampaigns");
+
   const { dataUsers: dataAllUsers, isLoadingUsers: isLoadingAllUsers } =
     useGetUsers({});
 
@@ -190,21 +189,6 @@ const CampaignPage = ({ parentRoute }: any) => {
   //   }
   // }, [userSearchIsSuccess, userSearchData, dataAssets, searchValue, dataUsers]);
 
-  const onSelectionChangeHandler = (
-    selectionModel: GridSelectionModel,
-    details: any
-  ) => {
-    setSelectionModelPersonal(selectionModel);
-    const selectedRowData = dataUsers?.results.filter(
-      (row: UserTableRow) => row.id === selectionModel[0]
-    );
-    if (selectedRowData.length === 1) {
-      setRowForEdit(selectedRowData[0]);
-    }
-    setSelectedUsers(selectionModel);
-    setTotalSelected(selectionModel.length);
-  };
-
   const exportTableToPdf = () => {
     const doc = new jsPDF("portrait", "pt", "A4");
     doc.setFontSize(15);
@@ -234,59 +218,58 @@ const CampaignPage = ({ parentRoute }: any) => {
     setCurrentOffset((prevState) => prevState - TABLE_LIMIT);
   };
 
-  useEffect(() => {
-    if (dataUsers?.results.length > 0) {
-      const tableData: UserTableRow[] = [];
+  // useEffect(() => {
+  //   if (dataUsers?.results.length > 0) {
+  //     const tableData: UserTableRow[] = [];
 
-      dataUsers?.results.forEach((data: any) => {
-        tableData.push({
-          assets: "",
-          id: data.id,
-          user: `${data.first_name} ${data.last_name}`,
-          email: data.email,
-          role: data.type,
-          updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
-        });
-      });
-      setTableRows(tableData);
-    } else {
-      setTableRows([]);
-    }
+  //     dataUsers?.results.forEach((data: any) => {
+  //       tableData.push({
+  //         assets: "",
+  //         id: data.id,
+  //         user: `${data.first_name} ${data.last_name}`,
+  //         email: data.email,
+  //         role: data.type,
+  //         updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
+  //       });
+  //     });
+  //     setTableRows(tableData);
+  //   } else {
+  //     setTableRows([]);
+  //   }
 
-    return () => {
-      setTableRows([]);
-    };
-  }, [dataUsers]);
+  //   return () => {
+  //     setTableRows([]);
+  //   };
+  // }, [dataUsers]);
 
   const handleOnSearchFieldChange = (e: any) => {
-    setSearchValue((prevName) => e.target.value);
-    fetch(``, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((users: any) => {
-        const tableData: UserTableRow[] = [];
-
-        users?.results.forEach((data: any) => {
-          tableData.push({
-            assets: "",
-            id: data.id,
-            user: `${data.first_name} ${data.last_name}`,
-            email: data.email,
-            role: data.type,
-            updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
-          });
-        });
-        setTableRows(tableData);
-      })
-      .catch((error) => {
-        // console.log(error);
-      });
+    // setSearchValue((prevName) => e.target.value);
+    // fetch(``, {
+    //   method: "GET",
+    //   headers: {
+    //     Authorization: `Bearer ${localStorage.getItem("token")}`,
+    //   },
+    // })
+    //   .then((response) => {
+    //     return response.json();
+    //   })
+    //   .then((users: any) => {
+    //     const tableData: UserTableRow[] = [];
+    //     users?.results.forEach((data: any) => {
+    //       tableData.push({
+    //         assets: "",
+    //         id: data.id,
+    //         user: `${data.first_name} ${data.last_name}`,
+    //         email: data.email,
+    //         role: data.type,
+    //         updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
+    //       });
+    //     });
+    //     setTableRows(tableData);
+    //   })
+    //   .catch((error) => {
+    //     // console.log(error);
+    //   });
   };
 
   const { windowSize } = useContext(NewOnsiteChecklistContext);
@@ -301,6 +284,57 @@ const CampaignPage = ({ parentRoute }: any) => {
     }
   }, [windowSize]);
 
+  const hospitals = [
+    {
+      id: 1,
+      name: "Abebe Kebede",
+      location: "Minilike",
+      status: true,
+      staffMembers: ["Abebe Sisay", "Embet Getu"],
+      img: "https://images.unsplash.com/photo-1606166187734-a4cb74079037?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8c2ljayUyMHBlcnNvbnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
+    },
+    {
+      id: 1,
+      name: "Asrat Assefa",
+      location: "6 kilo",
+      status: true,
+      staffMembers: ["Abebe Sisay", "Embet Getu"],
+      img: "https://images.unsplash.com/photo-1606166187734-a4cb74079037?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8c2ljayUyMHBlcnNvbnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
+    },
+    {
+      id: 1,
+      name: "Zewde Tegaye",
+      location: "Zewditu",
+      status: true,
+      staffMembers: ["Abebe Sisay", "Embet Getu"],
+      img: "https://images.unsplash.com/photo-1606166187734-a4cb74079037?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8c2ljayUyMHBlcnNvbnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
+    },
+    {
+      id: 1,
+      name: "Bontu Simele",
+      location: "Piazza",
+      status: true,
+      staffMembers: ["Abebe Sisay", "Embet Getu"],
+      img: "https://images.unsplash.com/photo-1606166187734-a4cb74079037?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8c2ljayUyMHBlcnNvbnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
+    },
+    {
+      id: 1,
+      name: "Yonathan Feyera",
+      location: "Minilike",
+      status: true,
+      staffMembers: ["Abebe Sisay", "Embet Getu"],
+      img: "https://images.unsplash.com/photo-1606166187734-a4cb74079037?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8c2ljayUyMHBlcnNvbnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
+    },
+    {
+      id: 1,
+      name: "Yossef Gutu",
+      location: "Minilike",
+      status: true,
+      staffMembers: ["Abebe Sisay", "Embet Getu"],
+      img: "https://images.unsplash.com/photo-1606166187734-a4cb74079037?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8c2ljayUyMHBlcnNvbnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
+    },
+  ];
+
   return (
     <>
       <UserModal
@@ -308,7 +342,7 @@ const CampaignPage = ({ parentRoute }: any) => {
         setIsModalOpen={setIsUserModalOpen}
         type={userModalType}
         oldValues={rowForEdit}
-        availableAssets={dataAssets}
+        availableAssets={dataCampaigns}
         setSelectionModel={setSelectionModelPersonal}
         setSelectedRows={setSelectedUsers}
         setTotalSelected={setTotalSelected}
@@ -325,51 +359,66 @@ const CampaignPage = ({ parentRoute }: any) => {
         totalSelected={totalSelected}
         searchValue={searchValue}
         setSearchValue={setSearchValue}
-        addText={"user"}
+        addText={"Campaign"}
         setIsModalOpen={setIsUserModalOpen}
         setIsDeleteModalOpen={setIsUserDeleteModalOpen}
         totalRowsSelected={totalSelected}
         data={dataAllUsers?.results}
         setTableRows={setTableRows}
-        tableType={"users"}
+        tableType={"Campaign"}
         setActionType={setUserModalType}
-        isLoading={isLoadingUsers || isLoadingAssets || isLoadingAllUsers}
+        isLoading={isLoadingCampaigns || isLoadingAllUsers}
         exportTableToPdf={exportTableToPdf}
         handleOnSearchFieldChange={handleOnSearchFieldChange}
         parentRoute={parentRoute}
       />
-      <div className={dataGridStyles.tableContainer}>
-        <DataGrid
-          rows={tableRows}
-          columns={columns}
-          rowHeight={rowHeight}
-          pageSize={5}
-          onSelectionModelChange={onSelectionChangeHandler}
-          selectionModel={selectionModelPersonal}
-          disableSelectionOnClick
-          checkboxSelection
-          hideFooter
-          loading={isLoadingUsers || isLoadingAssets || isLoadingAllUsers}
-        />
-        <TablePagination
-          nextDisabled={
-            dataUsers?.next === null ||
-            isLoadingUsers ||
-            isLoadingAssets ||
-            isLoadingAllUsers
-          }
-          previousDisabled={
-            dataUsers?.previous === null ||
-            isLoadingUsers ||
-            isLoadingAssets ||
-            isLoadingAllUsers
-          }
-          onPreviousHandler={onPreviousHandler}
-          onNextHandler={onNextHandler}
-          currentPage={currentOffset / TABLE_LIMIT + 1}
-          setCurrentOffset={setCurrentOffset}
-          total={dataUsers?.count}
-        />
+      <div
+        style={{
+          width: "100%",
+          marginTop: "30px",
+          display: "flex",
+          flexDirection: "row",
+          flexWrap: "wrap",
+          paddingBottom: 100,
+          overflowY: "hidden",
+          overflowX: "hidden",
+        }}
+      >
+        {hospitals.map((hospital, index) => (
+          <div
+            key={index}
+            style={{
+              width: "295px",
+              backgroundColor: "#fff",
+              padding: 10,
+              margin: "30px",
+              boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              borderRadius: 10,
+              cursor: "pointer",
+            }}
+            onClick={() => navigate(`/${parentRoute}/campaign/1`)}
+          >
+            <div>
+              <img
+                src={`${hospital.img}`}
+                width="295px"
+                style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
+              />
+            </div>
+            <p style={{ fontSize: "16px", fontWeight: 600 }}>
+              Name: {hospital.name}
+            </p>
+            <p style={{ fontSize: "16px", fontWeight: 500 }}>
+              Location: {hospital.location}
+            </p>
+            <p style={{ fontSize: "16px", fontWeight: 500 }}>
+              Status: {hospital.location}
+            </p>
+          </div>
+        ))}
       </div>
     </>
   );

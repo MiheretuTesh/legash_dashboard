@@ -6,7 +6,7 @@ import { OptionsIcon } from "../../assets";
 import { UserTableRow } from "../../types";
 import UserModal from "../../components/UserModal";
 import { useGetUsers } from "../../hooks/useGetUsers";
-import { useGetAssets } from "../../hooks/useGetAssets";
+import { useGetHospitals } from "../../hooks/useGetHospitals";
 import { Roles, TABLE_LIMIT } from "../../constants";
 import DeleteModal from "../../components/DeleteModal";
 import jsPDF from "jspdf";
@@ -35,6 +35,7 @@ const UsersPage = ({ parentRoute }: any) => {
     last_name: "",
     email: "",
     updated_at: "",
+    role: "",
   });
 
   const columns = [
@@ -58,16 +59,16 @@ const UsersPage = ({ parentRoute }: any) => {
       field: "role",
       headerName: "Role",
       minWidth: 250,
-      renderCell: (params: any) => {
-        const row = params.row;
-        return (
-          <div>
-            {row.role === Roles.FundAssetManager
-              ? "Fund Asset Manager"
-              : "Engineer"}
-          </div>
-        );
-      },
+      // renderCell: (params: any) => {
+      //   const row = params.row;
+      //   return (
+      //     <div>
+      //       {row.role === Roles.FundAssetManager
+      //         ? "Fund Asset Manager"
+      //         : "Engineer"}
+      //     </div>
+      //   );
+      // },
     },
     {
       field: "updated_at",
@@ -138,7 +139,7 @@ const UsersPage = ({ parentRoute }: any) => {
 
   const [selectedUsers, setSelectedUsers] = useState<GridSelectionModel>();
 
-  const { dataAssets, isLoadingAssets } = useGetAssets({});
+  // const { dataAssets, isLoadingAssets } = useGetHospitals({});
   const { dataUsers, isLoadingUsers } = useGetUsers({
     limit: TABLE_LIMIT,
     offset: currentOffset,
@@ -234,59 +235,58 @@ const UsersPage = ({ parentRoute }: any) => {
     setCurrentOffset((prevState) => prevState - TABLE_LIMIT);
   };
 
-  useEffect(() => {
-    if (dataUsers?.results.length > 0) {
-      const tableData: UserTableRow[] = [];
+  // useEffect(() => {
+  //   if (dataUsers?.results.length > 0) {
+  //     const tableData: UserTableRow[] = [];
 
-      dataUsers?.results.forEach((data: any) => {
-        tableData.push({
-          assets: "",
-          id: data.id,
-          user: `${data.first_name} ${data.last_name}`,
-          email: data.email,
-          role: data.type,
-          updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
-        });
-      });
-      setTableRows(tableData);
-    } else {
-      setTableRows([]);
-    }
+  //     dataUsers?.results.forEach((data: any) => {
+  //       tableData.push({
+  //         assets: "",
+  //         id: data.id,
+  //         user: `${data.first_name} ${data.last_name}`,
+  //         email: data.email,
+  //         role: data.type,
+  //         updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
+  //       });
+  //     });
+  //     setTableRows(tableData);
+  //   } else {
+  //     setTableRows([]);
+  //   }
 
-    return () => {
-      setTableRows([]);
-    };
-  }, [dataUsers]);
+  //   return () => {
+  //     setTableRows([]);
+  //   };
+  // }, [dataUsers]);
 
   const handleOnSearchFieldChange = (e: any) => {
-    setSearchValue((prevName) => e.target.value);
-    fetch(``, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((users: any) => {
-        const tableData: UserTableRow[] = [];
-
-        users?.results.forEach((data: any) => {
-          tableData.push({
-            assets: "",
-            id: data.id,
-            user: `${data.first_name} ${data.last_name}`,
-            email: data.email,
-            role: data.type,
-            updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
-          });
-        });
-        setTableRows(tableData);
-      })
-      .catch((error) => {
-        // console.log(error);
-      });
+    // setSearchValue((prevName) => e.target.value);
+    // fetch(``, {
+    //   method: "GET",
+    //   headers: {
+    //     Authorization: `Bearer ${localStorage.getItem("token")}`,
+    //   },
+    // })
+    //   .then((response) => {
+    //     return response.json();
+    //   })
+    //   .then((users: any) => {
+    //     const tableData: UserTableRow[] = [];
+    //     users?.results.forEach((data: any) => {
+    //       tableData.push({
+    //         assets: "",
+    //         id: data.id,
+    //         user: `${data.first_name} ${data.last_name}`,
+    //         email: data.email,
+    //         role: data.role,
+    //         updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
+    //       });
+    //     });
+    //     setTableRows(tableData);
+    //   })
+    //   .catch((error) => {
+    //     // console.log(error);
+    //   });
   };
 
   const { windowSize } = useContext(NewOnsiteChecklistContext);
@@ -301,6 +301,49 @@ const UsersPage = ({ parentRoute }: any) => {
     }
   }, [windowSize]);
 
+  const users: UserTableRow[] = [
+    {
+      id: 1,
+      name: "Abebe Tesfa",
+      email: "abebe@gmail.com",
+      role: "Admin",
+      updated_at: "April 9, 2019",
+      edited_by: "Abebe Tesfa",
+    },
+    {
+      id: 2,
+      name: "Kebede Atnafu",
+      email: "kebede@gmail.com",
+      role: "Admin",
+      updated_at: "April 9, 2019",
+      edited_by: "Abebe Tesfa",
+    },
+    {
+      id: 3,
+      name: "Gezachew Aschenaki",
+      email: "geza@gmail.com",
+      role: "Hospital Admin",
+      updated_at: "April 9, 2019",
+      edited_by: "Abebe Tesfa",
+    },
+    {
+      id: 4,
+      name: "Kurabachew Getahun",
+      email: "kura@gmail.com",
+      role: "User",
+      updated_at: "April 9, 2019",
+      edited_by: "Abebe Tesfa",
+    },
+    {
+      id: 5,
+      name: "Genet Meshesha",
+      email: "geni@gmail.com",
+      role: "User",
+      updated_at: "April 9, 2019",
+      edited_by: "Abebe Tesfa",
+    },
+  ];
+
   return (
     <>
       <UserModal
@@ -308,7 +351,7 @@ const UsersPage = ({ parentRoute }: any) => {
         setIsModalOpen={setIsUserModalOpen}
         type={userModalType}
         oldValues={rowForEdit}
-        availableAssets={dataAssets}
+        availableAssets={[]}
         setSelectionModel={setSelectionModelPersonal}
         setSelectedRows={setSelectedUsers}
         setTotalSelected={setTotalSelected}
@@ -329,18 +372,19 @@ const UsersPage = ({ parentRoute }: any) => {
         setIsModalOpen={setIsUserModalOpen}
         setIsDeleteModalOpen={setIsUserDeleteModalOpen}
         totalRowsSelected={totalSelected}
-        data={dataAllUsers?.results}
+        data={users}
+        // data={dataAllUsers?.results}
         setTableRows={setTableRows}
         tableType={"users"}
         setActionType={setUserModalType}
-        isLoading={isLoadingUsers || isLoadingAssets || isLoadingAllUsers}
+        isLoading={isLoadingUsers || isLoadingAllUsers}
         exportTableToPdf={exportTableToPdf}
         handleOnSearchFieldChange={handleOnSearchFieldChange}
         parentRoute={parentRoute}
       />
       <div className={dataGridStyles.tableContainer}>
         <DataGrid
-          rows={tableRows}
+          rows={users}
           columns={columns}
           rowHeight={rowHeight}
           pageSize={5}
@@ -349,20 +393,14 @@ const UsersPage = ({ parentRoute }: any) => {
           disableSelectionOnClick
           checkboxSelection
           hideFooter
-          loading={isLoadingUsers || isLoadingAssets || isLoadingAllUsers}
+          // loading={isLoadingUsers || isLoadingAssets || isLoadingAllUsers}
         />
         <TablePagination
           nextDisabled={
-            dataUsers?.next === null ||
-            isLoadingUsers ||
-            isLoadingAssets ||
-            isLoadingAllUsers
+            dataUsers?.next === null || isLoadingUsers || isLoadingAllUsers
           }
           previousDisabled={
-            dataUsers?.previous === null ||
-            isLoadingUsers ||
-            isLoadingAssets ||
-            isLoadingAllUsers
+            dataUsers?.previous === null || isLoadingUsers || isLoadingAllUsers
           }
           onPreviousHandler={onPreviousHandler}
           onNextHandler={onNextHandler}

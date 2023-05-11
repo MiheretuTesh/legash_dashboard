@@ -44,6 +44,11 @@ const AccountRouter = ({ userType }: AccountRouterProps) => {
       case "/report-admin/campaigns":
         setSelectedTab("Campaigns");
         break;
+      case "/account-admin/users":
+      case "/hospital-admin/users":
+      case "/report-admin/users":
+        setSelectedTab("Users");
+        break;
       case "/user/report":
       case "/account-admin/report":
       case "/hospital-admin/report":
@@ -93,6 +98,8 @@ const AccountRouter = ({ userType }: AccountRouterProps) => {
         return "Hospitals";
       case "/account-admin/new-hospitals":
         return "Add New Hospital";
+      case "/account-admin/new-campaign":
+        return "Add New Campaign";
       case "/account-admin/campaigns":
       case "/hospital-admin/campaigns":
       case "/report-admin/campaigns":

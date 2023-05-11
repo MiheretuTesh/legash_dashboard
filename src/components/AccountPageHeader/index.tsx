@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useStyles } from "./index.style";
@@ -22,20 +22,12 @@ const AccountPageHeader = ({
 }: AccountPageHeaderProps) => {
   const styles = useStyles();
   const navigate = useNavigate();
-  // const {instance, accounts} = useMsal();
 
   const { data } = useGetUsersProfile();
   const queryClient = useQueryClient();
 
   const logout = () => {
     localStorage.removeItem("token");
-    // if(accounts){
-    //   instance.logout({
-    //     postLogoutRedirectUri: "/",
-    //   });
-    // }
-    /*sessionStorage.removeItem('00000000-0000-0000-e896-d6a858826147.9188040d-6c67-4c5b-b112-36a304b66dad-login.windows.net-accesstoken-c153880a-2f00-4e16-815f-391441faefce-daff0d6b-5365-47bb-8d5f-3c7b38042ce6-api://92488830-c2c0-4e70-bd5c-46c4304268b0/read--')*/
-
     localStorage.removeItem("type");
     sessionStorage.clear();
     queryClient.removeQueries();

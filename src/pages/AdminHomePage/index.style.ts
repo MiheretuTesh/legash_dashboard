@@ -27,37 +27,14 @@ export const useStyles = makeStyles({
     width: "100%",
     "@media (min-width: 900px) and (max-width: 1056px)": {
       width: "100%",
+      flexDirection: "row",
     },
     "@media (max-width: 710px)": {
       width: "100%",
     },
-
-    // "&:first-child": {
-    //   width: "45%",
-    // },
-    // "&:nth-child(2)": {
-    //   width: "45%",
-    // },
-    // "&:nth-child(3)": {
-    //   width: "28%",
-    // },
-    // "&:nth-child(4)": {
-    //   width: "28%",
-    // },
-    // "&:nth-child(5)": {
-    //   width: "28%",
-    // },
   },
 
-  headerContainer: {
-    // display: "flex",
-    // flexDirection: "row",
-    // justifyContent: "space-between",
-    // width: "100%",
-    // "&:hover": {
-    //   color: "#fff",
-    // },
-  },
+  headerContainer: {},
 
   headerText: {
     margin: 0,

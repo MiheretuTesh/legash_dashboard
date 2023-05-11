@@ -6,7 +6,7 @@ import { OptionsIcon } from "../../assets";
 import { UserTableRow } from "../../types";
 import UserModal from "../../components/UserModal";
 import { useGetUsers } from "../../hooks/useGetUsers";
-import { useGetAssets } from "../../hooks/useGetAssets";
+import { useGetHospitals } from "../../hooks/useGetHospitals";
 import { Roles, TABLE_LIMIT } from "../../constants";
 import DeleteModal from "../../components/DeleteModal";
 import jsPDF from "jspdf";
@@ -63,12 +63,12 @@ const UsersPage = ({ parentRoute }: any) => {
         switch (row.role) {
           case Roles.Admin:
             return "Admin";
-          case Roles.FundAssetManagerAdmin:
-            return "Fund Asset Manager Admin";
-          case Roles.FundAssetManager:
-            return "Fund Asset Manager";
-          case Roles.Engineer:
-            return "Engineer";
+          case Roles.HospitalAdmin:
+            return "Hospital Admin";
+          case Roles.ReportAdmin:
+            return "Report Admin";
+          case Roles.User:
+            return "User";
         }
         // return (
         //   <div>
@@ -161,7 +161,7 @@ const UsersPage = ({ parentRoute }: any) => {
 
   const [selectedUsers, setSelectedUsers] = useState<GridSelectionModel>();
 
-  const { dataAssets, isLoadingAssets } = useGetAssets({});
+  // const { dataAssets, isLoadingAssets } = useGetHospitals({});
   const { dataUsers, isLoadingUsers } = useGetUsers({
     limit: TABLE_LIMIT,
     offset: currentOffset,
@@ -259,54 +259,54 @@ const UsersPage = ({ parentRoute }: any) => {
     doc.save(`${Date.now()}-admin-user-report.pdf`);
   };
 
-  useEffect(() => {
-    if (dataUsers) {
-      const tableData: UserTableRow[] = [];
-      dataUsers?.results.forEach((data: any) => {
-        tableData.push({
-          assets: "",
-          id: data.id,
-          user: `${data.first_name} ${data.last_name}`,
-          email: data.email,
-          role: data.type,
-          updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
-        });
-      });
-      setTableRows(tableData);
-    }
-    return () => {
-      setTableRows([]);
-    };
-  }, [dataUsers]);
+  // useEffect(() => {
+  //   if (dataUsers) {
+  //     const tableData: UserTableRow[] = [];
+  //     dataUsers?.results.forEach((data: any) => {
+  //       tableData.push({
+  //         assets: "",
+  //         id: data.id,
+  //         user: `${data.first_name} ${data.last_name}`,
+  //         email: data.email,
+  //         role: data.type,
+  //         updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
+  //       });
+  //     });
+  //     setTableRows(tableData);
+  //   }
+  //   return () => {
+  //     setTableRows([]);
+  //   };
+  // }, [dataUsers]);
 
   const handleOnSearchFieldChange = (e: any) => {
-    setSearchValue((prevName) => e.target.value);
-    fetch(``, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((users: any) => {
-        const tableData: UserTableRow[] = [];
-        users?.results.forEach((data: any) => {
-          tableData.push({
-            assets: "",
-            id: data.id,
-            user: `${data.first_name} ${data.last_name}`,
-            email: data.email,
-            role: data.type,
-            updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
-          });
-        });
-        setTableRows(tableData);
-      })
-      .catch((error) => {
-        // console.log(error);
-      });
+    // setSearchValue((prevName) => e.target.value);
+    // fetch(``, {
+    //   method: "GET",
+    //   headers: {
+    //     Authorization: `Bearer ${localStorage.getItem("token")}`,
+    //   },
+    // })
+    //   .then((response) => {
+    //     return response.json();
+    //   })
+    //   .then((users: any) => {
+    //     const tableData: UserTableRow[] = [];
+    //     users?.results.forEach((data: any) => {
+    //       tableData.push({
+    //         assets: "",
+    //         id: data.id,
+    //         user: `${data.first_name} ${data.last_name}`,
+    //         email: data.email,
+    //         role: data.type,
+    //         updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
+    //       });
+    //     });
+    //     setTableRows(tableData);
+    //   })
+    //   .catch((error) => {
+    //     // console.log(error);
+    //   });
   };
 
   const hospitals = [
@@ -386,7 +386,7 @@ const UsersPage = ({ parentRoute }: any) => {
         setIsModalOpen={setIsUserModalOpen}
         type={userModalType}
         oldValues={rowForEdit}
-        availableAssets={dataAssets}
+        availableAssets={[]}
         setSelectionModel={setSelectionModelPersonal}
         setSelectedRows={setSelectedUsers}
         setTotalSelected={setTotalSelected}
@@ -411,7 +411,7 @@ const UsersPage = ({ parentRoute }: any) => {
         setTableRows={setTableRows}
         tableType={"users"}
         setActionType={setUserModalType}
-        isLoading={isLoadingUsers || isLoadingAssets || isLoadingAllUsers}
+        isLoading={isLoadingUsers || isLoadingAllUsers}
         exportTableToPdf={exportTableToPdf}
         handleOnSearchFieldChange={handleOnSearchFieldChange}
         parentRoute={parentRoute}

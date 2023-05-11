@@ -1,39 +1,39 @@
-import {Roles} from "../constants";
+import { Roles } from "../constants";
 
 export const transformRoleName = (roleName: string) => {
   switch (roleName) {
-    case "Fund Asset Manager": {
-      return Roles.FundAssetManager;
-    }
-    case "Fund Asset Manager Admin": {
-      return Roles.FundAssetManagerAdmin;
-    }
-    case "Engineer": {
-      return Roles.Engineer;
-    }
     case "Admin": {
-      return Roles.Admin
+      return Roles.Admin;
+    }
+    case "Hospital Admin": {
+      return Roles.HospitalAdmin;
+    }
+    case "Report Admin": {
+      return Roles.ReportAdmin;
+    }
+    case "User": {
+      return Roles.User;
     }
     default:
-      return Roles.FundAssetManager;
+      return "643fcc7d9cbbe5517bf42776";
   }
 };
 
 export const reverseTransformRole = (roleName: string) => {
   switch (roleName) {
-    case Roles.FundAssetManager: {
-      return "Fund Asset Manager";
-    }
-    case Roles.FundAssetManagerAdmin: {
-      return "Fund Asset Manager Admin";
-    }
-    case Roles.Engineer: {
-      return "Engineer";
-    }
     case Roles.Admin: {
-      return "Admin"
+      return "Admin";
+    }
+    case Roles.HospitalAdmin: {
+      return "Hospital Admin";
+    }
+    case Roles.ReportAdmin: {
+      return "Report Admin";
+    }
+    case Roles.User: {
+      return "User";
     }
     default:
-      return "Fund Asset Manager";
+      return "User";
   }
 };

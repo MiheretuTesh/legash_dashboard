@@ -1,199 +1,184 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Formik, Form } from "formik";
+import FormField from "../FormField";
 import { useStyles } from "./index.style";
+import FormButton from "../FormButton";
+import FormSelectField from "../FormSelectField";
+import * as Yup from "yup";
+import { ROLES_NAMES, GENDER } from "../../constants";
 import TextField from "@mui/material/TextField";
 import Select from "@mui/material/Select";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import ErrorModal from "../ErrorModal";
+import { useAddHospital } from "../../hooks/useAddHospital";
+
+const ethiopianPhoneNumberRegex = /^(\+251)?[0-9]\d{9}$/;
+
+const HospitalAddSchema = Yup.object().shape({
+  name: Yup.string()
+    .min(2, "Too Short!")
+    .max(70, "Too Long!")
+    .required("*Required"),
+  // location: Yup.string()
+  //   .min(2, "Too Short!")
+  //   .max(70, "Too Long!")
+  //   .required("*Required"),
+  email: Yup.string().email("Invalid email").required("*Required"),
+  website: Yup.string().required("*Required"),
+  bankAccounts: Yup.string().required("*Required"),
+  // status: Yup.string().required("*Required"),
+  phone: Yup.string()
+    .matches(ethiopianPhoneNumberRegex, "Invalid Ethiopian phone number")
+    .required("Phone number is required"),
+});
 
 const AddNewHospitalForm = () => {
-  const styles = useStyles();
-
-  const [formData, setFormData] = useState({
+  const initialValues = {
     name: "",
     location: "",
-    status: "",
-    staffs: "",
-    description: "",
-  });
-
-  const handleInputChange = (e: any) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    email: "",
+    phone: "",
+    bankAccounts: "",
+    hospitalAdmins: ["6454b5414923fe67c83db134"],
+    services: ["fkdkj"],
+    website: "",
   };
 
-  // const handleInputChange = (e: any) => {
-  //   if (e.target.name === "image") {
-  //     // setFormData({ ...formData, [e.target.name]: e.target.files[0] });
-  //     // setPreviewImage(URL.createObjectURL(e.target.files[0]));
-  //   } else {
-  //     // setFormData({ ...formData, [e.target.name]: e.target.value });
-  //   }
+  const styles = useStyles();
+
+  const hospitalHandler = () => {};
+
+  const { mutate, data, isLoading, isSuccess } = useAddHospital({
+    onSuccess: () => hospitalHandler(),
+    onError: () => hospitalHandler(),
+  });
+
+  // const handleSubmit = (e: any) => {
+  //   e.preventDefault();
+
+  //   console.log(formData, "formData");
+
+  //   // Perform validation
+  //   // const errors = {};
+  //   // if (!formData.name.trim()) {
+  //   //   errors.name = "Name is required";
+  //   // }
+  //   // if (!formData.email.trim()) {
+  //   //   errors.email = "Email is required";
+  //   // }
+  //   // if (!formData.gender) {
+  //   //   errors.gender = "Gender is required";
+  //   // }
+
+  //   // If there are errors, set them in state
+  //   // if (Object.keys(errors).length > 0) {
+  //   //   setErrors(errors);
+  //   //   return;
+  //   // }
+
+  //   // Submit the form data
+  //   console.log(formData);
   // };
 
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
+  const STAFF_MEMBERS = ["Abebe", "Tefera"];
+  const STATUS = ["Active", "Inactive"];
 
-    console.log(formData, "formData");
-
-    // Perform validation
-    // const errors = {};
-    // if (!formData.name.trim()) {
-    //   errors.name = "Name is required";
-    // }
-    // if (!formData.email.trim()) {
-    //   errors.email = "Email is required";
-    // }
-    // if (!formData.gender) {
-    //   errors.gender = "Gender is required";
-    // }
-
-    // If there are errors, set them in state
-    // if (Object.keys(errors).length > 0) {
-    //   setErrors(errors);
-    //   return;
-    // }
-
-    // Submit the form data
-    console.log(formData);
-
-    setFormData({
-      name: "",
-      location: "",
-      status: "",
-      description: "",
-      staffs: "",
-    });
+  const onSubmitHandler = (values: any) => {
+    console.log(values, "Hospital Data Submitted");
+    mutate(values);
   };
 
   return (
-    <div className={styles.container}>
-      <form onSubmit={handleSubmit}>
-        <div className={styles.secondContainer}>
-          <div className={styles.fullWidth}>
-            <div className={styles.formContainer}>
-              <p>Name</p>
-              <TextField
-                required
-                id="outlined-required"
-                placeholder="Name"
-                className={styles.textField}
-                label="Name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className={styles.formContainer}>
-              <p>Location</p>
-              <TextField
-                required
-                id="outlined-required"
-                placeholder="Location"
-                className={styles.textField}
-                label="Location"
-                name="location"
-                value={formData.location}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className={styles.formContainer}>
-              <p>Status</p>
-              <FormControl
-                variant="outlined"
-                // className={classes.formControl}
-                className={styles.textField}
-              >
-                <Select
-                  labelId="status-label"
-                  id="status"
-                  name="status"
-                  // value={formData.gender}
-                  // onChange={handleInputChange}
-                  label="Status"
-                  value={formData.status}
-                  onChange={handleInputChange}
-                  // error={!!errors.gender}
-                  // helperText={errors.gender}
-                >
-                  <MenuItem value="male">Active</MenuItem>
-                  <MenuItem value="female">InActive</MenuItem>
-                </Select>
-              </FormControl>
-            </div>
+    <Formik
+      initialValues={initialValues}
+      onSubmit={onSubmitHandler}
+      // validationSchema={HospitalAddSchema}
+    >
+      {({ handleChange }) => (
+        <>
+          <Form>
+            <div className={styles.secondContainer}>
+              <div className={styles.fullWidth}>
+                <div className={styles.formContainer}>
+                  <FormField
+                    fieldName="name"
+                    fieldLabel="Name"
+                    fieldPlaceholder="Menilike"
+                  />
+                  <FormField
+                    fieldName="location"
+                    fieldLabel="Location"
+                    fieldPlaceholder="Addis Ababa"
+                    isDisabled
+                  />
+                  {/* <FormSelectField
+                    fieldName="status"
+                    fieldLabel="Status"
+                    formikChangeHandler={handleChange}
+                    options={STATUS}
+                    initialValue={"none"}
+                    placeholder={"Select a status"}
+                  /> */}
 
-            <div className={styles.imageUploadContainer}>
-              <input
-                accept="image/*"
-                id="upload-image"
-                type="file"
-                name="image"
-                onChange={handleInputChange}
-                style={{ display: "none" }}
-              />
-              <label htmlFor="upload-image">
-                <Button
-                  variant="contained"
-                  component="span"
-                  startIcon={<CloudUploadIcon />}
-                >
-                  Upload Image
-                </Button>
-              </label>
-            </div>
+                  <FormField
+                    fieldName="phone"
+                    fieldLabel="Phone Number"
+                    fieldPlaceholder="0912345678"
+                  />
 
-            <div className={styles.imageUploadContainer}>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                style={{ width: "160px", backgroundColor: "#000000" }}
-              >
-                Submit
-              </Button>
-            </div>
-          </div>
+                  <FormField
+                    fieldName="email"
+                    fieldLabel="Email"
+                    fieldPlaceholder="example@gmail.com"
+                  />
 
-          <div style={{ width: "300px" }}></div>
-          <div className={styles.fullWidth}>
-            <div className={styles.formContainer}>
-              <p>
-                Staff <br />
-                Member
-              </p>
-              <TextField
-                required
-                id="outlined-required"
-                placeholder="Staff Members"
-                className={styles.textField}
-                label="Staff Members"
-                name="staffs"
-                value={formData.staffs}
-                onChange={handleInputChange}
-              />
+                  <FormField
+                    fieldName="website"
+                    fieldLabel="Website"
+                    fieldPlaceholder="www.menilike.com"
+                  />
+                  <FormField
+                    fieldName="bankAccounts"
+                    fieldLabel="Bank Accounts"
+                    fieldPlaceholder="1000255788983"
+                  />
+                  <FormButton buttonVariant="contained" buttonType="submit">
+                    Submit
+                  </FormButton>
+                </div>
+              </div>
             </div>
-            <div className={styles.formContainer}>
-              <p>Description</p>
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                id="description"
-                label="Description"
-                name="description"
-                multiline
-                rows={4}
-                style={{ width: "80%" }}
-                value={formData.description}
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
-        </div>
-      </form>
-    </div>
+          </Form>
+        </>
+      )}
+    </Formik>
   );
 };
 
 export default AddNewHospitalForm;
+
+{
+  /* <div className={styles.imageUploadContainer}>
+<input
+  accept="image/*"
+  id="upload-image"
+  type="file"
+  name="image"
+  onChange={handleInputChange}
+  style={{ display: "none" }}
+/>
+<label htmlFor="upload-image">
+  <Button
+    variant="contained"
+    component="span"
+    startIcon={<CloudUploadIcon />}
+  >
+    Upload Image
+  </Button>
+</label>
+</div>
+</div> */
+}

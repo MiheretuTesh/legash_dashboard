@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Formik, Form } from "formik";
 import FormField from "../FormField";
 import { useStyles } from "./index.style";
@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import FormButton from "../FormButton";
 import FormSelectField from "../FormSelectField";
 import * as Yup from "yup";
-import { ROLES_NAMES } from "../../constants";
+import { ROLES_NAMES, GENDER } from "../../constants";
 import { RegistrationFormValues } from "../../types";
 import { useRegister } from "../../hooks/useRegister";
 import LoadingSpinner from "../LoadingSpinner";
@@ -23,7 +23,9 @@ const RegistrationSchema = Yup.object().shape({
     .required("*Required"),
   email: Yup.string().email("Invalid email").required("*Required"),
   role: Yup.string().required("*Required"),
-  company: Yup.string().required("*Required"),
+  gender: Yup.string().required("*Required"),
+  dateOfBirth: Yup.string().required("*Required"),
+  phonenumber: Yup.string().required("*Required"),
   password: Yup.string()
     .required("*Required")
     .min(8, "Must be 8 characters or more")
@@ -42,9 +44,11 @@ const RegistrationForm = () => {
     lastName: "",
     email: "",
     role: "",
-    company: "",
+    phonenumber: "",
     password: "",
     confirmPassword: "",
+    gender: "",
+    dateOfBirth: "",
   };
   const styles = useStyles();
   const navigate = useNavigate();
@@ -52,22 +56,41 @@ const RegistrationForm = () => {
   const [errorText, setErrorText] = useState("");
 
   const onRegisterSuccess = (values: RegistrationFormValues) => {
-    navigate(`/verify-email/${values.email}`);
+    // navigate(`/verify-email/${values.email}`);
   };
 
   const onRegisterError = (error: any) => {
+    console.log(error, "ERROR Error");
     setErrorText("User already exists");
     setIsError(true);
   };
 
-  const { mutate, isLoading } = useRegister({
+  const { data, mutate, isLoading, isSuccess } = useRegister({
     onSuccess: (_x: any, values: RegistrationFormValues) =>
       onRegisterSuccess(values),
     onError: (error: any) => onRegisterError(error),
   });
 
+  useEffect(() => {
+    if (data?.data.success === "Success") {
+
+      navigate("/login");
+    }
+  }, [data]);
+
   const onSubmitHandler = async (values: RegistrationFormValues) => {
-    // mutate(values);
+    console.log(values, "Register From Values");
+    const formData: any = {
+      firstName: values.firstName,
+      lastName: values.lastName,
+      role: "643fcc7d9cbbe5517bf42776",
+      email: values.email,
+      phonenumber: values.phonenumber,
+      password: values.password,
+      dateOfBirth: values.dateOfBirth,
+      gender: values.gender,
+    };
+    mutate(formData);
   };
 
   return (
@@ -83,62 +106,68 @@ const RegistrationForm = () => {
             setIsOpen={setIsError}
             errorText={errorText}
           />
+          <h1 className={styles.formHeader}>Registration</h1>
           <Form className={styles.formContainer}>
-            <h1 className={styles.formHeader}>Registration</h1>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "space-between",
-                width: "100%",
-              }}
-            >
-              <div>
-                <FormField
-                  fieldName="firstName"
-                  fieldLabel="First name"
-                  fieldPlaceholder="John"
-                />
-                <FormField
-                  fieldName="lastName"
-                  fieldLabel="Last name"
-                  fieldPlaceholder="Miller"
-                />
-                <FormField
-                  fieldName="email"
-                  fieldLabel="Email"
-                  fieldPlaceholder="johnmiller@gmail.com"
-                />
-              </div>
-              <div style={{ width: "1em" }}></div>
-              <div>
-                <FormSelectField
-                  fieldName="role"
-                  fieldLabel="Role"
-                  formikChangeHandler={handleChange}
-                  options={ROLES_NAMES}
-                  initialValue={"none"}
-                  placeholder={"Select a role"}
-                />
-                <FormField
-                  fieldName="password"
-                  type="password"
-                  fieldLabel="Password"
-                  fieldPlaceholder=""
-                />
-                <FormField
-                  fieldName="confirmPassword"
-                  type="password"
-                  fieldLabel="Confirm Password"
-                  fieldPlaceholder=""
-                />
-              </div>
+            <div>
+              <FormField
+                fieldName="firstName"
+                fieldLabel="First name"
+                fieldPlaceholder="John"
+              />
+              <FormField
+                fieldName="lastName"
+                fieldLabel="Last name"
+                fieldPlaceholder="Miller"
+              />
+              <FormField
+                fieldName="email"
+                fieldLabel="Email"
+                fieldPlaceholder="johnmiller@gmail.com"
+              />
+              <FormField
+                fieldName="phonenumber"
+                fieldLabel="Phone Number"
+                fieldPlaceholder="johnmiller@gmail.com"
+              />
+              <FormField
+                fieldName="dateOfBirth"
+                fieldLabel="Date of Birth"
+                // fieldPlaceholder="johnmiller@gmail.com"
+              />
+              <FormButton buttonVariant="contained" buttonType="submit">
+                {isLoading ? <LoadingSpinner type="button" /> : "Submit"}
+              </FormButton>
             </div>
-
-            <FormButton buttonVariant="contained" buttonType="submit">
-              {isLoading ? <LoadingSpinner type="button" /> : "Submit"}
-            </FormButton>
+            <div>
+              <FormSelectField
+                fieldName="gender"
+                fieldLabel="Gender"
+                formikChangeHandler={handleChange}
+                options={GENDER}
+                initialValue={"none"}
+                placeholder={"Select a gender"}
+              />
+              <FormSelectField
+                fieldName="role"
+                fieldLabel="Role"
+                formikChangeHandler={handleChange}
+                options={ROLES_NAMES}
+                initialValue={"none"}
+                placeholder={"Select a role"}
+              />
+              <FormField
+                fieldName="password"
+                type="password"
+                fieldLabel="Password"
+                fieldPlaceholder=""
+              />
+              <FormField
+                fieldName="confirmPassword"
+                type="password"
+                fieldLabel="Confirm Password"
+                fieldPlaceholder=""
+              />
+            </div>
           </Form>
         </>
       )}
