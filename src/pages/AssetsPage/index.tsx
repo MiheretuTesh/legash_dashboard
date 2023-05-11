@@ -6,7 +6,7 @@ import { OptionsIcon } from "../../assets";
 import { AssetTableRow } from "../../types";
 import BuildingModal from "../../components/BuildingModal";
 import { useGetUsers } from "../../hooks/useGetUsers";
-import { useGetAssets } from "../../hooks/useGetAssets";
+import { useGetHospitals } from "../../hooks/useGetHospitals";
 import { TABLE_LIMIT } from "../../constants";
 import DeleteModal from "../../components/DeleteModal";
 import jsPDF from "jspdf";
@@ -49,12 +49,12 @@ const Assets = ({ parentRoute }: any) => {
   const [isAbleToDelete, setIsAbleToDelete] = useState(true);
 
   const { dataUsers, isLoadingUsers } = useGetUsers({});
-  const { dataAssets, isLoadingAssets } = useGetAssets({
-    limit: TABLE_LIMIT,
-    offset: currentOffset,
-  });
-  const { dataAssets: dataAllAssets, isLoadingAssets: isLoadingAllAssets } =
-    useGetAssets({});
+  // const { dataAssets, isLoadingAssets } = useGetHospitals({
+  //   // limit: TABLE_LIMIT,
+  //   // offset: currentOffset,
+  // });
+  // const { dataAssets: dataAllAssets, isLoadingAssets: isLoadingAllAssets } =
+  //   useGetHospitals({});
 
   // const {
   //   assetSearchData,
@@ -103,7 +103,7 @@ const Assets = ({ parentRoute }: any) => {
   //   }
   // }, [assetSearchIsSuccess, assetSearchData, dataAssets, searchValue]);
 
-  const { dataUserProfile } = useGetUserProfileData({});
+  // const { dataUserProfile } = useGetUserProfileData({});
 
   const columns = [
     { field: "building", headerName: "Building", flex: 0.3 },
@@ -124,11 +124,11 @@ const Assets = ({ parentRoute }: any) => {
         };
 
         const onDeleteHandler = () => {
-          if (params.row.created_by === dataUserProfile.id) {
-            setIsAbleToDelete(true);
-          } else {
-            setIsAbleToDelete(false);
-          }
+          // if (params.row.created_by === dataUserProfile.id) {
+          //   setIsAbleToDelete(true);
+          // } else {
+          //   setIsAbleToDelete(false);
+          // }
           setSelectedAssets([params.row.id]);
           setIsAssetDeleteModalOpen(true);
         };
@@ -174,29 +174,27 @@ const Assets = ({ parentRoute }: any) => {
     selectionModel: GridSelectionModel,
     details: any
   ) => {
-    setSelectionModelPersonal(selectionModel);
-    const selectedRowData = dataAssets?.results.filter(
-      (row: AssetTableRow) => row.id === selectionModel[0]
-    );
-
-    if (selectedRowData.length === 1) {
-      setRowForEdit(selectedRowData[0]);
-    }
-    setSelectedAssets(selectionModel);
-    setTotalSelected(selectionModel.length);
-
-    for (let i = 0; i <= dataAssets?.results.length; i++) {
-      if (dataAssets?.results[i]) {
-        if (selectionModel.includes(dataAssets?.results[i].id)) {
-          if (dataAssets?.results[i].created_by !== dataUserProfile.id) {
-            setIsAbleToDelete(false);
-            break;
-          } else {
-            setIsAbleToDelete(true);
-          }
-        }
-      }
-    }
+    // setSelectionModelPersonal(selectionModel);
+    // const selectedRowData = dataAssets?.results.filter(
+    //   (row: AssetTableRow) => row.id === selectionModel[0]
+    // );
+    // if (selectedRowData.length === 1) {
+    //   setRowForEdit(selectedRowData[0]);
+    // }
+    // setSelectedAssets(selectionModel);
+    // setTotalSelected(selectionModel.length);
+    // for (let i = 0; i <= dataAssets?.results.length; i++) {
+    //   if (dataAssets?.results[i]) {
+    //     if (selectionModel.includes(dataAssets?.results[i].id)) {
+    //       if (dataAssets?.results[i].created_by !== dataUserProfile.id) {
+    //         setIsAbleToDelete(false);
+    //         break;
+    //       } else {
+    //         setIsAbleToDelete(true);
+    //       }
+    //     }
+    //   }
+    // }
   };
 
   const onNextHandler = () => {
@@ -207,34 +205,34 @@ const Assets = ({ parentRoute }: any) => {
     setCurrentOffset((prevState) => prevState - TABLE_LIMIT);
   };
 
-  useEffect(() => {
-    if (dataAssets) {
-      const tableData: AssetTableRow[] = [];
+  // useEffect(() => {
+  //   if (dataAssets) {
+  //     const tableData: AssetTableRow[] = [];
 
-      if (dataAssets.results.length > 0) {
-        dataAssets.results.forEach((data: any) => {
-          tableData.push({
-            id: data.id,
-            building: data.building,
-            details: data.details,
-            updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
-            location: data.location,
-            assumptions: "",
-            edited_by: data.edited_by,
-            users: data.users,
-            created_by: data.created_by,
-          });
-        });
-        setTableRows(tableData);
-      } else {
-        setTableRows([]);
-      }
-    }
+  //     if (dataAssets.results.length > 0) {
+  //       dataAssets.results.forEach((data: any) => {
+  //         tableData.push({
+  //           id: data.id,
+  //           building: data.building,
+  //           details: data.details,
+  //           updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
+  //           location: data.location,
+  //           assumptions: "",
+  //           edited_by: data.edited_by,
+  //           users: data.users,
+  //           created_by: data.created_by,
+  //         });
+  //       });
+  //       setTableRows(tableData);
+  //     } else {
+  //       setTableRows([]);
+  //     }
+  //   }
 
-    return () => {
-      setTableRows([]);
-    };
-  }, [dataAssets]);
+  //   return () => {
+  //     setTableRows([]);
+  //   };
+  // }, [dataAssets]);
 
   const handleOnSearchFieldChange = (e: any) => {
     setSearchValue((prevName) => e.target.value);
@@ -271,24 +269,21 @@ const Assets = ({ parentRoute }: any) => {
   };
 
   const exportTableToPdf = () => {
-    const doc = new jsPDF("portrait", "pt", "A4");
-    doc.setFontSize(15);
-    const data = dataAllAssets?.results.map((user: any) => [
-      user.building,
-      user.location,
-      user.details,
-    ]);
-
-    const content = {
-      startY: 50,
-      head: [["Building", "Location", "Details"]],
-      body: data,
-    };
-
-    doc.text("Assets Report Table", 40, 40);
-
-    (doc as any).autoTable(content);
-    doc.save(`${Date.now()}-assets-report.pdf`);
+    // const doc = new jsPDF("portrait", "pt", "A4");
+    // doc.setFontSize(15);
+    // const data = dataAllAssets?.results.map((user: any) => [
+    //   user.building,
+    //   user.location,
+    //   user.details,
+    // ]);
+    // const content = {
+    //   startY: 50,
+    //   head: [["Building", "Location", "Details"]],
+    //   body: data,
+    // };
+    // doc.text("Assets Report Table", 40, 40);
+    // (doc as any).autoTable(content);
+    // doc.save(`${Date.now()}-assets-report.pdf`);
   };
 
   const { windowSize } = useContext(NewOnsiteChecklistContext);
@@ -331,11 +326,11 @@ const Assets = ({ parentRoute }: any) => {
         setIsModalOpen={setIsAssetModalOpen}
         setIsDeleteModalOpen={setIsAssetDeleteModalOpen}
         totalRowsSelected={totalSelected}
-        data={dataAllAssets?.results}
+        data={[]}
         setTableRows={setTableRows}
         tableType={"assets"}
         setActionType={setAssetModalType}
-        isLoading={isLoadingUsers || isLoadingAssets || isLoadingAllAssets}
+        isLoading={isLoadingUsers}
         exportTableToPdf={exportTableToPdf}
         handleOnSearchFieldChange={handleOnSearchFieldChange}
         parentRoute={parentRoute}
@@ -351,26 +346,16 @@ const Assets = ({ parentRoute }: any) => {
           disableSelectionOnClick
           checkboxSelection
           hideFooter
-          loading={isLoadingUsers || isLoadingAssets || isLoadingAllAssets}
+          loading={isLoadingUsers}
         />
         <TablePagination
-          nextDisabled={
-            dataAssets?.next === null ||
-            isLoadingUsers ||
-            isLoadingAssets ||
-            isLoadingAllAssets
-          }
-          previousDisabled={
-            dataAssets?.previous === null ||
-            isLoadingUsers ||
-            isLoadingAssets ||
-            isLoadingAllAssets
-          }
+          nextDisabled={isLoadingUsers}
+          previousDisabled={isLoadingUsers}
           onPreviousHandler={onPreviousHandler}
           onNextHandler={onNextHandler}
           currentPage={currentOffset / TABLE_LIMIT + 1}
           setCurrentOffset={setCurrentOffset}
-          total={dataAssets?.count}
+          total={0}
         />
       </div>
     </>

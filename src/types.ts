@@ -3,9 +3,11 @@ export interface RegistrationFormValues {
   lastName: string;
   email: string;
   role: string;
-  company: string;
+  phonenumber: string;
   password: string;
   confirmPassword: string;
+  dateOfBirth: string;
+  gender: string;
 }
 
 export interface LoginFormValues {
@@ -26,11 +28,11 @@ export interface ChangePasswordFormValues {
 
 export type UserTableRow = {
   id: number;
-  user: string;
+  name: string;
   email: string;
   role: string;
-  assets: string;
   updated_at: string;
+  edited_by: string;
 };
 
 export type AssetTableRow = {

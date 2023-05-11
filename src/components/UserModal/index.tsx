@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import Modal from "@mui/material/Modal";
 import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -89,15 +89,15 @@ const UserModal = ({
   });
 
   const oldSelectedAssets: () => string[] = () => {
-    let assets: any[] = [];
-    availableAssets.results.forEach((asset: any) => {
-      if (oldValues.user_assets.includes(asset.building)) {
-        assets.push(asset);
-      }
-    });
-    return assets;
+    return [];
+    // let assets: any[] = [];
+    // availableAssets.results.forEach((asset: any) => {
+    //   if (oldValues.user_assets.includes(asset.building)) {
+    //     assets.push(asset);
+    //   }
+    // });
+    // return assets;
   };
-
 
   const initialValues =
     oldValues.id !== 0 && type === "edit"
@@ -106,9 +106,11 @@ const UserModal = ({
           lastName: oldValues.last_name,
           email: oldValues.email,
           role:
-            oldValues.type === Roles.FundAssetManagerAdmin
-              ? "Fund Asset Manager Admin"
-              : oldValues.type === Roles.FundAssetManager ? "Fund Asset Manager" : "Engineer",
+            oldValues.type === Roles.Admin
+              ? "Super Admin"
+              : oldValues.type === Roles.HospitalAdmin
+              ? "Hospital Admin"
+              : "User",
           assets: oldSelectedAssets(),
         }
       : {
@@ -125,9 +127,13 @@ const UserModal = ({
 
   const onSubmitHandler = (values: UserFormValues) => {
     const selectedRole =
-      values.role === "Fund Asset Manager Admin"
-        ? Roles.FundAssetManagerAdmin
-        : values.role === "Fund Asset Manager" ? Roles.FundAssetManager : Roles.Engineer;
+      values.role === "Admin"
+        ? Roles.Admin
+        : values.role === "Hospital Admin"
+        ? Roles.HospitalAdmin
+        : values.role === "Report Admin"
+        ? Roles.ReportAdmin
+        : Roles.User;
 
     if (type === "add") {
       addMutate({
@@ -157,78 +163,80 @@ const UserModal = ({
     <Modal open={isModalOpen} onClose={onCloseHandler}>
       <>
         <Formik
-            initialValues={initialValues}
-            onSubmit={onSubmitHandler}
-            validationSchema={UserFormSchema}
-            validateOnBlur={false}
+          initialValues={initialValues}
+          onSubmit={onSubmitHandler}
+          validationSchema={UserFormSchema}
+          validateOnBlur={false}
         >
           {({ handleChange }) => (
-              <>
-                <ErrorModal
-                    open={isError}
-                    setIsOpen={setIsError}
-                    errorText={errorText}
+            <>
+              <ErrorModal
+                open={isError}
+                setIsOpen={setIsError}
+                errorText={errorText}
+              />
+              <Form className={styles.modalContainer}>
+                <h1 className={styles.formHeader}>
+                  {type === "add" ? "Add user" : "Edit user"}
+                </h1>
+                <div className={styles.cancelBtn}>
+                  <IconButton onClick={onCloseHandler}>
+                    <CloseIcon />
+                  </IconButton>
+                </div>
+                <FormField
+                  fieldName="firstName"
+                  fieldLabel="First name"
+                  fieldPlaceholder="John"
                 />
-                <Form className={styles.modalContainer}>
-                  <h1 className={styles.formHeader}>
-                    {type === "add" ? "Add user" : "Edit user"}
-                  </h1>
-                  <div className={styles.cancelBtn}>
-                    <IconButton onClick={onCloseHandler}>
-                      <CloseIcon />
-                    </IconButton>
-                  </div>
-                  <FormField
-                      fieldName="firstName"
-                      fieldLabel="First name"
-                      fieldPlaceholder="John"
-                  />
-                  <FormField
-                      fieldName="lastName"
-                      fieldLabel="Last name"
-                      fieldPlaceholder="Muller"
-                  />
-                  <FormField
-                      fieldName="email"
-                      fieldLabel="Email"
-                      fieldPlaceholder="johnmiller@gmail.com"
-                  />
-                  <FormSelectField
-                      fieldName="role"
-                      fieldLabel="Role"
-                      formikChangeHandler={handleChange}
-                      options={ROLES_NAMES}
-                      initialValue={
-                        initialValues.role === "" ? "none" : initialValues.role
-                      }
-                      placeholder={"Select a role"}
-                  />
-                  <FormSelectField
-                      fieldName="assets"
-                      fieldLabel="Buildings"
-                      fastField
-                      formikChangeHandler={handleChange}
-                      options={availableAssets.results}
-                      initialValue={
-                        initialValues.assets.length === 0 ? [] : initialValues.assets
-                      }
-                      multiple
-                      isAssetSelect
-                      placeholder={"Assign building"}
-                      customDropDownMenuContainerStyle={styles.dropdownMenu}
-                      addingUser={true}
-                  />
-                  <FormButton buttonVariant="contained" buttonType="submit">
-                    {isLoadingAddUser || isLoadingEditUser ? (
-                        <LoadingSpinner type="button" />
-                    ) : type === "add" ? (
-                        "Add"
-                    ) : (
-                        "Save"
-                    )}
-                  </FormButton>
-                </Form>
-              </>
+                <FormField
+                  fieldName="lastName"
+                  fieldLabel="Last name"
+                  fieldPlaceholder="Muller"
+                />
+                <FormField
+                  fieldName="email"
+                  fieldLabel="Email"
+                  fieldPlaceholder="johnmiller@gmail.com"
+                />
+                <FormSelectField
+                  fieldName="role"
+                  fieldLabel="Role"
+                  formikChangeHandler={handleChange}
+                  options={ROLES_NAMES}
+                  initialValue={
+                    initialValues.role === "" ? "none" : initialValues.role
+                  }
+                  placeholder={"Select a role"}
+                />
+                {/* <FormSelectField
+                  fieldName="assets"
+                  fieldLabel="Buildings"
+                  fastField
+                  formikChangeHandler={handleChange}
+                  options={[]}
+                  initialValue={
+                    initialValues.assets.length === 0
+                      ? []
+                      : initialValues.assets
+                  }
+                  multiple
+                  isAssetSelect
+                  placeholder={"Assign building"}
+                  customDropDownMenuContainerStyle={styles.dropdownMenu}
+                  addingUser={true}
+                /> */}
+                <FormButton buttonVariant="contained" buttonType="submit">
+                  {isLoadingAddUser || isLoadingEditUser ? (
+                    <LoadingSpinner type="button" />
+                  ) : type === "add" ? (
+                    "Add"
+                  ) : (
+                    "Save"
+                  )}
+                </FormButton>
+              </Form>
+            </>
           )}
         </Formik>
       </>

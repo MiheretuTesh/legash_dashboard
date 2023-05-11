@@ -4,6 +4,10 @@ import { IconButton } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { useStyles } from "./index.style";
+import DatePicker, { registerLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import en from "date-fns/locale/en-US"; // optional, use if you want to localize the date picker
+registerLocale("en-US", en);
 
 interface FormFieldProps {
   fieldName: string;
@@ -28,6 +32,13 @@ interface FormFieldProps {
   };
   onBlurHandler?: () => void;
 }
+interface FormValues {
+  date: Date;
+}
+
+const initialValues: FormValues = {
+  date: new Date(),
+};
 
 const FormField = ({
   fieldName,
@@ -53,6 +64,8 @@ const FormField = ({
     setShowPassword((prevState) => !prevState);
   };
 
+  const [startDate, setStartDate] = useState<Date>(initialValues.date);
+
   return (
     <div className={`${styles.formFieldContainer} ${customStyle}`}>
       {fieldLabel && (
@@ -62,21 +75,37 @@ const FormField = ({
       )}
       <div className={styles.fieldContainer}>
         {oneDigit && handleChange && formikChangeHandler ? (
-          <ComponentField
-            className={`${styles.field} ${customFieldStyle}`}
-            name={fieldName}
-            placeholder={fieldPlaceholder}
-            disabled={isDisabled}
-            maxLength="1"
-            onChange={(e: React.ChangeEvent<any>) => {
-              formikChangeHandler(e);
-              handleChange(e);
-            }}
-            size="1"
-            min="0"
-            max="9"
-            pattern="[0-9]{1}"
-          />
+          fieldName === "dateOfBirth" ? (
+            <Field name="dateOfBirth">
+              {({ field }: any) => (
+                <DatePicker
+                  {...field}
+                  selected={startDate}
+                  onChange={(date: Date) => {
+                    setStartDate(date);
+                  }}
+                  dateFormat="MM/dd/yyyy"
+                  locale="en-US"
+                />
+              )}
+            </Field>
+          ) : (
+            <ComponentField
+              className={`${styles.field} ${customFieldStyle}`}
+              name={fieldName}
+              placeholder={fieldPlaceholder}
+              disabled={isDisabled}
+              maxLength="1"
+              onChange={(e: React.ChangeEvent<any>) => {
+                formikChangeHandler(e);
+                handleChange(e);
+              }}
+              size="1"
+              min="0"
+              max="9"
+              pattern="[0-9]{1}"
+            />
+          )
         ) : (
           <ComponentField
             className={`${styles.field} ${customFieldStyle}`}

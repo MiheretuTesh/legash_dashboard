@@ -107,10 +107,10 @@ export const deleteAssetForm = async (obj: { formId: number }) => {
   return AxiosInstance.delete(`assets/form/${obj.formId}`);
 };
 
-export const searchAsset = async ( searchValue: string ) => {
+export const searchAsset = async (searchValue: string) => {
   return AxiosInstance.get(`assets/list?search=${searchValue}`);
 };
 
-export const searchAssetForm = async ( searchValue: string ) => {
+export const searchAssetForm = async (searchValue: string) => {
   return AxiosInstance.get(`assets/form/list?search=${searchValue}`);
 };

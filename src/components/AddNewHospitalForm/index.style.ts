@@ -14,11 +14,14 @@ export const useStyles = makeStyles({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
+    "@media (max-width: 1200px)": {
+      flexDirection: "column",
+    },
   },
   fullWidth: { width: "100%" },
   formContainer: {
     display: "flex",
-    flexDirection: "row",
+    flexDirection: "column",
     margin: "20px",
     width: "100%",
     justifyContent: "space-between",

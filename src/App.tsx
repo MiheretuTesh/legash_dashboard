@@ -35,9 +35,9 @@ const CampaignDetailsPage = React.lazy(
   () => import("./pages/CampaignDetailsPage")
 );
 
-const NewOnsiteChecklistPage = React.lazy(
-  () => import("./pages/NewOnsiteChecklistPage")
-);
+// const NewOnsiteChecklistPage = React.lazy(
+//   () => import("./pages/NewOnsiteChecklistPage")
+// );
 const AssumptionsFormPage = React.lazy(
   () => import("./pages/AssumptionsFormPage")
 );
@@ -354,7 +354,7 @@ function App() {
                       }
                       errorElement={<ErrorPage />}
                     />
-                    <Route
+                    {/* <Route
                       path="consultant-form"
                       element={
                         <Suspense fallback={<LoadingSpinner type="page" />}>
@@ -362,7 +362,7 @@ function App() {
                         </Suspense>
                       }
                       errorElement={<ErrorPage />}
-                    />
+                    /> */}
                     <Route
                       path="new-onsite-checklist"
                       element={
@@ -492,7 +492,7 @@ function App() {
                       }
                       errorElement={<ErrorPage />}
                     />
-                    <Route
+                    {/* <Route
                       path="consultant-form"
                       element={
                         <Suspense fallback={<LoadingSpinner type="page" />}>
@@ -500,7 +500,7 @@ function App() {
                         </Suspense>
                       }
                       errorElement={<ErrorPage />}
-                    />
+                    /> */}
                     <Route
                       path="new-onsite-checklist"
                       element={

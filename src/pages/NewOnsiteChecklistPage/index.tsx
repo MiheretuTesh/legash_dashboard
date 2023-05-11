@@ -18,20 +18,20 @@ import IconUnderlinedButton from "../../components/IconUnderlinedButton";
 import { NewOnSiteChecklistFormValues } from "../../types";
 import { NewOnsiteChecklistContext } from "../../contexts/NewOnsiteChecklistContext";
 import {
-    FetchFormDataIndexedDB,
-    saveStudentToIndexedDb,
-    emptyStore
+  FetchFormDataIndexedDB,
+  saveStudentToIndexedDb,
+  emptyStore,
 } from "../../components/FormDataIndexedDB";
 import {
   useConsultantForm,
   useUpdateConsultantForm,
 } from "../../hooks/useConsultantForm";
-import { useGetAssets } from "../../hooks/useGetAssets";
+import { useGetHospitals } from "../../hooks/useGetHospitals";
 import { useGetFormData } from "../../hooks/useGetFormData";
 import { useGetAssetsDraftForms } from "../../hooks/useGetAssetsDraftForms";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const BUILDING_OPTIONS = ["Building A", "Building B", "Building C"];
 
@@ -361,32 +361,33 @@ const NewOnsiteChecklistPage = ({ parentRoute }: { parentRoute: string }) => {
 
   const [selectedBuildingId, setSelectedBuildingId] = useState(null);
 
-  const { dataAssets } = useGetAssets({
-    limit: 0,
-    offset: 0,
-  });
+  // const { dataAssets } = useGetHospitals({
+  //   // limit: 0,
+  //   // offset: 0,
+  // });
 
   const initialStep: number = location?.state?.initialStep;
   const draftId: any = location?.state?.draftId;
-  const fromSubmitted: any = location?.state?.fromSubmitted ? location?.state?.fromSubmitted : false;
-  const fromDraft: any = location?.state?.fromDraft ? location?.state?.fromDraft : false;
+  const fromSubmitted: any = location?.state?.fromSubmitted
+    ? location?.state?.fromSubmitted
+    : false;
+  const fromDraft: any = location?.state?.fromDraft
+    ? location?.state?.fromDraft
+    : false;
 
   const [savedValues, setSavedValues]: any = useState("");
-  const [savedAsset, setSavedAsset]:  any = useState("");
+  const [savedAsset, setSavedAsset]: any = useState("");
   const [lastFormData, setLastFormData] = useState(false);
 
   const [onsiteFormData, setOnsiteFormData]: any = useState(null);
 
-
-
-  const { dataForm, isDataFormSuccess} = useGetFormData({
-    onGetFormSuccess: function () {
-    },
-    id: draftId
+  const { dataForm, isDataFormSuccess } = useGetFormData({
+    onGetFormSuccess: function () {},
+    id: draftId,
   });
 
   useEffect(() => {
-    if(isDataFormSuccess){
+    if (isDataFormSuccess) {
       setSavedValues(dataForm.data);
       setSavedAsset(dataForm.asset);
     } else {
@@ -406,7 +407,7 @@ const NewOnsiteChecklistPage = ({ parentRoute }: { parentRoute: string }) => {
     mutate: consultantForm,
     isLoading,
     isSuccess,
-    isError
+    isError,
   } = useConsultantForm({
     onSuccess: (data) => console.log("just"),
   });
@@ -419,34 +420,35 @@ const NewOnsiteChecklistPage = ({ parentRoute }: { parentRoute: string }) => {
     mutate: updateConsultantDraft,
     isLoading: updateConsultantDraftIsLoading,
     isSuccess: updateConsultantDraftIsSuccess,
-    isError: isErrorUpdate
+    isError: isErrorUpdate,
   } = useUpdateConsultantForm({
     onSuccess: (data) => console.log("draft updated"),
   });
 
   useEffect(() => {
-    if((isError=== true || isErrorUpdate === true) && isSubmitted===true){
+    if ((isError === true || isErrorUpdate === true) && isSubmitted === true) {
       notify();
       emptyStore("onsite-form-data");
 
-      formData.last_step = lastFormData ? 8: formData?.last_step;
-
+      formData.last_step = lastFormData ? 8 : formData?.last_step;
 
       saveStudentToIndexedDb(formData);
       navigate(`/${parentRoute}/forms`);
     }
   }, [isSubmitted, isError, isErrorUpdate, formData, navigate, parentRoute]);
 
-  const { dataAssetsDraftForms } =
-    useGetAssetsDraftForms({
-      isDraft: true,
-    });
+  const { dataAssetsDraftForms } = useGetAssetsDraftForms({
+    isDraft: true,
+  });
 
   FetchFormDataIndexedDB("onsite-form-data", setOnsiteFormData);
 
-  useEffect(()=> {
-    if((fromDraft === false || fromSubmitted === false) && (onsiteFormData !== "" || onsiteFormData !== undefined)) {
-      if(onsiteFormData?.data){
+  useEffect(() => {
+    if (
+      (fromDraft === false || fromSubmitted === false) &&
+      (onsiteFormData !== "" || onsiteFormData !== undefined)
+    ) {
+      if (onsiteFormData?.data) {
         setSavedValues(onsiteFormData.data);
         setStep(onsiteFormData.last_step);
         setAssetValue(onsiteFormData.asset);
@@ -843,21 +845,21 @@ const NewOnsiteChecklistPage = ({ parentRoute }: { parentRoute: string }) => {
 
   useEffect(() => {
     if (isSuccess === true || updateConsultantDraftIsSuccess === true) {
-        emptyStore("onsite-form-data");
-        navigate(`/${parentRoute}/forms`);
+      emptyStore("onsite-form-data");
+      navigate(`/${parentRoute}/forms`);
     }
   }, [isSuccess, updateConsultantDraftIsSuccess, navigate, parentRoute]);
 
   const onCancelClickHandler = () => {
     if (draftId) {
-        if (fromSubmitted) {
-            navigate(`/${parentRoute}/forms`, { state: { tab: 3 } });
+      if (fromSubmitted) {
+        navigate(`/${parentRoute}/forms`, { state: { tab: 3 } });
       }
-        if (fromDraft) {
-          navigate(`/${parentRoute}/forms`, { state: { tab: 2 } });
+      if (fromDraft) {
+        navigate(`/${parentRoute}/forms`, { state: { tab: 2 } });
       }
     } else {
-        navigate(`/${parentRoute}/forms`);
+      navigate(`/${parentRoute}/forms`);
     }
   };
 
@@ -875,10 +877,12 @@ const NewOnsiteChecklistPage = ({ parentRoute }: { parentRoute: string }) => {
       }
     });
 
-    console.log(draftedBuilding, "draftedBuilding draftedBuilding draftedBuilding");
+    console.log(
+      draftedBuilding,
+      "draftedBuilding draftedBuilding draftedBuilding"
+    );
 
     if (draftId) {
-
       const formData: any = {
         asset: selectedBuildingId !== null ? selectedBuildingId : assetValue,
         data: data,
@@ -897,9 +901,7 @@ const NewOnsiteChecklistPage = ({ parentRoute }: { parentRoute: string }) => {
 
       setCurrentForm(null);
       setLastPage(1);
-
     } else if (draftedBuilding !== null) {
-
       console.log(draftedBuilding?.id, "draftedBuilding");
 
       const formData: any = {
@@ -947,336 +949,333 @@ const NewOnsiteChecklistPage = ({ parentRoute }: { parentRoute: string }) => {
 
   return (
     <>
-      {
-        fromDraft || fromSubmitted ? (
-            isDataFormSuccess ? (
-                <Formik
-                  initialValues={savedValues || initialValues}
-                  onSubmit={onSubmitHandler}
-                  enableReinitialize={true}
-                  // validationSchema={schemas[step - 1]}
-                  // validateOnChange={false}
-                  // validateOnBlur={false}
-                >
-                  {({ handleChange, values, validateForm }) => (
-                    <>
-                      <ProgressBar
-                          customStyle={styles.progressBar}
-                          numberOfSteps={8}
-                          currentStep={step}
-                      />
-                      <Form className={styles.formContainer}>
-                        {step === 1 && (
-                            <FormSelectFieldAsset
-                                fieldName="company"
-                                formikChangeHandler={handleChange}
-                                options={
-                                  dataAssets?.results ? dataAssets?.results : BUILDING_OPTIONS
-                                }
-                                initialValue={values.company !== "" ? values.company : "none"}
-                                placeholder={"Building"}
-                                customStyle={styles.buildingChoiceContainer}
-                                isAssetSelect={true}
-                                setSelectedBuildingId={setSelectedBuildingId}
-                                assumptionFormSetFieldValue={() => null}
-                            />
-                        )}
-                        {step === 2 && (
-                            <SystemsCheckListForm
-                                formikChangeHandler={handleChange}
-                                initialValue={"none"}
-                                placeholder={"Select answer"}
-                                formValues={values}
-                            />
-                        )}
-                        {step === 3 && (
-                            <ResourcesManagementCheckListForm
-                                formikChangeHandler={handleChange}
-                                initialValue={"none"}
-                                placeholder={"Select answer"}
-                                formValues={values}
-                            />
-                        )}
-                        {step === 4 && (
-                            <SafetyAndSecurityCheckListForm
-                                formikChangeHandler={handleChange}
-                                initialValue={"none"}
-                                placeholder={"Select answer"}
-                                formValues={values}
-                            />
-                        )}
-                        {step === 5 && (
-                            <ConnectivityCheckListForm
-                                formikChangeHandler={handleChange}
-                                initialValue={"none"}
-                                placeholder={"Select answer"}
-                                formValues={values}
-                            />
-                        )}
-                        {step === 6 && (
-                            <DataCheckListForm
-                                formikChangeHandler={handleChange}
-                                initialValue={"none"}
-                                placeholder={"Select answer"}
-                                formValues={values}
-                            />
-                        )}
-                        {step === 7 && (
-                            <HealthAndWellbeingCheckListForm
-                                formikChangeHandler={handleChange}
-                                initialValue={"none"}
-                                placeholder={"Select answer"}
-                                formValues={values}
-                            />
-                        )}
-                        {step === 8 && (
-                            <DigitalServicesCheckListForm
-                                formikChangeHandler={handleChange}
-                                initialValue={"none"}
-                                placeholder={"Select answer"}
-                                formValues={values}
-                            />
-                        )}
-                        <div className={styles.btnsContainer}>
-                          <div>
-                            {step !== 1 && (
-                                <FormButton
-                                    buttonVariant="outlined"
-                                    buttonType="button"
-                                    onButtonClick={onBackButtonClickHandler}
-                                    customStyle={styles.backBtn}
-                                    disabled={isLoading || updateConsultantDraftIsLoading}
-                                >
-                                  Back
-                                </FormButton>
-                            )}
-                            <FormButton
-                                customStyle={styles.nextPageBtn}
-                                buttonVariant="contained"
-                                key={step === 8 ? "finish" : "next"}
-                                buttonType="submit"
-                                disabled={isLoading || updateConsultantDraftIsLoading}
-                            >
-                              {step === 8 ? (
-                                  (isLoading || updateConsultantDraftIsLoading) &&
-                                  formSubmitted ? (
-                                      <LoadingSpinner
-                                          customStyle={styles.loaderStyle}
-                                          type="button"
-                                      />
-                                  ) : (
-                                      "Submit"
-                                  )
-                              ) : (
-                                  "Save & Next"
-                              )}
-                            </FormButton>
-                          </div>
-                          <div className={styles.rightBtnsContainer}>
-                            <FormButton
-                                buttonVariant="outlined"
-                                buttonType="button"
-                                onButtonClick={() => onSaveAndExitClickHandler(values)}
-                                customStyle={styles.backBtn}
-                                disabled={isLoading || updateConsultantDraftIsLoading}
-                            >
-
-                              {(isLoading || updateConsultantDraftIsLoading) &&
-                              formSubmitted === false ? (
-                                  <LoadingSpinner
-                                      customStyle={styles.backBtn}
-                                      type="submitBtn"
-                                  />
-                              ) : (
-                                  "Save & exit"
-                              )}
-                            </FormButton>
-                            <IconUnderlinedButton
-                                onClick={onCancelClickHandler}
-                                customStyle={styles.cancelBtn}
-                                disabled={isLoading || updateConsultantDraftIsLoading}
-                            >
-                              Cancel
-                            </IconUnderlinedButton>
-                          </div>
-                        </div>
-                      </Form>
-                    </>
-                  )}
-                </Formik>
-            ) : (
-                <LoadingSpinner />
-            )
-        ) : (
-            <Formik
-                initialValues={savedValues || initialValues}
-                onSubmit={onSubmitHandler}
-                // validationSchema={schemas[step - 1]}
-                // validateOnChange={false}
-                // validateOnBlur={false}
-                enableReinitialize={true}
-            >
-              {({ handleChange, values, validateForm }) => (
-                  <>
-                    <ProgressBar
-                        customStyle={styles.progressBar}
-                        numberOfSteps={8}
-                        currentStep={step}
+      {fromDraft || fromSubmitted ? (
+        isDataFormSuccess ? (
+          <Formik
+            initialValues={savedValues || initialValues}
+            onSubmit={onSubmitHandler}
+            enableReinitialize={true}
+            // validationSchema={schemas[step - 1]}
+            // validateOnChange={false}
+            // validateOnBlur={false}
+          >
+            {({ handleChange, values, validateForm }) => (
+              <>
+                <ProgressBar
+                  customStyle={styles.progressBar}
+                  numberOfSteps={8}
+                  currentStep={step}
+                />
+                <Form className={styles.formContainer}>
+                  {step === 1 && (
+                    <FormSelectFieldAsset
+                      fieldName="company"
+                      formikChangeHandler={handleChange}
+                      options={BUILDING_OPTIONS}
+                      initialValue={
+                        values.company !== "" ? values.company : "none"
+                      }
+                      placeholder={"Building"}
+                      customStyle={styles.buildingChoiceContainer}
+                      isAssetSelect={true}
+                      setSelectedBuildingId={setSelectedBuildingId}
+                      assumptionFormSetFieldValue={() => null}
                     />
-                    <Form className={styles.formContainer}>
-                      {step === 1 && (
-                          <FormSelectFieldAsset
-                              fieldName="company"
-                              formikChangeHandler={handleChange}
-                              options={
-                                dataAssets?.results ? dataAssets?.results : BUILDING_OPTIONS
-                              }
-                              initialValue={values.company !== "" ? values.company : "none"}
-                              placeholder={"Building"}
-                              customStyle={styles.buildingChoiceContainer}
-                              isAssetSelect={true}
-                              setSelectedBuildingId={setSelectedBuildingId}
-                              assumptionFormSetFieldValue={() => null}
-                          />
+                  )}
+                  {step === 2 && (
+                    <SystemsCheckListForm
+                      formikChangeHandler={handleChange}
+                      initialValue={"none"}
+                      placeholder={"Select answer"}
+                      formValues={values}
+                    />
+                  )}
+                  {step === 3 && (
+                    <ResourcesManagementCheckListForm
+                      formikChangeHandler={handleChange}
+                      initialValue={"none"}
+                      placeholder={"Select answer"}
+                      formValues={values}
+                    />
+                  )}
+                  {step === 4 && (
+                    <SafetyAndSecurityCheckListForm
+                      formikChangeHandler={handleChange}
+                      initialValue={"none"}
+                      placeholder={"Select answer"}
+                      formValues={values}
+                    />
+                  )}
+                  {step === 5 && (
+                    <ConnectivityCheckListForm
+                      formikChangeHandler={handleChange}
+                      initialValue={"none"}
+                      placeholder={"Select answer"}
+                      formValues={values}
+                    />
+                  )}
+                  {step === 6 && (
+                    <DataCheckListForm
+                      formikChangeHandler={handleChange}
+                      initialValue={"none"}
+                      placeholder={"Select answer"}
+                      formValues={values}
+                    />
+                  )}
+                  {step === 7 && (
+                    <HealthAndWellbeingCheckListForm
+                      formikChangeHandler={handleChange}
+                      initialValue={"none"}
+                      placeholder={"Select answer"}
+                      formValues={values}
+                    />
+                  )}
+                  {step === 8 && (
+                    <DigitalServicesCheckListForm
+                      formikChangeHandler={handleChange}
+                      initialValue={"none"}
+                      placeholder={"Select answer"}
+                      formValues={values}
+                    />
+                  )}
+                  <div className={styles.btnsContainer}>
+                    <div>
+                      {step !== 1 && (
+                        <FormButton
+                          buttonVariant="outlined"
+                          buttonType="button"
+                          onButtonClick={onBackButtonClickHandler}
+                          customStyle={styles.backBtn}
+                          disabled={isLoading || updateConsultantDraftIsLoading}
+                        >
+                          Back
+                        </FormButton>
                       )}
-                      {step === 2 && (
-                          <SystemsCheckListForm
-                              formikChangeHandler={handleChange}
-                              initialValue={"none"}
-                              placeholder={"Select answer"}
-                              formValues={values}
+                      <FormButton
+                        customStyle={styles.nextPageBtn}
+                        buttonVariant="contained"
+                        key={step === 8 ? "finish" : "next"}
+                        buttonType="submit"
+                        disabled={isLoading || updateConsultantDraftIsLoading}
+                      >
+                        {step === 8 ? (
+                          (isLoading || updateConsultantDraftIsLoading) &&
+                          formSubmitted ? (
+                            <LoadingSpinner
+                              customStyle={styles.loaderStyle}
+                              type="button"
+                            />
+                          ) : (
+                            "Submit"
+                          )
+                        ) : (
+                          "Save & Next"
+                        )}
+                      </FormButton>
+                    </div>
+                    <div className={styles.rightBtnsContainer}>
+                      <FormButton
+                        buttonVariant="outlined"
+                        buttonType="button"
+                        onButtonClick={() => onSaveAndExitClickHandler(values)}
+                        customStyle={styles.backBtn}
+                        disabled={isLoading || updateConsultantDraftIsLoading}
+                      >
+                        {(isLoading || updateConsultantDraftIsLoading) &&
+                        formSubmitted === false ? (
+                          <LoadingSpinner
+                            customStyle={styles.backBtn}
+                            type="submitBtn"
                           />
-                      )}
-                      {step === 3 && (
-                          <ResourcesManagementCheckListForm
-                              formikChangeHandler={handleChange}
-                              initialValue={"none"}
-                              placeholder={"Select answer"}
-                              formValues={values}
-                          />
-                      )}
-                      {step === 4 && (
-                          <SafetyAndSecurityCheckListForm
-                              formikChangeHandler={handleChange}
-                              initialValue={"none"}
-                              placeholder={"Select answer"}
-                              formValues={values}
-                          />
-                      )}
-                      {step === 5 && (
-                          <ConnectivityCheckListForm
-                              formikChangeHandler={handleChange}
-                              initialValue={"none"}
-                              placeholder={"Select answer"}
-                              formValues={values}
-                          />
-                      )}
-                      {step === 6 && (
-                          <DataCheckListForm
-                              formikChangeHandler={handleChange}
-                              initialValue={"none"}
-                              placeholder={"Select answer"}
-                              formValues={values}
-                          />
-                      )}
-                      {step === 7 && (
-                          <HealthAndWellbeingCheckListForm
-                              formikChangeHandler={handleChange}
-                              initialValue={"none"}
-                              placeholder={"Select answer"}
-                              formValues={values}
-                          />
-                      )}
-                      {step === 8 && (
-                          <DigitalServicesCheckListForm
-                              formikChangeHandler={handleChange}
-                              initialValue={"none"}
-                              placeholder={"Select answer"}
-                              formValues={values}
-                          />
-                      )}
-                      <div className={styles.btnsContainer}>
-                        <div>
-                          {step !== 1 && (
-                              <FormButton
-                                  buttonVariant="outlined"
-                                  buttonType="button"
-                                  onButtonClick={onBackButtonClickHandler}
-                                  customStyle={styles.backBtn}
-                                  disabled={isLoading || updateConsultantDraftIsLoading}
-                              >
-                                Back
-                              </FormButton>
-                          )}
-                          <FormButton
-                              customStyle={styles.nextPageBtn}
-                              buttonVariant="contained"
-                              key={step === 8 ? "finish" : "next"}
-                              buttonType="submit"
-                              disabled={isLoading || updateConsultantDraftIsLoading}
-                          >
-                            {step === 8 ? (
-                                (isLoading || updateConsultantDraftIsLoading) &&
-                                formSubmitted ? (
-                                    <LoadingSpinner
-                                        customStyle={styles.loaderStyle}
-                                        type="button"
-                                    />
-                                ) : (
-                                    "Submit"
-                                )
-                            ) : (
-                                "Save & Next"
-                            )}
-                          </FormButton>
-                        </div>
-                        <div className={styles.rightBtnsContainer}>
-                          <FormButton
-                              buttonVariant="outlined"
-                              buttonType="button"
-                              onButtonClick={() => onSaveAndExitClickHandler(values)}
-                              customStyle={styles.backBtn}
-                              disabled={isLoading || updateConsultantDraftIsLoading}
-                          >
-
-                            {(isLoading || updateConsultantDraftIsLoading) &&
-                            formSubmitted === false ? (
-                                <LoadingSpinner
-                                    customStyle={styles.backBtn}
-                                    type="submitBtn"
-                                />
-                            ) : (
-                                "Save & exit"
-                            )}
-                          </FormButton>
-                          <IconUnderlinedButton
-                              onClick={onCancelClickHandler}
-                              customStyle={styles.cancelBtn}
-                              disabled={isLoading || updateConsultantDraftIsLoading}
-                          >
-                            Cancel
-                          </IconUnderlinedButton>
-                        </div>
-                      </div>
-                    </Form>
-                  </>
-              )}
-            </Formik>
+                        ) : (
+                          "Save & exit"
+                        )}
+                      </FormButton>
+                      <IconUnderlinedButton
+                        onClick={onCancelClickHandler}
+                        customStyle={styles.cancelBtn}
+                        disabled={isLoading || updateConsultantDraftIsLoading}
+                      >
+                        Cancel
+                      </IconUnderlinedButton>
+                    </div>
+                  </div>
+                </Form>
+              </>
+            )}
+          </Formik>
+        ) : (
+          <LoadingSpinner />
         )
-      }
+      ) : (
+        <Formik
+          initialValues={savedValues || initialValues}
+          onSubmit={onSubmitHandler}
+          // validationSchema={schemas[step - 1]}
+          // validateOnChange={false}
+          // validateOnBlur={false}
+          enableReinitialize={true}
+        >
+          {({ handleChange, values, validateForm }) => (
+            <>
+              <ProgressBar
+                customStyle={styles.progressBar}
+                numberOfSteps={8}
+                currentStep={step}
+              />
+              <Form className={styles.formContainer}>
+                {step === 1 && (
+                  <FormSelectFieldAsset
+                    fieldName="company"
+                    formikChangeHandler={handleChange}
+                    options={BUILDING_OPTIONS}
+                    initialValue={
+                      values.company !== "" ? values.company : "none"
+                    }
+                    placeholder={"Building"}
+                    customStyle={styles.buildingChoiceContainer}
+                    isAssetSelect={true}
+                    setSelectedBuildingId={setSelectedBuildingId}
+                    assumptionFormSetFieldValue={() => null}
+                  />
+                )}
+                {step === 2 && (
+                  <SystemsCheckListForm
+                    formikChangeHandler={handleChange}
+                    initialValue={"none"}
+                    placeholder={"Select answer"}
+                    formValues={values}
+                  />
+                )}
+                {step === 3 && (
+                  <ResourcesManagementCheckListForm
+                    formikChangeHandler={handleChange}
+                    initialValue={"none"}
+                    placeholder={"Select answer"}
+                    formValues={values}
+                  />
+                )}
+                {step === 4 && (
+                  <SafetyAndSecurityCheckListForm
+                    formikChangeHandler={handleChange}
+                    initialValue={"none"}
+                    placeholder={"Select answer"}
+                    formValues={values}
+                  />
+                )}
+                {step === 5 && (
+                  <ConnectivityCheckListForm
+                    formikChangeHandler={handleChange}
+                    initialValue={"none"}
+                    placeholder={"Select answer"}
+                    formValues={values}
+                  />
+                )}
+                {step === 6 && (
+                  <DataCheckListForm
+                    formikChangeHandler={handleChange}
+                    initialValue={"none"}
+                    placeholder={"Select answer"}
+                    formValues={values}
+                  />
+                )}
+                {step === 7 && (
+                  <HealthAndWellbeingCheckListForm
+                    formikChangeHandler={handleChange}
+                    initialValue={"none"}
+                    placeholder={"Select answer"}
+                    formValues={values}
+                  />
+                )}
+                {step === 8 && (
+                  <DigitalServicesCheckListForm
+                    formikChangeHandler={handleChange}
+                    initialValue={"none"}
+                    placeholder={"Select answer"}
+                    formValues={values}
+                  />
+                )}
+                <div className={styles.btnsContainer}>
+                  <div>
+                    {step !== 1 && (
+                      <FormButton
+                        buttonVariant="outlined"
+                        buttonType="button"
+                        onButtonClick={onBackButtonClickHandler}
+                        customStyle={styles.backBtn}
+                        disabled={isLoading || updateConsultantDraftIsLoading}
+                      >
+                        Back
+                      </FormButton>
+                    )}
+                    <FormButton
+                      customStyle={styles.nextPageBtn}
+                      buttonVariant="contained"
+                      key={step === 8 ? "finish" : "next"}
+                      buttonType="submit"
+                      disabled={isLoading || updateConsultantDraftIsLoading}
+                    >
+                      {step === 8 ? (
+                        (isLoading || updateConsultantDraftIsLoading) &&
+                        formSubmitted ? (
+                          <LoadingSpinner
+                            customStyle={styles.loaderStyle}
+                            type="button"
+                          />
+                        ) : (
+                          "Submit"
+                        )
+                      ) : (
+                        "Save & Next"
+                      )}
+                    </FormButton>
+                  </div>
+                  <div className={styles.rightBtnsContainer}>
+                    <FormButton
+                      buttonVariant="outlined"
+                      buttonType="button"
+                      onButtonClick={() => onSaveAndExitClickHandler(values)}
+                      customStyle={styles.backBtn}
+                      disabled={isLoading || updateConsultantDraftIsLoading}
+                    >
+                      {(isLoading || updateConsultantDraftIsLoading) &&
+                      formSubmitted === false ? (
+                        <LoadingSpinner
+                          customStyle={styles.backBtn}
+                          type="submitBtn"
+                        />
+                      ) : (
+                        "Save & exit"
+                      )}
+                    </FormButton>
+                    <IconUnderlinedButton
+                      onClick={onCancelClickHandler}
+                      customStyle={styles.cancelBtn}
+                      disabled={isLoading || updateConsultantDraftIsLoading}
+                    >
+                      Cancel
+                    </IconUnderlinedButton>
+                  </div>
+                </div>
+              </Form>
+            </>
+          )}
+        </Formik>
+      )}
       <ToastContainer
-          position="bottom-right"
-          autoClose={2000}
-          hideProgressBar={true}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"/>
+        position="bottom-right"
+        autoClose={2000}
+        hideProgressBar={true}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </>
-    )
+  );
 };
 
 export default NewOnsiteChecklistPage;

@@ -12,7 +12,6 @@ import { LoginFormValues } from "../../types";
 import ErrorModal from "../ErrorModal";
 import AxiosInstance from "../../api/AxiosInstance";
 import { loginRequest } from "../../utils/MicrosoftRedirect/authConfig";
-import { useMsal } from "@azure/msal-react";
 
 const LoginForm = () => {
   const initialValues = {
@@ -22,17 +21,14 @@ const LoginForm = () => {
   const styles = useStyles();
   const navigate = useNavigate();
   const [rememberMeState, setRememberMeState] = useState(false);
-  const [isAmbioAuthenticated, setIsAmbioAuthenticated] = useState(false);
 
   const [isPageLoading, setIsPageLoading] = useState(false);
-  const [, setIsPatrizia] = useState(false);
-  const { instance, accounts, inProgress } = useMsal();
   const [isError, setIsError] = useState(false);
   const [errorText, setErrorText] = useState("");
 
   const onLoginSuccess = (data: any) => {
-    localStorage.setItem("token", data.data.access);
-    sessionStorage.setItem("token", data.data.access);
+    localStorage.setItem("token", data.data.token.authToken);
+    sessionStorage.setItem("token", data.data.token.authToken);
     /*navigate("/account");*/
   };
 
@@ -50,37 +46,38 @@ const LoginForm = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      const userProfile = async () => {
-        const { data } = await AxiosInstance.get("users/profile/");
-        if (data.type === "ADMIN") {
-          localStorage.setItem("type", data.type);
-          navigate("/account-admin");
-        } else if (data.type === "FUND_ASSET_MANAGER_ADMIN") {
-          localStorage.setItem("type", data.type);
-          navigate("/account-fund-admin");
-        } else if (data.type === "FUND_ASSET_MANAGER") {
-          localStorage.setItem("type", data.type);
-          navigate("/account");
-        } else if (data.type === "ENGINEER") {
-          localStorage.setItem("type", data.type);
-          navigate("/account-consultant");
-        } else {
-          window.location.reload();
-        }
-      };
-      userProfile();
+      navigate("/account-admin");
+      // const userProfile = async () => {
+      //   const { data } = await AxiosInstance.get("users/profile/");
+      //   if (data.type === "ADMIN") {
+      //     localStorage.setItem("type", data.type);
+      //     navigate("/account-admin");
+      //   } else if (data.type === "FUND_ASSET_MANAGER_ADMIN") {
+      //     localStorage.setItem("type", data.type);
+      //     navigate("/account-fund-admin");
+      //   } else if (data.type === "FUND_ASSET_MANAGER") {
+      //     localStorage.setItem("type", data.type);
+      //     navigate("/account");
+      //   } else if (data.type === "ENGINEER") {
+      //     localStorage.setItem("type", data.type);
+      //     navigate("/account-consultant");
+      //   } else {
+      //     window.location.reload();
+      //   }
+      // };
+      // userProfile();
     }
   }, [isSuccess, navigate]);
 
   const LoginSchema = Yup.object().shape({
     email: Yup.string().email("Invalid email").required("*Required"),
-    password: isAmbioAuthenticated
-      ? Yup.string().required("*Required")
-      : Yup.string().notRequired(),
+    password: Yup.string().required("*Required"),
   });
 
   const onSubmitHandler = (values: LoginFormValues) => {
-    navigate("/account-admin");
+    console.log(values, "values  values values");
+    mutate(values);
+    // navigate("/account-admin");
 
     // if (isAmbioAuthenticated) {
     //   mutate(values);
@@ -214,7 +211,7 @@ const LoginForm = () => {
                 </>
 
                 <FormButton buttonVariant="contained" buttonType="submit">
-                  Login
+                  {isLoading ? <LoadingSpinner type="button" /> : "Login"}
                 </FormButton>
               </Form>
             </>

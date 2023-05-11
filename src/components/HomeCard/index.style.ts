@@ -19,28 +19,15 @@ export const useStyles = makeStyles({
       fill: "rgba(217,217,217, 0.1)",
       color: "#fff",
     },
-    "@media (min-width: 900px) and (max-width: 1056px)": {
-      width: "100%",
+    "@media (max-width: 1400px)": {
+      width: "40%",
+    },
+    "@media (max-width: 1500px)": {
+      width: "40%",
     },
     "@media (max-width: 710px)": {
       width: "100%",
     },
-
-    // "&:first-child": {
-    //   width: "45%",
-    // },
-    // "&:nth-child(2)": {
-    //   width: "45%",
-    // },
-    // "&:nth-child(3)": {
-    //   width: "28%",
-    // },
-    // "&:nth-child(4)": {
-    //   width: "28%",
-    // },
-    // "&:nth-child(5)": {
-    //   width: "28%",
-    // },
   },
 
   headerContainer: {
@@ -91,6 +78,12 @@ export const useStyles = makeStyles({
     justifyContent: "center",
     alignItems: "center",
     fontSize: "60px",
+    "@media (max-width: 1200px)": {
+      fontSize: "40px",
+    },
+    "@media (max-width: 1500px)": {
+      fontSize: "40px",
+    },
   },
 
   loaderStyle: {

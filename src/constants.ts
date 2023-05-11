@@ -1,10 +1,12 @@
 export enum Roles {
   Admin = "ADMIN",
-  FundAssetManagerAdmin = "FUND_ASSET_MANAGER_ADMIN",
-  FundAssetManager = "FUND_ASSET_MANAGER",
-  Engineer = "ENGINEER",
+  HospitalAdmin = "HOSPITAL_ADMIN",
+  ReportAdmin = "REPORT_ADMIN",
+  User = "USER",
 }
 
-export const ROLES_NAMES = ["Fund Asset Manager Admin", "Fund Asset Manager", "Engineer"];
+export const ROLES_NAMES = ["Admin", "Hospital Admin", "Report Admin", "User"];
+
+export const GENDER = ["Male", "Female"];
 
 export const TABLE_LIMIT = 5;

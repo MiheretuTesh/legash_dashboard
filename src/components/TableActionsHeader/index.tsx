@@ -86,8 +86,10 @@ const TableActionsHeader = ({
   // };
 
   const onAddButtonHandler = () => {
-    // setActionType("add");
-    // setIsModalOpen(true);
+    if (addText === "user") {
+      setActionType("add");
+      setIsModalOpen(true);
+    }
     if (addText === "Campaign") {
       navigate(`/${parentRoute}/new-campaign`);
     }

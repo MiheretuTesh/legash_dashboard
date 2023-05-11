@@ -1,7 +1,7 @@
 import ax from "axios";
 
 const AxiosInstance = ax.create({
-  baseURL: "",
+  baseURL: "https://legashfund.onrender.com/api/v1/",
   headers: {
     Accepted: "appication/json",
     "Content-Type": "application/json",
@@ -23,7 +23,7 @@ AxiosInstance.interceptors.request.use(
 
 export const AxiosDynamicContentType = (contentType = "application/json") => {
   const instance = ax.create({
-    baseURL: "",
+    baseURL: "https://legashfund.onrender.com/api/v1/",
     headers: {
       Accepted: "appication/json",
       "Content-Type": contentType,

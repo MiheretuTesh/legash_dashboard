@@ -3,9 +3,9 @@ import { makeStyles } from "@mui/styles";
 export const useStyles = makeStyles({
   formContainer: {
     display: "flex",
-    flexDirection: "column",
-    width: "100%",
-    justifyContent: "center",
+    flexDirection: "row",
+    width: "500px",
+    justifyContent: "space-around",
     marginTop: "100px",
   },
   formHeader: {
