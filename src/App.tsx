@@ -36,9 +36,6 @@ const CampaignDetailsPage = React.lazy(
   () => import("./pages/CampaignDetailsPage")
 );
 
-// const NewOnsiteChecklistPage = React.lazy(
-//   () => import("./pages/NewOnsiteChecklistPage")
-// );
 const AssumptionsFormPage = React.lazy(
   () => import("./pages/AssumptionsFormPage")
 );
