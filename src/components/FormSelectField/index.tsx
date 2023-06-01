@@ -6,8 +6,8 @@ import {
 } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox/Checkbox";
 import ListItemText from "@mui/material/ListItemText/ListItemText";
-import { ErrorMessage,  Field, FastField } from "formik";
-import React, {useEffect, useState} from "react";
+import { ErrorMessage, Field, FastField } from "formik";
+import React, { useEffect, useState } from "react";
 import { useStyles } from "./index.style";
 
 interface FormSelectFieldProps {
@@ -32,7 +32,11 @@ interface FormSelectFieldProps {
   isAssetSelect?: boolean;
   customSelectStyle?: string;
   addingUser?: boolean;
-  isForm?: boolean
+  isForm?: boolean;
+  isCampaignCreate?: boolean;
+  isHospitalCreate?: boolean;
+  isHospital?: boolean;
+  isFormName?: string;
 }
 
 const FormSelectField = ({
@@ -50,7 +54,8 @@ const FormSelectField = ({
   isAssetSelect,
   customSelectStyle,
   addingUser,
-  isForm
+  isForm,
+  isFormName,
 }: FormSelectFieldProps) => {
   const [value, setValue] = useState(initialValue);
   const styles = useStyles();
@@ -58,9 +63,9 @@ const FormSelectField = ({
   const ComponentField = fastField ? FastField : Field;
   const ComponentFieldForm = fastField ? Field : Field;
 
-  useEffect(()=>{
-    setValue(initialValue)
-  },[initialValue]);
+  useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
   const handleChange = (event: SelectChangeEvent) => {
     if (formikChangeHandler) {
       formikChangeHandler(event);
@@ -78,219 +83,232 @@ const FormSelectField = ({
   return (
     <div className={`${styles.formFieldContainer} ${customStyle}`}>
       {fieldLabel && <label className={styles.label}>{fieldLabel}</label>}
-      {
-        isForm ?
-            <ComponentFieldForm name={fieldName}>
-              {({
-                  field, // { name, value, onChange, onBlur }
-                  form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
-                  meta,
-                }: any) => (
-                  <FormControl className={styles.field}>
-                    <Select
-                        {...field}
-                        className={`${styles.select} ${customSelectStyle}`}
-                        MenuProps={{
-                          classes: {
-                            paper: `${styles.dropdownMenuContainer} ${customDropDownMenuContainerStyle}`,
-                          },
-                        }}
-                        value={value}
-                        onChange={handleChange}
-                        displayEmpty
-                        multiple={multiple}
-                        renderValue={(selected: any) =>
-                            multiple && isUserSelect
-                                ? selected
-                                    .map(
-                                        (option: any) =>
-                                            `${option.first_name} ${option.last_name}`
-                                    )
-                                    .join(", ")
-                                : multiple && isAssetSelect
-                                ? selected.map((option: any) => option.building).join(", ")
-                                : selected === "none"
-                                    ? placeholder
-                                    : selected
-                        }
-                    >
-                      {placeholder ? (
-                          isUserSelect ? (
-                              <MenuItem value={["none"]} disabled>
-                                {placeholder}
-                              </MenuItem>
-                          ) : (
-                              <MenuItem value="none" disabled>
-                                {placeholder}
-                              </MenuItem>
-                          )
-                      ) : null}
-                      {isUserSelect &&
-                      options &&
-                      options.map((option, index) => (
-                          <MenuItem key={`${index}-${option}`} value={option}>
-                            {
-                              (option.first_name !== null && option.last_name !== null)
-                              &&
-                              (
-                                  <>
-                                    <Checkbox
-                                        checked={(value && value.indexOf(option) > -1) || false}
-                                    />
-                                    <ListItemText
-                                        primary={`${option.first_name} ${option.last_name}`}
-                                    />
-                                  </>
-                              )
-                            }
-                          </MenuItem>
-                      ))}
-                      {addingUser &&
-                      isAssetSelect &&
-                      options &&
-                      options.map((option, index) => (
-                          <MenuItem key={`${index}-${option.building}`} value={option}>
+      {isForm ? (
+        <ComponentFieldForm name={fieldName}>
+          {({
+            field, // { name, value, onChange, onBlur }
+            form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
+            meta,
+          }: any) => (
+            <FormControl className={styles.field}>
+              <Select
+                {...field}
+                className={`${styles.select} ${customSelectStyle}`}
+                MenuProps={{
+                  classes: {
+                    paper: `${styles.dropdownMenuContainer} ${customDropDownMenuContainerStyle}`,
+                  },
+                }}
+                value={value}
+                onChange={handleChange}
+                displayEmpty
+                multiple={multiple}
+                renderValue={(selected: any) =>
+                  multiple && isUserSelect
+                    ? selected
+                        .map(
+                          (option: any) =>
+                            `${option.first_name} ${option.last_name}`
+                        )
+                        .join(", ")
+                    : multiple && isAssetSelect
+                    ? selected.map((option: any) => option.building).join(", ")
+                    : selected === "none"
+                    ? placeholder
+                    : selected
+                }
+              >
+                {placeholder ? (
+                  isUserSelect ? (
+                    <MenuItem value={["none"]} disabled>
+                      {placeholder}
+                    </MenuItem>
+                  ) : (
+                    <MenuItem value="none" disabled>
+                      {placeholder}
+                    </MenuItem>
+                  )
+                ) : null}
+                {isUserSelect &&
+                  options &&
+                  options.map((option, index) => (
+                    <MenuItem key={`${index}-${option}`} value={option}>
+                      {option.first_name !== null &&
+                        option.last_name !== null && (
+                          <>
                             <Checkbox
-                                checked={(value && value.indexOf(option) > -1) || false}
+                              checked={
+                                (value && value.indexOf(option) > -1) || false
+                              }
                             />
-                            <ListItemText primary={option.building} />
-                          </MenuItem>
-                      ))}
-                      {!addingUser &&
-                      isAssetSelect &&
-                      options &&
-                      options.map((option, index) => (
-                          <MenuItem
-                              key={`${index}-${option.building}`}
-                              value={option.building}
-                          >
-                            {option.building}
-                          </MenuItem>
-                      ))}
-
-                      {!isUserSelect &&
-                      !isAssetSelect &&
-                      options &&
-                      options.map((option, index) => (
-                          <MenuItem key={`${index}-${option}`} value={option}>
-                            {option}
-                          </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-              )}
-            </ComponentFieldForm>
-            :
-            <ComponentField name={fieldName}>
-              {({
-                  field, // { name, value, onChange, onBlur }
-                  form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
-                  meta,
-                }: any) => (
-                  <FormControl className={styles.field}>
-                    <Select
-                        {...field}
-                        className={`${styles.select} ${customSelectStyle}`}
-                        MenuProps={{
-                          classes: {
-                            paper: `${styles.dropdownMenuContainer} ${customDropDownMenuContainerStyle}`,
-                          },
-                        }}
-                        value={value}
-                        onChange={handleChange}
-                        displayEmpty
-                        multiple={multiple}
-                        renderValue={(selected: any) =>
-                            multiple && isUserSelect
-                                ? selected
-                                    .map(
-                                        (option: any) =>
-                                            `${option.email} ${option.last_name}`
-                                    )
-                                    .join(", ")
-                                : multiple && isAssetSelect
-                                ? selected.map((option: any) => option.building).join(", ")
-                                : selected === "none"
-                                    ? placeholder
-                                    : selected
-                        }
+                            <ListItemText
+                              primary={`${option.first_name} ${option.last_name}`}
+                            />
+                          </>
+                        )}
+                    </MenuItem>
+                  ))}
+                {addingUser &&
+                  isAssetSelect &&
+                  options &&
+                  options.map((option, index) => (
+                    <MenuItem
+                      key={`${index}-${option.building}`}
+                      value={option}
                     >
-                      {placeholder ? (
-                          isUserSelect ? (
-                              <MenuItem value={["none"]} disabled>
-                                {placeholder}
-                              </MenuItem>
-                          ) : (
-                              <MenuItem value="none" disabled>
-                                {placeholder}
-                              </MenuItem>
-                          )
-                      ) : null}
-                      {isUserSelect &&
-                      options &&
-                      options.map((option, index) => (
-                          <MenuItem key={`${index}-${option}`} value={option}>
-                            {
-                              (option.first_name !== null && option.last_name !== null)
-                              ?
-                              (
-                                  <>
-                                    <Checkbox
-                                        checked={(value && value.indexOf(option) > -1) || false}
-                                    />
-                                    <ListItemText
-                                        primary={`${option.first_name} ${option.last_name}`}
-                                    />
-                                  </>
-                              ) : (
-                                      <>
-                                        <Checkbox
-                                            checked={(value && value.indexOf(option) > -1) || false}
-                                        />
-                                        <ListItemText
-                                            primary={`${option.email}`}
-                                        />
-                                      </>
-                                  )
-                            }
-                          </MenuItem>
-                      ))}
-                      {addingUser &&
-                      isAssetSelect &&
-                      options &&
-                      options.map((option, index) => (
-                          <MenuItem key={`${index}-${option.building}`} value={option}>
-                            <Checkbox
-                                checked={(value && value.indexOf(option) > -1) || false}
-                            />
-                            <ListItemText primary={option.building} />
-                          </MenuItem>
-                      ))}
-                      {!addingUser &&
-                      isAssetSelect &&
-                      options &&
-                      options.map((option, index) => (
-                          <MenuItem
-                              key={`${index}-${option.building}`}
-                              value={option.building}
-                          >
-                            {option.building}
-                          </MenuItem>
-                      ))}
+                      <Checkbox
+                        checked={(value && value.indexOf(option) > -1) || false}
+                      />
+                      <ListItemText primary={option.building} />
+                    </MenuItem>
+                  ))}
+                {!addingUser &&
+                  isAssetSelect &&
+                  options &&
+                  options.map((option, index) => (
+                    <MenuItem
+                      key={`${index}-${option.building}`}
+                      value={option.building}
+                    >
+                      {option.building}
+                    </MenuItem>
+                  ))}
 
-                      {!isUserSelect &&
-                      !isAssetSelect &&
-                      options &&
-                      options.map((option, index) => (
-                          <MenuItem key={`${index}-${option}`} value={option}>
-                            {option}
-                          </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-              )}
-            </ComponentField>
-      }
+                {!isUserSelect &&
+                  !isAssetSelect &&
+                  options &&
+                  options.map((option, index) => (
+                    <MenuItem key={`${index}-${option}`} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+              </Select>
+            </FormControl>
+          )}
+        </ComponentFieldForm>
+      ) : (
+        <ComponentField name={fieldName}>
+          {({
+            field, // { name, value, onChange, onBlur }
+            form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
+            meta,
+          }: any) => (
+            <FormControl className={styles.field}>
+              <Select
+                {...field}
+                className={`${styles.select} ${customSelectStyle}`}
+                MenuProps={{
+                  classes: {
+                    paper: `${styles.dropdownMenuContainer} ${customDropDownMenuContainerStyle}`,
+                  },
+                }}
+                value={value}
+                onChange={handleChange}
+                displayEmpty
+                multiple={multiple}
+                renderValue={(selected: any) =>
+                  multiple && isUserSelect
+                    ? selected
+                        .map(
+                          (option: any) => `${option.email} ${option.last_name}`
+                        )
+                        .join(", ")
+                    : multiple && isAssetSelect
+                    ? selected.map((option: any) => option.building).join(", ")
+                    : selected === "none"
+                    ? placeholder
+                    : selected
+                }
+              >
+                {placeholder ? (
+                  isUserSelect ? (
+                    <MenuItem value={["none"]} disabled>
+                      {placeholder}
+                    </MenuItem>
+                  ) : (
+                    <MenuItem value="none" disabled>
+                      {placeholder}
+                    </MenuItem>
+                  )
+                ) : null}
+                {isUserSelect &&
+                  options &&
+                  options.map((option, index) => (
+                    <MenuItem key={`${index}-${option}`} value={option}>
+                      {option.first_name !== null &&
+                      option.last_name !== null ? (
+                        <>
+                          <Checkbox
+                            checked={
+                              (value && value.indexOf(option) > -1) || false
+                            }
+                          />
+                          <ListItemText
+                            primary={`${option.first_name} ${option.last_name}`}
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <Checkbox
+                            checked={
+                              (value && value.indexOf(option) > -1) || false
+                            }
+                          />
+                          <ListItemText primary={`${option.email}`} />
+                        </>
+                      )}
+                    </MenuItem>
+                  ))}
+                {addingUser &&
+                  isAssetSelect &&
+                  options &&
+                  options.map((option, index) => (
+                    <MenuItem
+                      key={`${index}-${option.building}`}
+                      value={option}
+                    >
+                      <Checkbox
+                        checked={(value && value.indexOf(option) > -1) || false}
+                      />
+                      <ListItemText primary={option.building} />
+                    </MenuItem>
+                  ))}
+                {/* {isCampaignCreate &&
+                  options &&
+                  options.map((option, index) => (
+                    <MenuItem key={`${index}-${option.id}`} value={option.name}>
+                      {option.name}
+                    </MenuItem>
+                  ))} */}
+
+                {/* {isHospitalCreate &&
+                  options &&
+                  options.map((option, index) => (
+                    <MenuItem key={`${index}-${option.id}`} value={option.name}>
+                      {option.name}
+                    </MenuItem>
+                  ))} */}
+
+                {isFormName === "hospital_create" &&
+                  options &&
+                  options.map((option, index) => (
+                    <MenuItem key={`${index}-${option}`} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+
+                {/* {isAssetSelect &&
+                  options &&
+                  options.map((option, index) => (
+                    <MenuItem key={`${index}-${option}`} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))} */}
+              </Select>
+            </FormControl>
+          )}
+        </ComponentField>
+      )}
 
       <ErrorMessage
         className={`${styles.errorMessageTxt} ${

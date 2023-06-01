@@ -17,6 +17,7 @@ interface SideLabelFormSelectFieldProps {
       ? void
       : (e: string | React.ChangeEvent<any>) => void;
   };
+  isFormName?: string;
 }
 
 const SideLabelFormSelectField = ({
@@ -26,6 +27,7 @@ const SideLabelFormSelectField = ({
   options,
   customFieldStyle,
   initialValue,
+  isFormName,
   formikChangeHandler,
 }: SideLabelFormSelectFieldProps) => {
   const styles = useStyles();
@@ -39,6 +41,7 @@ const SideLabelFormSelectField = ({
         initialValue={initialValue ? initialValue : options[0]}
         placeholder={fieldPlaceholder}
         formikChangeHandler={formikChangeHandler}
+        isFormName={isFormName}
       />
     </div>
   );

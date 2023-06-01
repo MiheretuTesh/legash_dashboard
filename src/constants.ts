@@ -1,8 +1,8 @@
 export enum Roles {
-  Admin = "ADMIN",
-  HospitalAdmin = "HOSPITAL_ADMIN",
-  ReportAdmin = "REPORT_ADMIN",
-  User = "USER",
+  Admin = "Admin",
+  HospitalAdmin = "Hospital Admin",
+  ReportAdmin = "Patient",
+  User = "user",
 }
 
 export const ROLES_NAMES = ["Admin", "Hospital Admin", "Report Admin", "User"];

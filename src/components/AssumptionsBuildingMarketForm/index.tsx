@@ -4,7 +4,7 @@ import SideLabelFormField from "../SideLabelFormField";
 import SideLabelFormSelectField from "../SideLabelFormSelectField";
 import { useStyles } from "./index.style";
 
-interface AssumptionsBuildingMarketFormProps {
+interface HospitalsDataFormProps {
   formikChangeHandler: {
     (e: React.ChangeEvent<any>): void;
     <T = string | React.ChangeEvent<any>>(
@@ -16,15 +16,19 @@ interface AssumptionsBuildingMarketFormProps {
   assumptionFormValues?: AssumtionFormValues;
 }
 
-const AssumptionsBuildingMarketForm = ({
+const HospitalsDataForm = ({
   formikChangeHandler,
   assumptionFormValues,
-}: AssumptionsBuildingMarketFormProps) => {
+}: HospitalsDataFormProps) => {
   const styles = useStyles();
   return (
     <div className={styles.container}>
       <div className={styles.fieldsContainer}>
-        <SideLabelFormField fieldLabel="Name" fieldName="buildingName" isDisabled />
+        <SideLabelFormField
+          fieldLabel="Name"
+          fieldName="buildingName"
+          isDisabled
+        />
         <SideLabelFormField
           fieldLabel="Hold Period"
           fieldName="holdPeriod"
@@ -59,9 +63,9 @@ const AssumptionsBuildingMarketForm = ({
         {/*  type="number"*/}
         {/*/>*/}
         <SideLabelFormField
-            fieldLabel="Climate Zone"
-            fieldName="climateZone"
-            type="number"
+          fieldLabel="Climate Zone"
+          fieldName="climateZone"
+          type="number"
         />
         <SideLabelFormField
           fieldLabel="Start year"
@@ -112,4 +116,4 @@ const AssumptionsBuildingMarketForm = ({
   );
 };
 
-export default AssumptionsBuildingMarketForm;
+export default HospitalsDataForm;

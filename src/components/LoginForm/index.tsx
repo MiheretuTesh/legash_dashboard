@@ -39,35 +39,52 @@ const LoginForm = () => {
 
   /*const userCode = useGetCode();*/
 
-  const { mutate, isLoading, isSuccess } = useLogin({
+  const { mutate, isLoading, isSuccess, data } = useLogin({
     onSuccess: (data) => onLoginSuccess(data),
     onError: (error) => onLoginError(error),
   });
 
   useEffect(() => {
     if (isSuccess) {
-      navigate("/account-admin");
+      // navigate("/account-admin");
       // const userProfile = async () => {
       //   const { data } = await AxiosInstance.get("users/profile/");
-      //   if (data.type === "ADMIN") {
-      //     localStorage.setItem("type", data.type);
-      //     navigate("/account-admin");
-      //   } else if (data.type === "FUND_ASSET_MANAGER_ADMIN") {
-      //     localStorage.setItem("type", data.type);
-      //     navigate("/account-fund-admin");
-      //   } else if (data.type === "FUND_ASSET_MANAGER") {
-      //     localStorage.setItem("type", data.type);
-      //     navigate("/account");
-      //   } else if (data.type === "ENGINEER") {
-      //     localStorage.setItem("type", data.type);
-      //     navigate("/account-consultant");
-      //   } else {
-      //     window.location.reload();
-      //   }
+      if (data.data.data.role.roleName === "Admin") {
+        localStorage.setItem("role", data.data.data.role.roleName);
+        navigate("/account-admin");
+      } else if (data.data.data.role.roleName === "Hospital Admin") {
+        localStorage.setItem("role", data.data.data.role.roleName);
+        navigate("/hospital-admin");
+      } else if (data.data.data.role.roleName === "Patient") {
+        localStorage.setItem("role", data.data.data.role.roleName);
+        navigate("/user");
+      } else if (data.data.data.role.roleName === "user") {
+        localStorage.setItem("role", data.data.data.role.roleName);
+        navigate("/user");
+      } else {
+        window.location.reload();
+      }
       // };
       // userProfile();
     }
   }, [isSuccess, navigate]);
+
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      const role = localStorage.getItem("role");
+      if (role === "Admin") {
+        navigate("/account-admin");
+      } else if (role === "Hospital Admin") {
+        navigate("/hospital-admin");
+      } else if (role === "Patient") {
+        navigate("/user");
+      } else if (role === "user") {
+        navigate("/user");
+      } else {
+        window.location.reload();
+      }
+    }
+  }, [localStorage]);
 
   const LoginSchema = Yup.object().shape({
     email: Yup.string().email("Invalid email").required("*Required"),

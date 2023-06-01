@@ -39,11 +39,11 @@ export const useStyles = makeStyles({
       height: "32px !important",
     },
   },
-  actionBtnsContainer: {
+  actionBtnContainer: {
     display: "flex",
-    width: "40%",
+    width: "20%",
     flexDirection: "row",
-    marginTop: "10px",
+    margin: "10px",
   },
   cancelBtn: {
     "&.MuiButton-outlined": {

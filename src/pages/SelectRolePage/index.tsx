@@ -37,7 +37,7 @@ const SelectRolePage = () => {
         key_value = "ENGINEER";
         break;
     }
-    const { data } = await AxiosInstance.patch("users/profile/", {
+    const { data } = await AxiosInstance.patch("users/fetchUser/", {
       type: key_value,
     });
     localStorage.setItem("type", data.type);

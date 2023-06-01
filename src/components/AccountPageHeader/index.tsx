@@ -28,7 +28,7 @@ const AccountPageHeader = ({
 
   const logout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("type");
+    localStorage.removeItem("role");
     sessionStorage.clear();
     queryClient.removeQueries();
     navigate("/");
@@ -41,6 +41,8 @@ const AccountPageHeader = ({
   const handleProfile = () => {
     navigate("/account-admin/settings", { state: { tab: 1 } });
   };
+
+  console.log(data?.data.data.role, "data?.data.data.role");
 
   return (
     <header className={styles.headerContainer}>
@@ -65,27 +67,27 @@ const AccountPageHeader = ({
             <div className={styles.profileContainer}>
               <div className={styles.nameRoleContainer}>
                 <p className={styles.roleTxt}>
-                  {reverseTransformRole(data?.data.type)}
+                  {reverseTransformRole(data?.data.data.role.roleName)}
                 </p>
                 <p className={styles.nameTxt}>
-                  {data?.data?.first_name} {data?.data?.last_name}
+                  {data?.data.data.firstName} {data?.data.data.lastName}
                 </p>
               </div>
-              {data?.data.photo !== null ? (
+              {/* {data?.data.photo ? (
                 <img
                   className={styles.profilePicture}
                   src={data?.data.photo}
                   alt="profile"
                   onClick={handleProfile}
                 />
-              ) : (
-                <img
-                  className={styles.profilePicture}
-                  src={ProfilePictureExample}
-                  alt="profile"
-                  onClick={handleProfile}
-                />
-              )}
+              ) : ( */}
+              <img
+                className={styles.profilePicture}
+                src={ProfilePictureExample}
+                alt="profile"
+                onClick={handleProfile}
+              />
+              {/* )} */}
             </div>
           ) : (
             <LoadingSpinner type={"text"} />

@@ -5,11 +5,8 @@ import { DataGrid, GridSelectionModel } from "@mui/x-data-grid";
 import { OptionsIcon } from "../../assets";
 import { UserTableRow } from "../../types";
 import UserModal from "../../components/UserModal";
-import { useGetUsers } from "../../hooks/useGetUsers";
-import { useGetHospitals } from "../../hooks/useGetHospitals";
 import { Roles, TABLE_LIMIT } from "../../constants";
 import DeleteModal from "../../components/DeleteModal";
-import jsPDF from "jspdf";
 import "jspdf-autotable";
 import TablePagination from "../../components/Pagination";
 import { NewOnsiteChecklistContext } from "../../contexts/NewOnsiteChecklistContext";
@@ -18,6 +15,8 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
 import moment from "moment";
+import { useGetAllUsers } from "../../hooks/useGetAllUsers";
+import { useEditUsers } from "../../hooks/useEditUsers";
 // import { useGetUserSearch } from "../../hooks/useGetUserSearch"
 
 const UsersPage = ({ parentRoute }: any) => {
@@ -31,11 +30,12 @@ const UsersPage = ({ parentRoute }: any) => {
   const [userModalType, setUserModalType] = useState("add");
   const [rowForEdit, setRowForEdit] = useState({
     id: 0,
-    first_name: "",
-    last_name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     updated_at: "",
     role: "",
+    phone: "",
   });
 
   const columns = [
@@ -88,7 +88,19 @@ const UsersPage = ({ parentRoute }: any) => {
       renderCell: (params: any) => {
         const onEditHandler = () => {
           setUserModalType("edit");
-          setRowForEdit(params.row);
+          const nameSplit = params.row.name.split(" ");
+
+          const rowData = {
+            id: params.row.id,
+            firstName: nameSplit[0],
+            lastName: nameSplit[1],
+            email: params.row.email,
+            role: params.role,
+            phone: params.phone,
+            updated_at: "",
+          };
+
+          setRowForEdit(rowData);
           setIsUserModalOpen(true);
         };
 
@@ -139,13 +151,9 @@ const UsersPage = ({ parentRoute }: any) => {
 
   const [selectedUsers, setSelectedUsers] = useState<GridSelectionModel>();
 
-  // const { dataAssets, isLoadingAssets } = useGetHospitals({});
-  const { dataUsers, isLoadingUsers } = useGetUsers({
-    limit: TABLE_LIMIT,
-    offset: currentOffset,
-  });
-  const { dataUsers: dataAllUsers, isLoadingUsers: isLoadingAllUsers } =
-    useGetUsers({});
+  const { dataUsers, isLoadingUsers, isSuccess } = useGetAllUsers({});
+
+  const handleUserEdit = () => {};
 
   // const {
   //   userSearchData,
@@ -206,26 +214,7 @@ const UsersPage = ({ parentRoute }: any) => {
     setTotalSelected(selectionModel.length);
   };
 
-  const exportTableToPdf = () => {
-    const doc = new jsPDF("portrait", "pt", "A4");
-    doc.setFontSize(15);
-    const data = dataAllUsers?.results.map((user: any) => [
-      `${user.first_name} ${user.last_name}`,
-      user.email,
-      user.type,
-    ]);
-
-    const content = {
-      startY: 50,
-      head: [["Name", "Email", "Role", "Assets"]],
-      body: data,
-    };
-
-    doc.text("User Report Table", 40, 40);
-
-    (doc as any).autoTable(content);
-    doc.save(`${Date.now()}-user-report.pdf`);
-  };
+  const exportTableToPdf = () => {};
 
   const onNextHandler = () => {
     setCurrentOffset((prevState) => prevState + TABLE_LIMIT);
@@ -235,29 +224,29 @@ const UsersPage = ({ parentRoute }: any) => {
     setCurrentOffset((prevState) => prevState - TABLE_LIMIT);
   };
 
-  // useEffect(() => {
-  //   if (dataUsers?.results.length > 0) {
-  //     const tableData: UserTableRow[] = [];
+  useEffect(() => {
+    if (dataUsers?.data.length > 0) {
+      const tableData: any[] = [];
 
-  //     dataUsers?.results.forEach((data: any) => {
-  //       tableData.push({
-  //         assets: "",
-  //         id: data.id,
-  //         user: `${data.first_name} ${data.last_name}`,
-  //         email: data.email,
-  //         role: data.type,
-  //         updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
-  //       });
-  //     });
-  //     setTableRows(tableData);
-  //   } else {
-  //     setTableRows([]);
-  //   }
+      dataUsers?.data.forEach((data: any) => {
+        tableData.push({
+          id: data.id,
+          name: `${data.firstName} ${data.lastName}`,
+          email: data.email,
+          role: data.role,
+          updated_at: moment(data.updatedAt).format("MMM D, YYYY HH:mm"),
+          lastEditBy: "",
+        });
+      });
+      setTableRows(tableData);
+    } else {
+      setTableRows([]);
+    }
 
-  //   return () => {
-  //     setTableRows([]);
-  //   };
-  // }, [dataUsers]);
+    return () => {
+      setTableRows([]);
+    };
+  }, [dataUsers]);
 
   const handleOnSearchFieldChange = (e: any) => {
     // setSearchValue((prevName) => e.target.value);
@@ -293,7 +282,6 @@ const UsersPage = ({ parentRoute }: any) => {
   const [rowHeight, setRowHeight] = useState(60);
 
   useEffect(() => {
-    console.log({ test: windowSize.innerWidth });
     if (windowSize.innerHeight <= 666 || windowSize.innerWidth <= 1200) {
       setRowHeight(40);
     } else {
@@ -372,35 +360,35 @@ const UsersPage = ({ parentRoute }: any) => {
         setIsModalOpen={setIsUserModalOpen}
         setIsDeleteModalOpen={setIsUserDeleteModalOpen}
         totalRowsSelected={totalSelected}
-        data={users}
+        data={tableRows}
         // data={dataAllUsers?.results}
         setTableRows={setTableRows}
         tableType={"users"}
         setActionType={setUserModalType}
-        isLoading={isLoadingUsers || isLoadingAllUsers}
+        isLoading={isLoadingUsers || isLoadingUsers}
         exportTableToPdf={exportTableToPdf}
         handleOnSearchFieldChange={handleOnSearchFieldChange}
         parentRoute={parentRoute}
       />
       <div className={dataGridStyles.tableContainer}>
         <DataGrid
-          rows={users}
+          rows={tableRows}
           columns={columns}
           rowHeight={rowHeight}
-          pageSize={5}
+          pageSize={10}
           onSelectionModelChange={onSelectionChangeHandler}
           selectionModel={selectionModelPersonal}
           disableSelectionOnClick
           checkboxSelection
           hideFooter
-          // loading={isLoadingUsers || isLoadingAssets || isLoadingAllUsers}
+          loading={isLoadingUsers}
         />
         <TablePagination
           nextDisabled={
-            dataUsers?.next === null || isLoadingUsers || isLoadingAllUsers
+            dataUsers?.next === null || isLoadingUsers || isLoadingUsers
           }
           previousDisabled={
-            dataUsers?.previous === null || isLoadingUsers || isLoadingAllUsers
+            dataUsers?.previous === null || isLoadingUsers || isLoadingUsers
           }
           onPreviousHandler={onPreviousHandler}
           onNextHandler={onNextHandler}

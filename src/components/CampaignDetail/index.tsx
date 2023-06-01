@@ -1,19 +1,23 @@
 import { Form, Formik } from "formik";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useStyles } from "./index.style";
 import * as Yup from "yup";
 import FormEditableField from "../FormEditableField";
 import FormButton from "../FormButton";
-import { reverseTransformRole } from "../../utils/functions";
 import PersonalDetailImageUpload from "../PersonalDetailImageUpload";
 import FormField from "../FormField";
 import HospitalPicture from "../../assets/images/Hospital.jpg";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useEditCampaign } from "../../hooks/useEditCampaign";
+import LoadingSpinner from "../LoadingSpinner";
 
 interface Values {
-  name: string;
-  email: string;
-  role: string;
-  company: string;
+  targetFunding: number;
+  startDate: string;
+  endDate: string;
+  currentFundedAmount: number;
+  diagnosis: string;
+  status: string;
 }
 
 const CampaignEditSchema = Yup.object().shape({
@@ -27,19 +31,56 @@ const CampaignEditSchema = Yup.object().shape({
   company: Yup.string().required("*Required"),
 });
 const CampaignEdit = ({ profileData, handleProfileEdit }: any) => {
+  const location = useLocation();
+  const { state } = useLocation();
+  const parentRoute = location.pathname.split("/")[1];
+  const navigate = useNavigate();
   const styles = useStyles();
   const [isProfileEdited, setIsProfileEdited] = useState(false);
   const [uploadedPhoto, setUploadedPhoto] = useState("");
 
-  const initialValues = {
-    name: `${profileData?.first_name} ${profileData?.last_name}`,
-    email: profileData?.email,
-    role: reverseTransformRole(profileData?.type),
-    company: profileData?.company,
+  const initialValues: any = {
+    // name: `${profileData?.first_name} ${profileData?.last_name}`,
+    // email: profileData?.email,
+    // role: reverseTransformRole(profileData?.type),
+    // company: profileData?.company,
+    id: state?.id,
+    targetFunding: state?.targetFunding,
+    startDate: state?.startDate,
+    endDate: state?.endDate,
+    currentFundedAmount: state?.currentFundedAmount,
+    diagnosis: state?.diagnosis,
+    status: state?.status,
   };
 
+  const handleEditHospital = () => {};
+
+  const { mutate, isLoading, data, isSuccess } = useEditCampaign({
+    onEditCampaignSuccess: handleEditHospital,
+    onEditCampaignError: handleEditHospital,
+  });
+
+  useEffect(() => {
+    if (isSuccess === true) {
+      navigate(`/${parentRoute}/campaigns`);
+    }
+  }, [isSuccess, data]);
+
   const onSubmitHandler = (values: Values) => {
-    handleProfileEdit(values);
+    const formData = {
+      targetFunding: values.targetFunding,
+      startDate: values.startDate,
+      endDate: values.endDate,
+      currentFundedAmount: values.currentFundedAmount,
+      diagnosis: [values.diagnosis],
+      status: values.status,
+    };
+    mutate({
+      id: initialValues.id,
+      obj: formData,
+    });
+    // console.log(values, "values values values");
+    // handleProfileEdit(values);
   };
 
   const handleChangeImg = (e: any, setFieldValue: any) => {
@@ -58,7 +99,7 @@ const CampaignEdit = ({ profileData, handleProfileEdit }: any) => {
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmitHandler}
-      validationSchema={CampaignEditSchema}
+      // validationSchema={CampaignEditSchema}
     >
       {({ handleChange, resetForm }) => (
         <>
@@ -92,39 +133,36 @@ const CampaignEdit = ({ profileData, handleProfileEdit }: any) => {
 
             <div className={styles.formMainContainer}>
               <div className={styles.formContainer}>
-                <FormEditableField
+                {/* <FormEditableField
                   fieldName="name"
                   fieldLabel="Name"
                   customStyle={styles.formField}
                   setIsProfileEdited={setIsProfileEdited}
+                /> */}
+                <FormEditableField
+                  fieldName="targetFunding"
+                  fieldLabel="Target Funding"
+                  customStyle={styles.formField}
+                  setIsProfileEdited={setIsProfileEdited}
                 />
                 <FormEditableField
-                  fieldName="location"
-                  fieldLabel="Location"
+                  fieldName="startDate"
+                  fieldLabel="Start Date"
+                  customStyle={styles.formField}
+                  setIsProfileEdited={setIsProfileEdited}
+                />
+                <FormEditableField
+                  fieldName="endDate"
+                  fieldLabel="Start Date"
                   customStyle={styles.formField}
                   setIsProfileEdited={setIsProfileEdited}
                 />
                 <FormEditableField
                   fieldName="status"
-                  fieldLabel="Campaign Status"
+                  fieldLabel="Status"
                   customStyle={styles.formField}
                   setIsProfileEdited={setIsProfileEdited}
                 />
-                <FormEditableField
-                  fieldName="account"
-                  fieldLabel="Account Number"
-                  customStyle={styles.formField}
-                  setIsProfileEdited={setIsProfileEdited}
-                />
-                <div className={styles.actionBtnsContainer}>
-                  <FormButton
-                    buttonType="submit"
-                    buttonVariant="contained"
-                    disabled={!isProfileEdited}
-                  >
-                    Save
-                  </FormButton>
-                </div>
               </div>
               <div className={styles.formContainer}>
                 <FormEditableField
@@ -139,6 +177,11 @@ const CampaignEdit = ({ profileData, handleProfileEdit }: any) => {
                   customStyle={styles.formField}
                 />
               </div>
+            </div>
+            <div className={styles.actionBtnContainer}>
+              <FormButton buttonType="submit" buttonVariant="contained">
+                {isLoading ? <LoadingSpinner type="button" /> : "Save"}
+              </FormButton>
             </div>
           </Form>
         </>

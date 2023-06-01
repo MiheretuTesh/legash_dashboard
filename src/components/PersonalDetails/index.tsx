@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import HospitalEdit from "../HospitalDetail";
+import PersonalDetailsForm from "../PersonalDetailsForm";
 import { useStyles } from "./index.style";
 import { useGetUsersProfile } from "../../hooks/useGetUsersProfile";
 import { useProfileEdit } from "../../hooks/useProfileEdit";
@@ -15,60 +16,43 @@ interface Values {
 }
 
 const PersonalDetails = () => {
-  // const { isLoading, data } = useGetUsersProfile();
+  const { isLoading, data: profileData } = useGetUsersProfile();
   const [isUploading, setIsUploading] = useState(false);
   const navigate = useNavigate();
 
-  // const { mutate } = useProfileEdit({
-  //   onSuccess: (data) => UseHandleProfileEdit(data),
-  // });
+  const UseHandleProfileEdit = (data: any) => {};
 
-  const UseHandleProfileEdit = (values: Values) => {
-    navigate(0);
-  };
+  const { mutate } = useProfileEdit({
+    onSuccess: (data) => UseHandleProfileEdit(data),
+  });
 
   const handleProfileEdit = (values: any) => {
     const name = values.name.split(" ");
-    const first_name = name[0];
-    const last_name = name[1] ? name[1] : "";
+    const firstName = name[0];
+    const lastName = name[1] ? name[1] : "";
 
     const fd = new FormData();
     if (values.img) {
       fd.append("photo", values.img, values.img.name);
     }
-    fd.append("first_name", first_name);
-    fd.append("last_name", last_name);
-    fd.append("email", values.email);
-    fd.append("job_title", values.role);
-    fd.append("company", values.company);
+    fd.append("firstName", firstName);
+    fd.append("lastName", lastName);
+    fd.append("phonenumber", values.phonenumber);
 
     setIsUploading(true);
-    // mutate(fd);
+    mutate(fd);
   };
 
   const styles = useStyles();
   return (
     <div>
       <>
-        <HospitalEdit profileData={""} handleProfileEdit={handleProfileEdit} />
+        <PersonalDetailsForm
+          profileData={profileData?.data.data}
+          handleProfileEdit={handleProfileEdit}
+        />
       </>
     </div>
-    //   <div className={styles.container}>
-    //   {isLoading || isUploading ? (
-    //     <div className={styles.loaderStyle}>
-    //       <LoadingSpinner />
-    //     </div>
-    //   ) : (
-    //     <>
-    //       {data?.data && (
-    //         <PersonalDetailsForm
-    //           profileData={data?.data}
-    //           handleProfileEdit={handleProfileEdit}
-    //         />
-    //       )}
-    //     </>
-    //   )}
-    // </div>
   );
 };
 

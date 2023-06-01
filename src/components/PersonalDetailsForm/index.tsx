@@ -13,7 +13,7 @@ interface Values {
   name: string;
   email: string;
   role: string;
-  company: string;
+  phonenumber: string;
 }
 
 const PersonalDetailsSchema = Yup.object().shape({
@@ -32,10 +32,11 @@ const PersonalDetailsForm = ({ profileData, handleProfileEdit }: any) => {
   const [uploadedPhoto, setUploadedPhoto] = useState("");
 
   const initialValues = {
-    name: `${profileData?.first_name} ${profileData?.last_name}`,
+    name: `${profileData?.firstName} ${profileData?.lastName}`,
     email: profileData?.email,
-    role: reverseTransformRole(profileData?.type),
-    company: profileData?.company,
+    // role: reverseTransformRole(profileData?.role.roleName),
+    role: profileData?.role.roleName,
+    phonenumber: profileData?.phonenumber,
   };
 
   const onSubmitHandler = (values: Values) => {
@@ -64,7 +65,7 @@ const PersonalDetailsForm = ({ profileData, handleProfileEdit }: any) => {
         <>
           <Form className={styles.topContainer}>
             <div className={styles.profilePictureContainer}>
-              <img
+              {/* <img
                 className={styles.pictureContainer}
                 src={
                   uploadedPhoto
@@ -73,6 +74,11 @@ const PersonalDetailsForm = ({ profileData, handleProfileEdit }: any) => {
                     ? profileData.photo
                     : ProfilePictureExample
                 }
+                alt="profile"
+              /> */}
+              <img
+                className={styles.pictureContainer}
+                src={ProfilePictureExample}
                 alt="profile"
               />
               <PersonalDetailImageUpload
@@ -105,8 +111,8 @@ const PersonalDetailsForm = ({ profileData, handleProfileEdit }: any) => {
                 isDisabled
               />
               <FormEditableField
-                fieldName="company"
-                fieldLabel="Company"
+                fieldName="phonenumber"
+                fieldLabel="Phone Number"
                 customStyle={styles.formField}
                 setIsProfileEdited={setIsProfileEdited}
               />

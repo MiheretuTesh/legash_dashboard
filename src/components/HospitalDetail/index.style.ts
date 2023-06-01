@@ -5,7 +5,6 @@ export const useStyles = makeStyles({
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
-    // maxHeight: "500px",
     width: "100%",
     overflowY: "auto",
     "@media (max-width: 1200px)": {
@@ -60,12 +59,13 @@ export const useStyles = makeStyles({
   },
   profilePictureContainer: {
     display: "flex",
-    flexDirection: "row",
-    alignItems: "flex-end",
+    flexDirection: "column",
+    justifyContent: "center",
   },
   pictureContainer: {
     width: "30%",
     height: "10%",
-    margin: "0 10px",
+    margin: "0",
+    marginBottom: "10px",
   },
 });

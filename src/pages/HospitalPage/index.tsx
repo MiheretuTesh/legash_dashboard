@@ -1,25 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
 import TableActionsHeader from "../../components/TableActionsHeader";
-import IconButton from "@mui/material/IconButton";
-import { DataGrid, GridSelectionModel } from "@mui/x-data-grid";
-import { OptionsIcon } from "../../assets";
-import { UserTableRow } from "../../types";
+import { GridSelectionModel } from "@mui/x-data-grid";
 import UserModal from "../../components/UserModal";
-// import { useGetUsers } from "../../hooks/useGetUsers";
 import { useGetHospitals } from "../../hooks/useGetHospitals";
-import { Roles, TABLE_LIMIT } from "../../constants";
+import { TABLE_LIMIT } from "../../constants";
 import DeleteModal from "../../components/DeleteModal";
 import { useNavigate } from "react-router-dom";
-import jsPDF from "jspdf";
-import "jspdf-autotable";
-import TablePagination from "../../components/Pagination";
 import { NewOnsiteChecklistContext } from "../../contexts/NewOnsiteChecklistContext";
 import { useStyles } from "../../styles/DataGrid.style";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
 import moment from "moment";
-// import { useGetUserSearch } from "../../hooks/useGetUserSearch"
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 const HospitalPage = ({ parentRoute }: any) => {
   const styles = useStyles();
@@ -27,7 +17,7 @@ const HospitalPage = ({ parentRoute }: any) => {
   const [currentOffset, setCurrentOffset] = useState(0);
   const [totalSelected, setTotalSelected] = useState(0);
   const [searchValue, setSearchValue] = useState("");
-  const [hospitalsData, setHospitalsData] = useState<any[]>([]);
+  const [hospitalsData, setHospitalsData] = useState<any>([]);
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const [isUserDeleteModalOpen, setIsUserDeleteModalOpen] = useState(false);
   const [userModalType, setUserModalType] = useState("add");
@@ -46,7 +36,6 @@ const HospitalPage = ({ parentRoute }: any) => {
 
   const { dataHospitals, isLoadingHospitals } = useGetHospitals({});
 
-  console.log(dataHospitals, "dataHospitals dataHospitals dataHospitals");
   // const { dataUsers, isLoadingUsers } = useGetUsers({
   //   limit: TABLE_LIMIT,
   //   offset: currentOffset,
@@ -139,23 +128,23 @@ const HospitalPage = ({ parentRoute }: any) => {
     setCurrentOffset((prevState) => prevState - TABLE_LIMIT);
   };
 
-  console.log(dataHospitals?.data.hospitals, "Hello Hospitals");
-
   useEffect(() => {
     if (dataHospitals?.data.hospitals.length > 0) {
       const tableData: any[] = [];
 
       dataHospitals?.data.hospitals.forEach((data: any) => {
         tableData.push({
-          id: data.id,
+          id: data._id,
           name: data.name,
           email: data.email,
           role: data.type,
           updated_at: moment(data.updatedAt).format("MMM D, YYYY HH:mm"),
-          bankAccounts: data.bankAccounts,
           phone: data.phone,
-          location: `${data.location.address} ${data.location.city}`,
+          location: `${data.location.address}, ${data.location.city}`,
+          locationA: data.location,
           status: "Active",
+          bankAccounts: data.bankAccounts[0].accountNumber,
+          website: data.website,
         });
       });
       setHospitalsData(tableData);
@@ -197,6 +186,19 @@ const HospitalPage = ({ parentRoute }: any) => {
     //   });
   };
 
+  const hospitalImg = [
+    "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aG9zcGl0YWwlMjBidWlsZGluZ3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
+    "https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1yZWxhdGVkfDd8fHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
+    "https://images.unsplash.com/photo-1586773860383-dab5f3bc1bcc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1yZWxhdGVkfDEyfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60",
+    "https://www.northamericanbuildings.com/wp-content/uploads/2019/02/hospital-builder-company-1.jpg",
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSC1sznfet_Fm2xhU814Upufc5-tKuba8J4-A&usqp=CAU",
+    "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aG9zcGl0YWwlMjBidWlsZGluZ3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
+    "https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1yZWxhdGVkfDd8fHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
+    "https://images.unsplash.com/photo-1586773860383-dab5f3bc1bcc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1yZWxhdGVkfDEyfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60",
+    "https://www.northamericanbuildings.com/wp-content/uploads/2019/02/hospital-builder-company-1.jpg",
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSC1sznfet_Fm2xhU814Upufc5-tKuba8J4-A&usqp=CAU",
+  ];
+
   const { windowSize } = useContext(NewOnsiteChecklistContext);
   const [rowHeight, setRowHeight] = useState(60);
 
@@ -207,59 +209,6 @@ const HospitalPage = ({ parentRoute }: any) => {
       setRowHeight(60);
     }
   }, [windowSize]);
-
-  console.log(hospitalsData, "hospitalsData hospitalsData hospitalsData");
-
-  const hospitals = [
-    {
-      id: 1,
-      name: "Minileke Hospital",
-      location: "Minilike",
-      status: true,
-      staffMembers: ["Abebe Sisay", "Embet Getu"],
-      img: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aG9zcGl0YWwlMjBidWlsZGluZ3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
-    },
-    {
-      id: 1,
-      name: "Yekatit 12 Hospital",
-      location: "6 kilo",
-      status: true,
-      staffMembers: ["Abebe Sisay", "Embet Getu"],
-      img: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aG9zcGl0YWwlMjBidWlsZGluZ3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
-    },
-    {
-      id: 1,
-      name: "Alert Hospital",
-      location: "Zewditu",
-      status: true,
-      staffMembers: ["Abebe Sisay", "Embet Getu"],
-      img: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aG9zcGl0YWwlMjBidWlsZGluZ3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
-    },
-    {
-      id: 1,
-      name: "Black Lion Hospital",
-      location: "Piazza",
-      status: true,
-      staffMembers: ["Abebe Sisay", "Embet Getu"],
-      img: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aG9zcGl0YWwlMjBidWlsZGluZ3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
-    },
-    {
-      id: 1,
-      name: "Minileke Hospital",
-      location: "Minilike",
-      status: true,
-      staffMembers: ["Abebe Sisay", "Embet Getu"],
-      img: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aG9zcGl0YWwlMjBidWlsZGluZ3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
-    },
-    {
-      id: 1,
-      name: "Minileke Hospital",
-      location: "Minilike",
-      status: true,
-      staffMembers: ["Abebe Sisay", "Embet Getu"],
-      img: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aG9zcGl0YWwlMjBidWlsZGluZ3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
-    },
-  ];
 
   return (
     <>
@@ -310,45 +259,94 @@ const HospitalPage = ({ parentRoute }: any) => {
           overflowX: "hidden",
         }}
       >
-        {hospitalsData.map((hospital, index) => (
+        {isLoadingHospitals ? (
           <div
-            key={index}
             style={{
-              width: "295px",
-              backgroundColor: "#fff",
-              padding: 10,
-              margin: "30px",
-              boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
+              width: "100%",
+              height: "100%",
               display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-              borderRadius: 10,
-              cursor: "pointer",
+              justifyContent: "center",
+              alignItems: "center",
             }}
-            onClick={() => navigate(`/${parentRoute}/campaign/1`)}
           >
-            <div>
-              <img
-                src={
-                  hospital.img
-                    ? `${hospital.img}`
-                    : "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aG9zcGl0YWwlMjBidWlsZGluZ3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60"
-                }
-                width="295px"
-                style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
-              />
-            </div>
-            <p style={{ fontSize: "16px", fontWeight: 600 }}>
-              Name: {hospital.name}
-            </p>
-            <p style={{ fontSize: "16px", fontWeight: 500 }}>
-              Location: {hospital.location}
-            </p>
-            <p style={{ fontSize: "16px", fontWeight: 500 }}>
-              Status: {hospital.status}
-            </p>
+            <LoadingSpinner />
           </div>
-        ))}
+        ) : (
+          hospitalsData.map((hospital: any, index: any) => (
+            <div
+              key={index}
+              style={{
+                width: "295px",
+                backgroundColor: "#fff",
+                padding: 10,
+                margin: "30px",
+                boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                borderRadius: 10,
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                const hospitalData: any = { hospital: hospital };
+                navigate(`/${parentRoute}/hospital-detail/${hospital.id}`, {
+                  state: hospitalData,
+                });
+              }}
+            >
+              <div>
+                <img
+                  src={hospital.img ? `${hospital.img}` : hospitalImg[index]}
+                  width="295px"
+                  style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
+                />
+              </div>
+              <p style={{ fontSize: "16px", fontWeight: 600 }}>
+                Name: {hospital.name}
+              </p>
+              <p style={{ fontSize: "16px", fontWeight: 500 }}>
+                Location: {hospital.location}
+              </p>
+              <p style={{ fontSize: "16px", fontWeight: 500 }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  Status:
+                  {hospital.status === "Active" ? (
+                    <div
+                      style={{
+                        backgroundColor: "#32E9DA",
+                        padding: "5px",
+                        borderRadius: 8,
+                        color: "white",
+                        marginLeft: "5px",
+                      }}
+                    >
+                      {hospital.status}
+                    </div>
+                  ) : (
+                    <div
+                      style={{
+                        backgroundColor: "red",
+                        padding: "5px",
+                        borderRadius: 8,
+                        color: "white",
+                        marginLeft: "5px",
+                      }}
+                    >
+                      {hospital.status}
+                    </div>
+                  )}
+                </div>
+              </p>
+            </div>
+          ))
+        )}
       </div>
     </>
   );

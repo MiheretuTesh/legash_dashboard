@@ -72,11 +72,10 @@ const RegistrationForm = () => {
   });
 
   useEffect(() => {
-    if (data?.data.success === "Success") {
-
+    if (isSuccess === true) {
       navigate("/login");
     }
-  }, [data]);
+  }, [data, isSuccess]);
 
   const onSubmitHandler = async (values: RegistrationFormValues) => {
     console.log(values, "Register From Values");

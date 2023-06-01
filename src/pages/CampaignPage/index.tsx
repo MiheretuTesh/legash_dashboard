@@ -15,10 +15,9 @@ import "jspdf-autotable";
 import TablePagination from "../../components/Pagination";
 import { NewOnsiteChecklistContext } from "../../contexts/NewOnsiteChecklistContext";
 import { useStyles } from "../../styles/DataGrid.style";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
 import moment from "moment";
+import { data } from "jquery";
+import LoadingSpinner from "../../components/LoadingSpinner";
 // import { useGetUserSearch } from "../../hooks/useGetUserSearch"
 
 const CampaignPage = ({ parentRoute }: any) => {
@@ -27,7 +26,7 @@ const CampaignPage = ({ parentRoute }: any) => {
   const [currentOffset, setCurrentOffset] = useState(0);
   const [totalSelected, setTotalSelected] = useState(0);
   const [searchValue, setSearchValue] = useState("");
-  const [tableRows, setTableRows] = useState<UserTableRow[]>([]);
+  const [tableRows, setTableRows] = useState<any[]>([]);
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const [isUserDeleteModalOpen, setIsUserDeleteModalOpen] = useState(false);
   const [userModalType, setUserModalType] = useState("add");
@@ -39,108 +38,12 @@ const CampaignPage = ({ parentRoute }: any) => {
     updated_at: "",
   });
 
-  const columns = [
-    // {
-    //   field: "name",
-    //   headerName: "Name",
-    //   flex: 0.3,
-    //   renderCell: (params: any) => {
-    //     const row = params.row;
-    //     return (
-    //       <div>
-    //         {row.first_name}&nbsp;{row.last_name}
-    //       </div>
-    //     );
-    //   },
-    // },
-    { field: "name", headerName: "Name", minWidth: 250 },
-
-    { field: "email", headerName: "Email", minWidth: 250 },
-    {
-      field: "role",
-      headerName: "Role",
-      minWidth: 250,
-      renderCell: (params: any) => {
-        const row = params.row;
-        return (
-          <div>
-            {row.role === Roles.Admin ? "Super Admin" : "Hospital Admin"}
-          </div>
-        );
-      },
-    },
-    {
-      field: "updated_at",
-      headerName: "Last Edited At",
-      minWidth: 180,
-    },
-    {
-      field: "edited_by",
-      headerName: "Last Edited By",
-      minWidth: 180,
-    },
-    {
-      field: "action",
-      headerName: "",
-      sortable: false,
-      disableColumnMenu: true,
-      renderCell: (params: any) => {
-        const onEditHandler = () => {
-          setUserModalType("edit");
-          setRowForEdit(params.row);
-          setIsUserModalOpen(true);
-        };
-
-        const onDeleteHandler = () => {
-          setSelectedUsers([params.row.id]);
-          setIsUserDeleteModalOpen(true);
-        };
-
-        return (
-          <PopupState variant="popover" popupId="demo-popup-menu">
-            {(popupState: any) => (
-              <React.Fragment>
-                <IconButton
-                  sx={{ width: 30, height: 30, padding: "5px" }}
-                  {...bindTrigger(popupState)}
-                >
-                  <OptionsIcon />
-                </IconButton>
-                <Menu {...bindMenu(popupState)}>
-                  <MenuItem
-                    onClick={() => {
-                      popupState.close();
-                      onEditHandler();
-                    }}
-                  >
-                    Edit
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      popupState.close();
-                      onDeleteHandler();
-                    }}
-                  >
-                    Delete
-                  </MenuItem>
-                </Menu>
-              </React.Fragment>
-            )}
-          </PopupState>
-        );
-      },
-      flex: 0.01,
-    },
-  ];
-
   const [selectionModelPersonal, setSelectionModelPersonal] =
     useState<GridSelectionModel>([]);
 
   const [selectedUsers, setSelectedUsers] = useState<GridSelectionModel>();
 
   const { dataCampaigns, isLoadingCampaigns } = useGetCampaigns({});
-
-  console.log(dataCampaigns, "dataCampaigns dataCampaigns dataCampaigns");
 
   const { dataUsers: dataAllUsers, isLoadingUsers: isLoadingAllUsers } =
     useGetUsers({});
@@ -218,29 +121,33 @@ const CampaignPage = ({ parentRoute }: any) => {
     setCurrentOffset((prevState) => prevState - TABLE_LIMIT);
   };
 
-  // useEffect(() => {
-  //   if (dataUsers?.results.length > 0) {
-  //     const tableData: UserTableRow[] = [];
+  useEffect(() => {
+    if (dataCampaigns?.data.campaigns.length > 0) {
+      const tableData: any[] = [];
 
-  //     dataUsers?.results.forEach((data: any) => {
-  //       tableData.push({
-  //         assets: "",
-  //         id: data.id,
-  //         user: `${data.first_name} ${data.last_name}`,
-  //         email: data.email,
-  //         role: data.type,
-  //         updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
-  //       });
-  //     });
-  //     setTableRows(tableData);
-  //   } else {
-  //     setTableRows([]);
-  //   }
+      dataCampaigns?.data.campaigns.forEach((data: any) => {
+        tableData.push({
+          id: data._id,
+          currentFundedAmount: data.currentFundedAmount,
+          user: `${data.first_name} ${data.last_name}`,
+          diagnosis: data.diagnosis[0],
+          status: data.status,
+          updatedAt: moment(data.updatedAt).format("MMM D, YYYY HH:mm"),
+          targetFunding: data.targetFunding,
+          treatmentRequired: data.treatmentRequired,
+          startDate: data.startDate,
+          endDate: data.endDate,
+        });
+      });
+      setTableRows(tableData);
+    } else {
+      setTableRows([]);
+    }
 
-  //   return () => {
-  //     setTableRows([]);
-  //   };
-  // }, [dataUsers]);
+    return () => {
+      setTableRows([]);
+    };
+  }, [dataCampaigns]);
 
   const handleOnSearchFieldChange = (e: any) => {
     // setSearchValue((prevName) => e.target.value);
@@ -272,68 +179,23 @@ const CampaignPage = ({ parentRoute }: any) => {
     //   });
   };
 
+  const campaignsImg = [
+    "https://images.unsplash.com/photo-1548102245-c79dbcfa9f92?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=996&q=80",
+    "https://images.unsplash.com/photo-1588349482083-036b31c6eca3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1yZWxhdGVkfDE0fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60",
+    "https://images.unsplash.com/photo-1537280788811-0cc64e2c028b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1yZWxhdGVkfDEwfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60",
+    "https://images.unsplash.com/photo-1606166187734-a4cb74079037?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80",
+  ];
+
   const { windowSize } = useContext(NewOnsiteChecklistContext);
   const [rowHeight, setRowHeight] = useState(60);
 
   useEffect(() => {
-    console.log({ test: windowSize.innerWidth });
     if (windowSize.innerHeight <= 666 || windowSize.innerWidth <= 1200) {
       setRowHeight(40);
     } else {
       setRowHeight(60);
     }
   }, [windowSize]);
-
-  const hospitals = [
-    {
-      id: 1,
-      name: "Abebe Kebede",
-      location: "Minilike",
-      status: true,
-      staffMembers: ["Abebe Sisay", "Embet Getu"],
-      img: "https://images.unsplash.com/photo-1606166187734-a4cb74079037?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8c2ljayUyMHBlcnNvbnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
-    },
-    {
-      id: 1,
-      name: "Asrat Assefa",
-      location: "6 kilo",
-      status: true,
-      staffMembers: ["Abebe Sisay", "Embet Getu"],
-      img: "https://images.unsplash.com/photo-1606166187734-a4cb74079037?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8c2ljayUyMHBlcnNvbnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
-    },
-    {
-      id: 1,
-      name: "Zewde Tegaye",
-      location: "Zewditu",
-      status: true,
-      staffMembers: ["Abebe Sisay", "Embet Getu"],
-      img: "https://images.unsplash.com/photo-1606166187734-a4cb74079037?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8c2ljayUyMHBlcnNvbnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
-    },
-    {
-      id: 1,
-      name: "Bontu Simele",
-      location: "Piazza",
-      status: true,
-      staffMembers: ["Abebe Sisay", "Embet Getu"],
-      img: "https://images.unsplash.com/photo-1606166187734-a4cb74079037?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8c2ljayUyMHBlcnNvbnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
-    },
-    {
-      id: 1,
-      name: "Yonathan Feyera",
-      location: "Minilike",
-      status: true,
-      staffMembers: ["Abebe Sisay", "Embet Getu"],
-      img: "https://images.unsplash.com/photo-1606166187734-a4cb74079037?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8c2ljayUyMHBlcnNvbnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
-    },
-    {
-      id: 1,
-      name: "Yossef Gutu",
-      location: "Minilike",
-      status: true,
-      staffMembers: ["Abebe Sisay", "Embet Getu"],
-      img: "https://images.unsplash.com/photo-1606166187734-a4cb74079037?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8c2ljayUyMHBlcnNvbnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
-    },
-  ];
 
   return (
     <>
@@ -384,41 +246,79 @@ const CampaignPage = ({ parentRoute }: any) => {
           overflowX: "hidden",
         }}
       >
-        {hospitals.map((hospital, index) => (
+        {isLoadingCampaigns ? (
           <div
-            key={index}
             style={{
-              width: "295px",
-              backgroundColor: "#fff",
-              padding: 10,
-              margin: "30px",
-              boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
+              width: "100%",
+              height: "100%",
               display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-              borderRadius: 10,
-              cursor: "pointer",
+              justifyContent: "center",
+              alignItems: "center",
             }}
-            onClick={() => navigate(`/${parentRoute}/campaign/1`)}
           >
-            <div>
-              <img
-                src={`${hospital.img}`}
-                width="295px"
-                style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
-              />
-            </div>
-            <p style={{ fontSize: "16px", fontWeight: 600 }}>
-              Name: {hospital.name}
-            </p>
-            <p style={{ fontSize: "16px", fontWeight: 500 }}>
-              Location: {hospital.location}
-            </p>
-            <p style={{ fontSize: "16px", fontWeight: 500 }}>
-              Status: {hospital.location}
-            </p>
+            <LoadingSpinner />
           </div>
-        ))}
+        ) : (
+          tableRows.map((campaign, index) => (
+            <div
+              key={index}
+              style={{
+                width: "295px",
+                backgroundColor: "#fff",
+                padding: 10,
+                margin: "30px",
+                boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                borderRadius: 10,
+                cursor: "pointer",
+              }}
+              onClick={() =>
+                navigate(`/${parentRoute}/campaign/${campaign.id}`, {
+                  state: campaign,
+                })
+              }
+            >
+              <div>
+                <img
+                  src={campaign.img ? `${campaign.img}` : campaignsImg[index]}
+                  width="295px"
+                  style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
+                />
+              </div>
+              <p style={{ fontSize: "16px", fontWeight: 600 }}>
+                Target Fund: {campaign.targetFunding}
+              </p>
+              <p style={{ fontSize: "16px", fontWeight: 500 }}>
+                Treatment Required: {campaign.treatmentRequired}
+              </p>
+              <p style={{ fontSize: "16px", fontWeight: 500 }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  Status:
+                  <div
+                    style={{
+                      backgroundColor: "#FFB84C",
+                      color: "white",
+                      padding: "5px",
+                      borderRadius: 8,
+                      marginLeft: 5,
+                    }}
+                  >
+                    {campaign.status}
+                  </div>
+                </div>
+              </p>
+            </div>
+          ))
+        )}
       </div>
     </>
   );

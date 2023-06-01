@@ -1,221 +1,248 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Formik, Form } from "formik";
+import FormField from "../FormField";
 import { useStyles } from "./index.style";
-import TextField from "@mui/material/TextField";
-import Select from "@mui/material/Select";
-import FormControl from "@mui/material/FormControl";
-import MenuItem from "@mui/material/MenuItem";
-import Button from "@mui/material/Button";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import FormButton from "../FormButton";
+import FormSelectField from "../FormSelectField";
+import * as Yup from "yup";
+import ErrorModal from "../ErrorModal";
+import { useAddCampaign } from "../../hooks/useAddCampaign";
+import LoadingSpinner from "../LoadingSpinner";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useGetAllUsers } from "../../hooks/useGetAllUsers";
+import { useGetHospitals } from "../../hooks/useGetHospitals";
+import ImageUpload from "../ImageUpload";
+
+const CampaignAddSchema = Yup.object().shape({
+  patientId: Yup.string().required("*Required"),
+  hospitalId: Yup.string().required("*Required"),
+  targetFunding: Yup.string().required("*Required"),
+  treatmentRequired: Yup.string().required("*Required"),
+  diagnosis: Yup.string().required("*Required"),
+  startDate: Yup.string().required("*Required"),
+  endDate: Yup.string().required("*Required"),
+  currentFundedAmount: Yup.string().required("*Required"),
+});
 
 const AddNewCampaignForm = () => {
+  const location = useLocation();
+  const parentRoute = location.pathname.split("/")[1];
+  const [imageUrlGenerated, setImageUrlGenerated] = useState(false);
+  const [imgUploadUrl, setImagUploadUrl] = useState("");
+
+  const navigate = useNavigate();
+  const initialValues = {
+    patientId: "",
+    hospitalId: "",
+    targetFunding: "",
+    treatmentRequired: "",
+    diagnosis: "",
+    startDate: "",
+    endDate: "",
+    currentFundedAmount: "",
+  };
+  const [isError, setIsError] = useState(false);
+  const [errorText, setErrorText] = useState("");
+  const [allUsers, setAllUsers]: any = useState([]);
+  const [allHospitals, setAllHospitals]: any = useState([]);
+
   const styles = useStyles();
 
-  const [formData, setFormData] = useState({
-    name: "",
-    location: "",
-    status: "",
-    staffs: "",
-    description: "",
-    patientId: "",
-  });
+  const campaignAddHandler = () => {};
+  const {
+    dataUsers,
+    isLoadingUsers,
+    isSuccess: isAllUsersFetched,
+  } = useGetAllUsers({});
 
-  const handleInputChange = (e: any) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const { dataHospitals, isLoadingHospitals } = useGetHospitals({});
+
+  console.log(dataHospitals, "dataHospitals dataHospitals dataHospitals");
+
+  useEffect(() => {
+    if (dataUsers?.data.length > 0) {
+      const tableData: any[] = [];
+
+      dataUsers?.data.forEach((data: any) => {
+        if (data?.role?.roleName === "user") {
+          tableData.push({
+            id: data.id,
+            name: `${data.firstName} ${data.lastName}`,
+            email: data.email,
+          });
+        }
+      });
+      setAllUsers(tableData);
+    } else {
+      setAllUsers([]);
+    }
+
+    return () => {
+      setAllUsers([]);
+    };
+  }, [dataUsers]);
+
+  useEffect(() => {
+    if (dataHospitals?.data.hospitals.length > 0) {
+      const tableData: any[] = [];
+
+      dataHospitals?.data.hospitals.forEach((data: any) => {
+        tableData.push({
+          id: data._id,
+          name: data.name,
+          email: data.email,
+        });
+      });
+      setAllHospitals(tableData);
+    } else {
+      setAllHospitals([]);
+    }
+    return () => {
+      setAllHospitals([]);
+    };
+  }, [dataHospitals]);
+
+  const onAddCampaignError = () => {
+    setErrorText("Incorrect Phone Number or URL");
+    setIsError(true);
   };
 
-  // const handleInputChange = (e: any) => {
-  //   if (e.target.name === "image") {
-  //     // setFormData({ ...formData, [e.target.name]: e.target.files[0] });
-  //     // setPreviewImage(URL.createObjectURL(e.target.files[0]));
-  //   } else {
-  //     // setFormData({ ...formData, [e.target.name]: e.target.value });
-  //   }
-  // };
+  const { mutate, data, isLoading, isSuccess } = useAddCampaign({
+    onSuccess: campaignAddHandler,
+    onError: onAddCampaignError,
+  });
 
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
+  useEffect(() => {
+    if (isSuccess === true) {
+      navigate(`/${parentRoute}/campaigns`);
+    }
+  }, [data, isSuccess]);
 
-    console.log(formData, "formData");
+  const HOSPITAL_LIST = ["Menilike", "Yekaktit 12", "Black Lion"];
 
-    // Perform validation
-    // const errors = {};
-    // if (!formData.name.trim()) {
-    //   errors.name = "Name is required";
-    // }
-    // if (!formData.email.trim()) {
-    //   errors.email = "Email is required";
-    // }
-    // if (!formData.gender) {
-    //   errors.gender = "Gender is required";
-    // }
-
-    // If there are errors, set them in state
-    // if (Object.keys(errors).length > 0) {
-    //   setErrors(errors);
-    //   return;
-    // }
-
-    // Submit the form data
-    console.log(formData);
-
-    setFormData({
-      name: "",
-      location: "",
-      status: "",
-      description: "",
-      staffs: "",
-      patientId: "",
-    });
+  const onSubmitHandler = (values: any) => {
+    values.coverImage = imgUploadUrl;
+    console.log(values, "values");
+    // mutate(values);
   };
 
   return (
-    <div className={styles.container}>
-      <form onSubmit={handleSubmit}>
-        <div className={styles.secondContainer}>
-          <div className={styles.fullWidth}>
-            <div className={styles.formContainer}>
-              <p>Name</p>
-              <TextField
-                required
-                id="outlined-required"
-                placeholder="Name"
-                className={styles.textField}
-                label="Name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className={styles.formContainer}>
-              <p>Location</p>
-              <TextField
-                required
-                id="outlined-required"
-                placeholder="Location"
-                className={styles.textField}
-                label="Location"
-                name="location"
-                value={formData.location}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className={styles.formContainer}>
-              <p>Status</p>
-              <FormControl
-                variant="outlined"
-                // className={classes.formControl}
-                className={styles.textField}
-              >
-                <Select
-                  labelId="status-label"
-                  id="status"
-                  name="status"
-                  // value={formData.gender}
-                  // onChange={handleInputChange}
-                  label="Status"
-                  value={formData.status}
-                  onChange={handleInputChange}
-                  // error={!!errors.gender}
-                  // helperText={errors.gender}
-                >
-                  <MenuItem value="male">Active</MenuItem>
-                  <MenuItem value="female">InActive</MenuItem>
-                </Select>
-              </FormControl>
-            </div>
+    <Formik
+      initialValues={initialValues}
+      onSubmit={onSubmitHandler}
+      validationSchema={CampaignAddSchema}
+    >
+      {({ handleChange }) => (
+        <>
+          <ErrorModal
+            open={isError}
+            setIsOpen={setIsError}
+            errorText={errorText}
+          />
+          <Form>
+            <div className={styles.secondContainer}>
+              <div className={styles.fullWidth}>
+                <div className={styles.formContainer}>
+                  <div className={styles.formContainer2}>
+                    <div style={{ width: "45%" }}>
+                      <ImageUpload
+                        setImageUrlGenerated={setImageUrlGenerated}
+                        setImagUploadUrl={setImagUploadUrl}
+                      />
+                      <FormSelectField
+                        fieldName="patientId"
+                        fieldLabel="Patient"
+                        formikChangeHandler={handleChange}
+                        options={allUsers}
+                        initialValue={"none"}
+                        placeholder={"Select a patient"}
+                        isCampaignCreate={true}
+                      />
+                      <FormSelectField
+                        fieldName="hospitalId"
+                        fieldLabel="Hospital"
+                        formikChangeHandler={handleChange}
+                        options={allHospitals}
+                        initialValue={"none"}
+                        placeholder={"Select hospital"}
+                        isCampaignCreate={true}
+                      />
+                      <FormField
+                        fieldName="targetFunding"
+                        fieldLabel="Target Funding"
+                        fieldPlaceholder="100000"
+                      />
+                      <FormField
+                        fieldName="treatmentRequired"
+                        fieldLabel="Treatment Required"
+                        fieldPlaceholder="Diabetes"
+                      />
+                    </div>
+                    <div style={{ width: "45%" }}>
+                      <FormField
+                        fieldName="diagnosis"
+                        fieldLabel="diagnosis"
+                        fieldPlaceholder="Diabetes"
+                      />
+                      <FormField
+                        fieldName="startDate"
+                        fieldLabel="Starting Date"
+                        fieldPlaceholder="19-12-2022"
+                      />
 
-            <div className={styles.formContainer}>
-              <p>Patient</p>
-              <FormControl
-                variant="outlined"
-                // className={classes.formControl}
-                className={styles.textField}
-              >
-                <Select
-                  labelId="patient-label"
-                  id="patientId"
-                  name="patientId"
-                  // value={formData.gender}
-                  // onChange={handleInputChange}
-                  label="Patient"
-                  value={formData.patientId}
-                  onChange={handleInputChange}
-                  // error={!!errors.gender}
-                  // helperText={errors.gender}
-                >
-                  <MenuItem value="1">Patient 1</MenuItem>
-                  <MenuItem value="2">Patient 2</MenuItem>
-                  <MenuItem value="3">Patient 3</MenuItem>
-                  <MenuItem value="4">Patient 4</MenuItem>
-                  <MenuItem value="5">Patient 5</MenuItem>
-                  <MenuItem value="6">Patient 6</MenuItem>
-                </Select>
-              </FormControl>
-            </div>
+                      <FormField
+                        fieldName="endDate"
+                        fieldLabel="Ending Date"
+                        fieldPlaceholder="12-09-2023"
+                      />
 
-            <div className={styles.imageUploadContainer}>
-              <p>Image</p>
-              <input
-                accept="image/*"
-                id="upload-image"
-                type="file"
-                name="image"
-                onChange={handleInputChange}
-                style={{ display: "none" }}
-              />
-              <label htmlFor="upload-image">
-                <Button
-                  variant="contained"
-                  component="span"
-                  startIcon={<CloudUploadIcon />}
-                  className={styles.imgBtn}
-                  style={{ marginLeft: "65px" }}
-                >
-                  Upload Image
-                </Button>
-              </label>
+                      <FormField
+                        fieldName="currentFundedAmount"
+                        fieldLabel="Current Funded Amount"
+                        fieldPlaceholder="12000"
+                      />
+                    </div>
+                  </div>
+                  <div style={{ margin: "20px" }}>
+                    <FormButton
+                      buttonVariant="contained"
+                      buttonType="submit"
+                      customStyle={styles.customBtnStyle}
+                    >
+                      {isLoading ? <LoadingSpinner type="button" /> : "Submit"}
+                    </FormButton>
+                  </div>
+                </div>
+              </div>
             </div>
-
-            <div className={styles.imageUploadContainer}>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                style={{
-                  width: "160px",
-                  backgroundColor: "#000000",
-                  marginLeft: "110px",
-                }}
-              >
-                Submit
-              </Button>
-            </div>
-          </div>
-
-          <div style={{ width: "300px" }}></div>
-          <div className={styles.fullWidth}>
-            <div className={styles.formContainer}>
-              <p>Case</p>
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                id="case"
-                label="Case"
-                name="case"
-                multiline
-                rows={4}
-                style={{ width: "80%" }}
-                value={formData.description}
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
-        </div>
-      </form>
-    </div>
+          </Form>
+        </>
+      )}
+    </Formik>
   );
 };
 
 export default AddNewCampaignForm;
+
+{
+  /* <div className={styles.imageUploadContainer}>
+<input
+  accept="image/*"
+  id="upload-image"
+  type="file"
+  name="image"
+  onChange={handleInputChange}
+  style={{ display: "none" }}
+/>
+<label htmlFor="upload-image">
+  <Button
+    variant="contained"
+    component="span"
+    startIcon={<CloudUploadIcon />}
+  >
+    Upload Image
+  </Button>
+</label>
+</div>
+</div> */
+}

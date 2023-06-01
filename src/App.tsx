@@ -22,10 +22,11 @@ const AdminHomePage = React.lazy(() => import("./pages/AdminHomePage"));
 const AddNewHospital = React.lazy(() => import("./pages/AddNewHospital"));
 const AddNewCampaign = React.lazy(() => import("./pages/AddNewCampaign"));
 
+const AddHospitalForm = React.lazy(() => import("./pages/AddHospitalForm"));
+
 const FundAssetManagerHomePage = React.lazy(
   () => import("./pages/FundAssetManagerHomePage")
 );
-const FormsPage = React.lazy(() => import("./pages/FormsPage"));
 const HelpPage = React.lazy(() => import("./pages/HelpPage"));
 const SettingsPage = React.lazy(() => import("./pages/SettingsPage"));
 const HospitalDetailsPage = React.lazy(
@@ -58,7 +59,6 @@ const CheckYourEmailPage = React.lazy(
   () => import("./pages/CheckYourEmailPage")
 );
 const VerifyEmailPage = React.lazy(() => import("./pages/VerifyEmailPage"));
-const PBIReportPage = React.lazy(() => import("./pages/PBIReportPage"));
 const ErrorPage = React.lazy(() => import("./pages/ErrorPage"));
 
 function getWindowSize() {
@@ -246,15 +246,6 @@ function App() {
                       }
                       errorElement={<ErrorPage />}
                     />
-                    {/* <Route
-                      path="report/:reportId"
-                      element={
-                        <Suspense fallback={<LoadingSpinner type="page" />}>
-                          <PBIReportPage />
-                        </Suspense>
-                      }
-                      errorElement={<ErrorPage />}
-                    /> */}
                     <Route
                       path="dashboards"
                       element={
@@ -611,6 +602,15 @@ function App() {
                       element={
                         <Suspense fallback={<LoadingSpinner type="page" />}>
                           <FundAssetManagerHomePage parentRoute="user" />
+                        </Suspense>
+                      }
+                      errorElement={<ErrorPage />}
+                    />
+                    <Route
+                      path="users"
+                      element={
+                        <Suspense fallback={<LoadingSpinner type="page" />}>
+                          <UserPage parentRoute="user" />
                         </Suspense>
                       }
                       errorElement={<ErrorPage />}

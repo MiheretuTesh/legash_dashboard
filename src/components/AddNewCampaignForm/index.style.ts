@@ -14,14 +14,24 @@ export const useStyles = makeStyles({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
+    "@media (max-width: 1200px)": {
+      flexDirection: "column",
+    },
   },
   fullWidth: { width: "100%" },
   formContainer: {
     display: "flex",
+    flexDirection: "column",
+    margin: "20px",
+    width: "100%",
+    justifyContent: "space-around",
+  },
+  formContainer2: {
+    display: "flex",
     flexDirection: "row",
     margin: "20px",
     width: "100%",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
   },
   textField: { width: "80%" },
   imageUploadContainer: {
@@ -29,10 +39,7 @@ export const useStyles = makeStyles({
     flexDirection: "row",
     margin: "20px",
     width: "100%",
-    alignItems: "center",
-    // justifyContent: "space-between",
+    paddingLeft: "110px",
   },
-  imgBtn: {
-    paddingLeft: "100px",
-  },
+  customBtnStyle: { width: "200px" },
 });

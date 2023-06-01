@@ -19,14 +19,14 @@ const ConsultantHomePageCard = ({
     <div className={styles.cardContainer}>
       {title && <h1 className={styles.cardTitle}>{title}</h1>}
       <p className={styles.cardTxt}>{text}</p>
-      <FormButton
+      {/* <FormButton
         customStyle={styles.cardButton}
         buttonType="button"
         buttonVariant="contained"
         onButtonClick={onViewClick}
       >
         {title === "Dashboards" ? "View" : "New Form"}
-      </FormButton>
+      </FormButton> */}
     </div>
   );
 };

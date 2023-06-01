@@ -18,7 +18,6 @@ export const addUser = ({
     lastName?: string;
     email: string;
     role?: string;
-    assets: number[];
   };
 }) => {
   return AxiosInstance.post("users/create/", {
@@ -26,7 +25,6 @@ export const addUser = ({
     first_name: obj.firstName,
     last_name: obj.lastName,
     type: obj.role,
-    assets: obj.assets,
   });
 };
 
@@ -55,9 +53,9 @@ export const editUser = ({
     assets: obj.assets,
   });
 };
-export const userProfileEdit = (obj: any) => {
+export const userProfileEdit = ({ id, obj }: any) => {
   return AxiosDynamicContentType("multipart/form-data").patch(
-    `users/profile/`,
+    `users/${id}`,
     obj
   );
 };
@@ -66,12 +64,12 @@ export const deleteUsers = (obj: { ids: number[] }) => {
 };
 
 export const getUserProfileData = async () => {
-  const { data } = await AxiosInstance.get("users/profile/");
+  const { data } = await AxiosInstance.get("users/fetchUser/");
   return data;
 };
 
 export const getUserProfile = () => {
-  return AxiosInstance.get(`users/profile/`);
+  return AxiosInstance.get(`users/fetchUser/`);
 };
 
 export const searchUser = async (searchValue: string) => {

@@ -11,7 +11,7 @@ import FormButton from "../FormButton";
 import { Roles, ROLES_NAMES } from "../../constants";
 import { useAddUser } from "../../hooks/useAddUser";
 import LoadingSpinner from "../LoadingSpinner";
-import { useEditUser } from "../../hooks/useEditUser";
+import { useEditUsers } from "../../hooks/useEditUsers";
 import { GridSelectionModel } from "@mui/x-data-grid";
 import ErrorModal from "../ErrorModal";
 
@@ -21,7 +21,6 @@ interface UserFormValues {
   // username: string;
   email: string;
   role: string;
-  assets: any[];
 }
 
 interface UserModalProps {
@@ -83,7 +82,7 @@ const UserModal = ({
     onAddUserError: (error: any) => onAddEditUserErrorHandler(error),
   });
 
-  const { mutate: editMutate, isLoading: isLoadingEditUser } = useEditUser({
+  const { mutate: editMutate, isLoading: isLoadingEditUser } = useEditUsers({
     onEditUserSuccess: onEditUserSuccessHandler,
     onEditUserError: (error: any) => onAddEditUserErrorHandler(error),
   });
@@ -99,26 +98,24 @@ const UserModal = ({
     // return assets;
   };
 
-  const initialValues =
+  const initialValues: any =
     oldValues.id !== 0 && type === "edit"
       ? {
-          firstName: oldValues.first_name,
-          lastName: oldValues.last_name,
+          firstName: oldValues.firstName,
+          lastName: oldValues.lastName,
           email: oldValues.email,
           role:
-            oldValues.type === Roles.Admin
+            oldValues.role === Roles.Admin
               ? "Super Admin"
               : oldValues.type === Roles.HospitalAdmin
               ? "Hospital Admin"
               : "User",
-          assets: oldSelectedAssets(),
         }
       : {
           firstName: "",
           lastName: "",
           email: "",
           role: "",
-          assets: [],
         };
 
   const onCloseHandler = () => {
@@ -126,6 +123,7 @@ const UserModal = ({
   };
 
   const onSubmitHandler = (values: UserFormValues) => {
+    console.log(values, "values values");
     const selectedRole =
       values.role === "Admin"
         ? Roles.Admin
@@ -140,7 +138,6 @@ const UserModal = ({
         obj: {
           firstName: values.firstName,
           lastName: values.lastName,
-          assets: values.assets.map((asset) => asset.id),
           email: values.email,
           role: selectedRole,
         },
@@ -151,9 +148,9 @@ const UserModal = ({
         obj: {
           firstName: values.firstName,
           lastName: values.lastName,
-          assets: values.assets.map((asset) => asset.id),
           email: values.email,
-          role: selectedRole,
+          // role: selectedRole,
+          role: "645e44069e60637d858a265f",
         },
       });
     }

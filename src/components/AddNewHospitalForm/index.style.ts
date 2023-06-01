@@ -24,7 +24,14 @@ export const useStyles = makeStyles({
     flexDirection: "column",
     margin: "20px",
     width: "100%",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
+  },
+  formContainer2: {
+    display: "flex",
+    flexDirection: "row",
+    margin: "20px",
+    width: "100%",
+    justifyContent: "space-around",
   },
   textField: { width: "80%" },
   imageUploadContainer: {
@@ -34,4 +41,5 @@ export const useStyles = makeStyles({
     width: "100%",
     paddingLeft: "110px",
   },
+  customBtnStyle: { width: "200px" },
 });

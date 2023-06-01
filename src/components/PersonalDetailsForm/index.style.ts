@@ -5,8 +5,9 @@ export const useStyles = makeStyles({
     display: "flex",
     justifyContent: "space-between",
     maxHeight: "500px",
-    width: "100%",
+    width: "50%",
     overflowY: "auto",
+    marginTop: "50px",
     "@media (max-width: 1200px)": {
       flexDirection: "column",
     },

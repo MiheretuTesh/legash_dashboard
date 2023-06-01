@@ -14,7 +14,7 @@ interface Values {
   company: string;
 }
 
-const HospitalDetails = () => {
+const PersonalDetails = () => {
   // const { isLoading, data } = useGetUsersProfile();
   const [isUploading, setIsUploading] = useState(false);
   const navigate = useNavigate();
@@ -53,7 +53,23 @@ const HospitalDetails = () => {
         <HospitalEdit profileData={""} handleProfileEdit={handleProfileEdit} />
       </>
     </div>
+    //   <div className={styles.container}>
+    //   {isLoading || isUploading ? (
+    //     <div className={styles.loaderStyle}>
+    //       <LoadingSpinner />
+    //     </div>
+    //   ) : (
+    //     <>
+    //       {data?.data && (
+    //         <PersonalDetailsForm
+    //           profileData={data?.data}
+    //           handleProfileEdit={handleProfileEdit}
+    //         />
+    //       )}
+    //     </>
+    //   )}
+    // </div>
   );
 };
 
-export default HospitalDetails;
+export default PersonalDetails;
