@@ -10,7 +10,7 @@ import { ErrorMessage, Field, FastField } from "formik";
 import React, { useEffect, useState } from "react";
 import { useStyles } from "./index.style";
 
-interface FormSelectFieldProps {
+interface FormSelectFieldIDProps {
   fieldName: string;
   fieldLabel?: string;
   options: any[];
@@ -34,9 +34,11 @@ interface FormSelectFieldProps {
   addingUser?: boolean;
   isForm?: boolean;
   isFormName?: string;
+  setHospitalId: Function;
+  setPatientId: Function;
 }
 
-const FormSelectField = ({
+const FormSelectFieldID = ({
   fieldName,
   fieldLabel,
   options,
@@ -53,7 +55,9 @@ const FormSelectField = ({
   addingUser,
   isForm,
   isFormName,
-}: FormSelectFieldProps) => {
+  setHospitalId,
+  setPatientId,
+}: FormSelectFieldIDProps) => {
   const [value, setValue] = useState(initialValue);
   const styles = useStyles();
 
@@ -270,21 +274,6 @@ const FormSelectField = ({
                       <ListItemText primary={option.building} />
                     </MenuItem>
                   ))}
-                {/* {isCampaignCreate &&
-                  options &&
-                  options.map((option, index) => (
-                    <MenuItem key={`${index}-${option.id}`} value={option.name}>
-                      {option.name}
-                    </MenuItem>
-                  ))} */}
-
-                {/* {isHospitalCreate &&
-                  options &&
-                  options.map((option, index) => (
-                    <MenuItem key={`${index}-${option.id}`} value={option.name}>
-                      {option.name}
-                    </MenuItem>
-                  ))} */}
 
                 {isFormName === "hospital_create" &&
                   options &&
@@ -294,21 +283,31 @@ const FormSelectField = ({
                     </MenuItem>
                   ))}
 
-                {isFormName === "campaign_create" &&
+                {isFormName === "campaign_create_patient" &&
                   options &&
                   options.map((option, index) => (
-                    <MenuItem key={`${index}-${option.id}`} value={option.name}>
+                    <MenuItem
+                      key={`${index}-${option.id}`}
+                      value={option.name}
+                      onClick={() => setPatientId(option.id)}
+                    >
                       {option.name}
                     </MenuItem>
                   ))}
-
-                {/* {isAssetSelect &&
+                {isFormName === "campaign_create_hospital" &&
                   options &&
                   options.map((option, index) => (
-                    <MenuItem key={`${index}-${option}`} value={option}>
-                      {option}
+                    <MenuItem
+                      key={`${index}-${option.id}`}
+                      value={option.name}
+                      onClick={() => {
+                        setHospitalId(option.id);
+                        console.log(option, "option option option");
+                      }}
+                    >
+                      {option.name}
                     </MenuItem>
-                  ))} */}
+                  ))}
               </Select>
             </FormControl>
           )}
@@ -326,4 +325,4 @@ const FormSelectField = ({
   );
 };
 
-export default FormSelectField;
+export default FormSelectFieldID;

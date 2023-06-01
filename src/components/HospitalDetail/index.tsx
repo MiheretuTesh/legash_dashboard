@@ -169,6 +169,15 @@ const HospitalEdit = ({ profileData, handleProfileEdit }: any) => {
                 />
               </div>
               <div className={styles.formContainer}>
+                <FormSelectField
+                  fieldName="status"
+                  fieldLabel="Status"
+                  formikChangeHandler={handleChange}
+                  options={["Active", "Pending", "Terminate"]}
+                  initialValue={"none"}
+                  placeholder={"Select a Status"}
+                  isFormName="hospital_create"
+                />
                 <FormEditableField
                   fieldName="email"
                   fieldLabel="Email"

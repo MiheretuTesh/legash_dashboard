@@ -4,6 +4,7 @@ import FormField from "../FormField";
 import { useStyles } from "./index.style";
 import FormButton from "../FormButton";
 import FormSelectField from "../FormSelectField";
+import FormSelectFieldID from "../FormSelectFieldID";
 import * as Yup from "yup";
 import ErrorModal from "../ErrorModal";
 import { useAddCampaign } from "../../hooks/useAddCampaign";
@@ -45,6 +46,9 @@ const AddNewCampaignForm = () => {
   const [errorText, setErrorText] = useState("");
   const [allUsers, setAllUsers]: any = useState([]);
   const [allHospitals, setAllHospitals]: any = useState([]);
+
+  const [patientId, setPatientId] = useState(null);
+  const [hospitalId, setHospitalId] = useState(null);
 
   const styles = useStyles();
 
@@ -118,12 +122,11 @@ const AddNewCampaignForm = () => {
     }
   }, [data, isSuccess]);
 
-  const HOSPITAL_LIST = ["Menilike", "Yekaktit 12", "Black Lion"];
-
   const onSubmitHandler = (values: any) => {
     values.coverImage = imgUploadUrl;
-    console.log(values, "values");
-    // mutate(values);
+    values["patientId"] = patientId;
+    values["hospitalId"] = hospitalId;
+    mutate(values);
   };
 
   return (
@@ -149,23 +152,27 @@ const AddNewCampaignForm = () => {
                         setImageUrlGenerated={setImageUrlGenerated}
                         setImagUploadUrl={setImagUploadUrl}
                       />
-                      <FormSelectField
+                      <FormSelectFieldID
                         fieldName="patientId"
                         fieldLabel="Patient"
                         formikChangeHandler={handleChange}
                         options={allUsers}
                         initialValue={"none"}
                         placeholder={"Select a patient"}
-                        isCampaignCreate={true}
+                        isFormName="campaign_create_patient"
+                        setHospitalId={setHospitalId}
+                        setPatientId={setPatientId}
                       />
-                      <FormSelectField
+                      <FormSelectFieldID
                         fieldName="hospitalId"
                         fieldLabel="Hospital"
                         formikChangeHandler={handleChange}
                         options={allHospitals}
                         initialValue={"none"}
                         placeholder={"Select hospital"}
-                        isCampaignCreate={true}
+                        isFormName="campaign_create_hospital"
+                        setHospitalId={setHospitalId}
+                        setPatientId={setPatientId}
                       />
                       <FormField
                         fieldName="targetFunding"

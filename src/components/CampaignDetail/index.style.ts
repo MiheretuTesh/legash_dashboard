@@ -60,12 +60,11 @@ export const useStyles = makeStyles({
   },
   profilePictureContainer: {
     display: "flex",
-    flexDirection: "row",
-    alignItems: "flex-end",
+    flexDirection: "column",
   },
   pictureContainer: {
-    width: "30%",
+    width: "20%",
     height: "10%",
-    margin: "0 10px",
+    margin: "0",
   },
 });

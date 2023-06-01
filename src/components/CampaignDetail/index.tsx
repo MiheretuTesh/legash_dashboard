@@ -10,7 +10,7 @@ import HospitalPicture from "../../assets/images/Hospital.jpg";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEditCampaign } from "../../hooks/useEditCampaign";
 import LoadingSpinner from "../LoadingSpinner";
-
+import ImageUpload from "../ImageUpload";
 interface Values {
   targetFunding: number;
   startDate: string;
@@ -39,11 +39,10 @@ const CampaignEdit = ({ profileData, handleProfileEdit }: any) => {
   const [isProfileEdited, setIsProfileEdited] = useState(false);
   const [uploadedPhoto, setUploadedPhoto] = useState("");
 
+  const [imageUrlGenerated, setImageUrlGenerated] = useState(false);
+  const [imgUploadUrl, setImagUploadUrl] = useState("");
+
   const initialValues: any = {
-    // name: `${profileData?.first_name} ${profileData?.last_name}`,
-    // email: profileData?.email,
-    // role: reverseTransformRole(profileData?.type),
-    // company: profileData?.company,
     id: state?.id,
     targetFunding: state?.targetFunding,
     startDate: state?.startDate,
@@ -79,8 +78,6 @@ const CampaignEdit = ({ profileData, handleProfileEdit }: any) => {
       id: initialValues.id,
       obj: formData,
     });
-    // console.log(values, "values values values");
-    // handleProfileEdit(values);
   };
 
   const handleChangeImg = (e: any, setFieldValue: any) => {
@@ -105,30 +102,15 @@ const CampaignEdit = ({ profileData, handleProfileEdit }: any) => {
         <>
           <Form className={styles.topContainer}>
             <div className={styles.profilePictureContainer}>
-              {/* <img
-                className={styles.pictureContainer}
-                src={
-                  uploadedPhoto
-                    ? uploadedPhoto
-                    : profileData?.photo !== null
-                    ? profileData.photo
-                    : ProfilePictureExample
-                }
-                alt="profile"
-              /> */}
               <img
                 className={styles.pictureContainer}
                 src={HospitalPicture}
                 alt="hospital"
               />
-              <PersonalDetailImageUpload
-                customStyle={styles.uploadBtn}
-                onChange={handleChangeImg}
-                fieldName="img"
-                isUploaded={uploadedPhoto}
-              >
-                Upload photo
-              </PersonalDetailImageUpload>
+              <ImageUpload
+                setImageUrlGenerated={setImageUrlGenerated}
+                setImagUploadUrl={setImagUploadUrl}
+              />
             </div>
 
             <div className={styles.formMainContainer}>

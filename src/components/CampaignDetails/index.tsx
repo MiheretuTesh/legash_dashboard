@@ -53,22 +53,6 @@ const CampaignDetails = () => {
         <CampaignEdit profileData={""} handleProfileEdit={handleProfileEdit} />
       </>
     </div>
-    //   <div className={styles.container}>
-    //   {isLoading || isUploading ? (
-    //     <div className={styles.loaderStyle}>
-    //       <LoadingSpinner />
-    //     </div>
-    //   ) : (
-    //     <>
-    //       {data?.data && (
-    //         <CampaignDetailsForm
-    //           profileData={data?.data}
-    //           handleProfileEdit={handleProfileEdit}
-    //         />
-    //       )}
-    //     </>
-    //   )}
-    // </div>
   );
 };
 
