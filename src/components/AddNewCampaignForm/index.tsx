@@ -123,10 +123,18 @@ const AddNewCampaignForm = () => {
   }, [data, isSuccess]);
 
   const onSubmitHandler = (values: any) => {
-    values.coverImage = imgUploadUrl;
-    values["patientId"] = patientId;
-    values["hospitalId"] = hospitalId;
-    mutate(values);
+    const formData = {
+      currentFundedAmount: values.currentFundedAmount,
+      diagnosis: values.diagnosis,
+      endDate: values.endDate,
+      hospitalId: hospitalId,
+      patientId: patientId,
+      startDate: values.startDate,
+      targetFunding: values.targetFunding,
+      treatmentRequired: values.treatmentRequired,
+      coverImage: `${imgUploadUrl}`,
+    };
+    mutate(formData);
   };
 
   return (
@@ -175,20 +183,20 @@ const AddNewCampaignForm = () => {
                         setPatientId={setPatientId}
                       />
                       <FormField
-                        fieldName="targetFunding"
-                        fieldLabel="Target Funding"
-                        fieldPlaceholder="100000"
-                      />
-                      <FormField
                         fieldName="treatmentRequired"
                         fieldLabel="Treatment Required"
                         fieldPlaceholder="Diabetes"
+                      />
+                      <FormField
+                        fieldName="targetFunding"
+                        fieldLabel="Target Funding"
+                        fieldPlaceholder="100000"
                       />
                     </div>
                     <div style={{ width: "45%" }}>
                       <FormField
                         fieldName="diagnosis"
-                        fieldLabel="diagnosis"
+                        fieldLabel="Diagnosis"
                         fieldPlaceholder="Diabetes"
                       />
                       <FormField
@@ -203,11 +211,11 @@ const AddNewCampaignForm = () => {
                         fieldPlaceholder="2022-10-23"
                         formikChangeHandler={handleChange}
                       />
-                      <FormField
+                      {/* <FormField
                         fieldName="currentFundedAmount"
                         fieldLabel="Current Funded Amount"
                         fieldPlaceholder="12000"
-                      />
+                      /> */}
                     </div>
                   </div>
                   <div style={{ margin: "20px" }}>
@@ -230,26 +238,3 @@ const AddNewCampaignForm = () => {
 };
 
 export default AddNewCampaignForm;
-
-{
-  /* <div className={styles.imageUploadContainer}>
-<input
-  accept="image/*"
-  id="upload-image"
-  type="file"
-  name="image"
-  onChange={handleInputChange}
-  style={{ display: "none" }}
-/>
-<label htmlFor="upload-image">
-  <Button
-    variant="contained"
-    component="span"
-    startIcon={<CloudUploadIcon />}
-  >
-    Upload Image
-  </Button>
-</label>
-</div>
-</div> */
-}

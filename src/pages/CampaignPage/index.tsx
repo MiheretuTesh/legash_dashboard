@@ -48,70 +48,7 @@ const CampaignPage = ({ parentRoute }: any) => {
   const { dataUsers: dataAllUsers, isLoadingUsers: isLoadingAllUsers } =
     useGetUsers({});
 
-  // const {
-  //   userSearchData,
-  //   // userSearchIsLoading,
-  //   userSearchIsSuccess,
-  //   userSearchRefetch
-  // } = useGetUserSearch({search_value: searchValue});
-
-  // useEffect(() => {
-  //   if(searchValue === ""){
-  //     if (dataAssets) {
-  //       const tableData: UserTableRow[] = [];
-  //       dataUsers?.results.forEach((data: any) => {
-  //         tableData.push({
-  //           assets: "",
-  //           id: data.id,
-  //           user: `${data.first_name} ${data.last_name}`,
-  //           email: data.email,
-  //           role: data.type,
-  //           updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
-  //           user_assets: data.user_assets.toString(),
-  //         });
-  //       });
-  //       setTableRows(tableData);
-  //     }
-  //   }
-  //   if(userSearchIsSuccess === true && userSearchData !== undefined){
-  //     if (userSearchData?.data.results) {
-  //       const tableData: UserTableRow[] = [];
-  //       userSearchData?.data.results.forEach((data: any) => {
-  //         tableData.push({
-  //           assets: "",
-  //           id: data.id,
-  //           user: `${data.first_name} ${data.last_name}`,
-  //           email: data.email,
-  //           role: data.type,
-  //           updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
-  //           user_assets: data.user_assets.toString(),
-  //         });
-  //       });
-  //       setTableRows(tableData);
-  //     }
-  //   }
-  // }, [userSearchIsSuccess, userSearchData, dataAssets, searchValue, dataUsers]);
-
-  const exportTableToPdf = () => {
-    const doc = new jsPDF("portrait", "pt", "A4");
-    doc.setFontSize(15);
-    const data = dataAllUsers?.results.map((user: any) => [
-      `${user.first_name} ${user.last_name}`,
-      user.email,
-      user.type,
-    ]);
-
-    const content = {
-      startY: 50,
-      head: [["Name", "Email", "Role", "Assets"]],
-      body: data,
-    };
-
-    doc.text("User Report Table", 40, 40);
-
-    (doc as any).autoTable(content);
-    doc.save(`${Date.now()}-user-report.pdf`);
-  };
+  const exportTableToPdf = () => {};
 
   const onNextHandler = () => {
     setCurrentOffset((prevState) => prevState + TABLE_LIMIT);
@@ -125,6 +62,8 @@ const CampaignPage = ({ parentRoute }: any) => {
     if (dataCampaigns?.data.campaigns.length > 0) {
       const tableData: any[] = [];
 
+      console.log(dataCampaigns?.data, "dataCampaigns?.data");
+
       dataCampaigns?.data.campaigns.forEach((data: any) => {
         tableData.push({
           id: data._id,
@@ -137,6 +76,7 @@ const CampaignPage = ({ parentRoute }: any) => {
           treatmentRequired: data.treatmentRequired,
           startDate: data.startDate,
           endDate: data.endDate,
+          coverImage: data.coverImage,
         });
       });
       setTableRows(tableData);
@@ -282,7 +222,11 @@ const CampaignPage = ({ parentRoute }: any) => {
             >
               <div>
                 <img
-                  src={campaign.img ? `${campaign.img}` : campaignsImg[index]}
+                  src={
+                    campaign.coverImage
+                      ? `${campaign.coverImage}`
+                      : campaignsImg[index]
+                  }
                   width="295px"
                   style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
                 />
@@ -303,17 +247,31 @@ const CampaignPage = ({ parentRoute }: any) => {
                   }}
                 >
                   Status:
-                  <div
-                    style={{
-                      backgroundColor: "#FFB84C",
-                      color: "white",
-                      padding: "5px",
-                      borderRadius: 8,
-                      marginLeft: 5,
-                    }}
-                  >
-                    {campaign.status}
-                  </div>
+                  {campaign.status === "Active" ? (
+                    <div
+                      style={{
+                        backgroundColor: "#32E9DA",
+                        padding: "5px",
+                        borderRadius: 8,
+                        color: "white",
+                        marginLeft: "5px",
+                      }}
+                    >
+                      {campaign.status}
+                    </div>
+                  ) : (
+                    <div
+                      style={{
+                        backgroundColor: "#FFB84C",
+                        padding: "5px",
+                        borderRadius: 8,
+                        color: "white",
+                        marginLeft: "5px",
+                      }}
+                    >
+                      {campaign.status}
+                    </div>
+                  )}
                 </div>
               </p>
             </div>

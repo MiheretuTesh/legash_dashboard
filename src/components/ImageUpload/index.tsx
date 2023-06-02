@@ -19,9 +19,7 @@ const ImageUpload = ({ setImageUrlGenerated, setImagUploadUrl }: any) => {
         body: formData,
       }
     );
-    console.log("here");
     const data = await response.json();
-    console.log(data.secure_url);
     setImageUrl(data.secure_url);
     setImagUploadUrl(data.secure_url);
     setImageUrlGenerated(true);
@@ -45,9 +43,6 @@ const ImageUpload = ({ setImageUrlGenerated, setImagUploadUrl }: any) => {
         display: "flex",
         flexDirection: "column",
         paddingBottom: 10,
-        // paddingTop: 50,
-        // padding: "20px 0px 20px 0px",
-        // borderBottom: "1px solid #D6E3E6",
       }}
     >
       {previewUrl && <img src={previewUrl} alt="Preview" width="200" />}

@@ -20,7 +20,7 @@ export const useStyles = makeStyles({
     flexDirection: "row",
     width: "80%",
     marginLeft: "10px",
-    marginTop: "50px",
+    marginTop: "20px",
     justifyContent: "space-between",
   },
   formContainer: {
@@ -66,5 +66,6 @@ export const useStyles = makeStyles({
     width: "20%",
     height: "10%",
     margin: "0",
+    marginBottom: "10px",
   },
 });
