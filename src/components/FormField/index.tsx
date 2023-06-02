@@ -64,7 +64,19 @@ const FormField = ({
     setShowPassword((prevState) => !prevState);
   };
 
-  const [startDate, setStartDate] = useState<Date>(initialValues.date);
+  const [dateValue, setDateValue] = useState<Date>(new Date());
+
+  const handleDateChange = (date: Date) => {
+    setDateValue(date);
+    if (formikChangeHandler) {
+      formikChangeHandler({
+        target: {
+          name: fieldName,
+          value: date,
+        },
+      });
+    }
+  };
 
   return (
     <div className={`${styles.formFieldContainer} ${customStyle}`}>
@@ -74,38 +86,39 @@ const FormField = ({
         </label>
       )}
       <div className={styles.fieldContainer}>
-        {oneDigit && handleChange && formikChangeHandler ? (
-          fieldName === "dateOfBirth" ? (
-            <Field name="dateOfBirth">
-              {({ field }: any) => (
-                <DatePicker
-                  {...field}
-                  selected={startDate}
-                  onChange={(date: Date) => {
-                    setStartDate(date);
-                  }}
-                  dateFormat="MM/dd/yyyy"
-                  locale="en-US"
-                />
-              )}
-            </Field>
-          ) : (
-            <ComponentField
-              className={`${styles.field} ${customFieldStyle}`}
-              name={fieldName}
-              placeholder={fieldPlaceholder}
-              disabled={isDisabled}
-              maxLength="1"
-              onChange={(e: React.ChangeEvent<any>) => {
-                formikChangeHandler(e);
-                handleChange(e);
-              }}
-              size="1"
-              min="0"
-              max="9"
-              pattern="[0-9]{1}"
-            />
-          )
+        {fieldName === "dateOfBirth" ||
+        fieldName === "startDate" ||
+        fieldName === "endDate" ? (
+          <Field name={fieldName} placeholder={fieldPlaceholder}>
+            {({ field }: any) => (
+              <DatePicker
+                className={`${styles.field} ${customFieldStyle}`}
+                {...field}
+                selected={dateValue}
+                onChange={handleDateChange}
+                placeholderText={fieldPlaceholder}
+                dateFormat="yyyy-MM-dd"
+                locale="en-US"
+                onKeyDown={(e) => e.preventDefault()}
+              />
+            )}
+          </Field>
+        ) : oneDigit && handleChange && formikChangeHandler ? (
+          <ComponentField
+            className={`${styles.field} ${customFieldStyle}`}
+            name={fieldName}
+            placeholder={fieldPlaceholder}
+            disabled={isDisabled}
+            maxLength="1"
+            onChange={(e: React.ChangeEvent<any>) => {
+              formikChangeHandler(e);
+              handleChange(e);
+            }}
+            size="1"
+            min="0"
+            max="9"
+            pattern="[0-9]{1}"
+          />
         ) : (
           <ComponentField
             className={`${styles.field} ${customFieldStyle}`}
