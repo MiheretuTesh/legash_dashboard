@@ -42,8 +42,6 @@ const AccountPageHeader = ({
     navigate("/account-admin/settings", { state: { tab: 1 } });
   };
 
-  console.log(data?.data.data.role, "data?.data.data.role");
-
   return (
     <header className={styles.headerContainer}>
       <DrawerButton handleDrawerToggle={handleDrawerToggle} />

@@ -2,7 +2,6 @@ import AxiosInstance from "./AxiosInstance";
 
 export const getAllHospitals = async () => {
   const { data } = await AxiosInstance.get(`hospitals`);
-  console.log(data, "Hospital Data");
   return data;
 };
 

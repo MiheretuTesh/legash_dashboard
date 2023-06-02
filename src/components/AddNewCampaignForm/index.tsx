@@ -50,6 +50,8 @@ const AddNewCampaignForm = () => {
   const [patientId, setPatientId] = useState(null);
   const [hospitalId, setHospitalId] = useState(null);
 
+  const [startDate, setStartDate] = useState(new Date());
+
   const styles = useStyles();
 
   const campaignAddHandler = () => {};
@@ -60,8 +62,6 @@ const AddNewCampaignForm = () => {
   } = useGetAllUsers({});
 
   const { dataHospitals, isLoadingHospitals } = useGetHospitals({});
-
-  console.log(dataHospitals, "dataHospitals dataHospitals dataHospitals");
 
   useEffect(() => {
     if (dataUsers?.data.length > 0) {
@@ -194,15 +194,15 @@ const AddNewCampaignForm = () => {
                       <FormField
                         fieldName="startDate"
                         fieldLabel="Starting Date"
-                        fieldPlaceholder="19-12-2022"
+                        fieldPlaceholder="2022-10-23"
+                        formikChangeHandler={handleChange}
                       />
-
                       <FormField
                         fieldName="endDate"
                         fieldLabel="Ending Date"
-                        fieldPlaceholder="12-09-2023"
+                        fieldPlaceholder="2022-10-23"
+                        formikChangeHandler={handleChange}
                       />
-
                       <FormField
                         fieldName="currentFundedAmount"
                         fieldLabel="Current Funded Amount"
