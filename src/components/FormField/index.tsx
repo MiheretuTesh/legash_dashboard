@@ -129,8 +129,8 @@ const FormField = ({
               type === "password" ? (showPassword ? "text" : "password") : type
             }
             onBlur={onBlurHandler}
-            rows={fieldName === "description" && 5}
-            component={fieldName === "description" && "textarea"}
+            rows={fieldName === "diagnosis" && 5}
+            component={fieldName === "diagnosis" && "textarea"}
           />
         )}
         {type === "password" && (

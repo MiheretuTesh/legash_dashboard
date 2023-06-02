@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useStyles } from "./index.style";
 import * as Yup from "yup";
 import FormEditableField from "../FormEditableField";
+import FormSelectField from "../FormSelectField";
 import FormButton from "../FormButton";
 import PersonalDetailImageUpload from "../PersonalDetailImageUpload";
 import FormField from "../FormField";
@@ -18,6 +19,8 @@ interface Values {
   currentFundedAmount: number;
   diagnosis: string;
   status: string;
+  treatmentRequired: string;
+  coverImage: string;
 }
 
 const CampaignEditSchema = Yup.object().shape({
@@ -40,7 +43,7 @@ const CampaignEdit = ({ profileData, handleProfileEdit }: any) => {
   const [uploadedPhoto, setUploadedPhoto] = useState("");
 
   const [imageUrlGenerated, setImageUrlGenerated] = useState(false);
-  const [imgUploadUrl, setImagUploadUrl] = useState("");
+  const [imgUploadUrl, setImagUploadUrl] = useState(state?.coverImage);
 
   const initialValues: any = {
     id: state?.id,
@@ -50,6 +53,7 @@ const CampaignEdit = ({ profileData, handleProfileEdit }: any) => {
     currentFundedAmount: state?.currentFundedAmount,
     diagnosis: state?.diagnosis,
     status: state?.status,
+    treatmentRequired: state?.treatmentRequired[0],
   };
 
   const handleEditHospital = () => {};
@@ -73,23 +77,14 @@ const CampaignEdit = ({ profileData, handleProfileEdit }: any) => {
       currentFundedAmount: values.currentFundedAmount,
       diagnosis: [values.diagnosis],
       status: values.status,
+      coverImage: `${imgUploadUrl}`,
+      treatmentRequired: values.treatmentRequired,
     };
+    console.log(formData, "formData formData formData");
     mutate({
       id: initialValues.id,
       obj: formData,
     });
-  };
-
-  const handleChangeImg = (e: any, setFieldValue: any) => {
-    const file = e.target.files[0];
-    if (file?.size / 1024 / 1024 < 5) {
-      let url = URL.createObjectURL(file);
-      setUploadedPhoto(url);
-      setFieldValue("img", file);
-      setIsProfileEdited(true);
-    } else {
-      console.log("Image size must be of 2MB or less");
-    }
   };
 
   return (
@@ -102,11 +97,19 @@ const CampaignEdit = ({ profileData, handleProfileEdit }: any) => {
         <>
           <Form className={styles.topContainer}>
             <div className={styles.profilePictureContainer}>
-              <img
-                className={styles.pictureContainer}
-                src={HospitalPicture}
-                alt="hospital"
-              />
+              {/* {imgUploadUrl !== "" ? (
+                <img
+                  className={styles.pictureContainer}
+                  src={imgUploadUrl}
+                  alt="hospital"
+                />
+              ) : (
+                <img
+                  className={styles.pictureContainer}
+                  src={HospitalPicture}
+                  alt="hospital"
+                />
+              )} */}
               <ImageUpload
                 setImageUrlGenerated={setImageUrlGenerated}
                 setImagUploadUrl={setImagUploadUrl}
@@ -115,19 +118,19 @@ const CampaignEdit = ({ profileData, handleProfileEdit }: any) => {
 
             <div className={styles.formMainContainer}>
               <div className={styles.formContainer}>
-                {/* <FormEditableField
-                  fieldName="name"
-                  fieldLabel="Name"
+                <FormEditableField
+                  fieldName="treatmentRequired"
+                  fieldLabel="Treatment Required"
                   customStyle={styles.formField}
                   setIsProfileEdited={setIsProfileEdited}
-                /> */}
+                />
                 <FormEditableField
                   fieldName="targetFunding"
                   fieldLabel="Target Funding"
                   customStyle={styles.formField}
                   setIsProfileEdited={setIsProfileEdited}
                 />
-                <FormEditableField
+                {/* <FormEditableField
                   fieldName="startDate"
                   fieldLabel="Start Date"
                   customStyle={styles.formField}
@@ -138,31 +141,28 @@ const CampaignEdit = ({ profileData, handleProfileEdit }: any) => {
                   fieldLabel="Start Date"
                   customStyle={styles.formField}
                   setIsProfileEdited={setIsProfileEdited}
-                />
-                <FormEditableField
+                /> */}
+                <FormSelectField
                   fieldName="status"
                   fieldLabel="Status"
-                  customStyle={styles.formField}
-                  setIsProfileEdited={setIsProfileEdited}
+                  formikChangeHandler={handleChange}
+                  options={["Active", "Pending", "Terminate"]}
+                  initialValue={"none"}
+                  placeholder={"Select a Status"}
+                  isFormName="hospital_create"
                 />
               </div>
               <div className={styles.formContainer}>
-                <FormEditableField
-                  fieldName="staffMembers"
-                  fieldLabel="Staff Members"
-                  customStyle={styles.formField}
-                  setIsProfileEdited={setIsProfileEdited}
-                />
                 <FormField
-                  fieldName="description"
-                  fieldLabel="Description"
+                  fieldName="diagnosis"
+                  fieldLabel="Diagnosis"
                   customStyle={styles.formField}
                 />
               </div>
             </div>
             <div className={styles.actionBtnContainer}>
               <FormButton buttonType="submit" buttonVariant="contained">
-                {isLoading ? <LoadingSpinner type="button" /> : "Save"}
+                {isLoading ? <LoadingSpinner type="button" /> : "Update"}
               </FormButton>
             </div>
           </Form>

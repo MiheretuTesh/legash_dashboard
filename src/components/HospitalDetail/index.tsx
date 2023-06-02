@@ -173,7 +173,7 @@ const HospitalEdit = ({ profileData, handleProfileEdit }: any) => {
                   fieldName="status"
                   fieldLabel="Status"
                   formikChangeHandler={handleChange}
-                  options={["Active", "Pending", "Terminate"]}
+                  options={["Active", "Terminate"]}
                   initialValue={"none"}
                   placeholder={"Select a Status"}
                   isFormName="hospital_create"
@@ -210,7 +210,7 @@ const HospitalEdit = ({ profileData, handleProfileEdit }: any) => {
                 buttonVariant="contained"
                 // disabled={!isProfileEdited}
               >
-                {isLoading ? <LoadingSpinner type="button" /> : "Save"}
+                {isLoading ? <LoadingSpinner type="button" /> : "Update"}
               </FormButton>
             </div>
           </Form>

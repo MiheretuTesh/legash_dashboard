@@ -427,6 +427,15 @@ function App() {
                       errorElement={<ErrorPage />}
                     />
                     <Route
+                      path="hospital-detail/:id"
+                      element={
+                        <Suspense fallback={<LoadingSpinner type="page" />}>
+                          <HospitalDetailsPage userType="hospital-admin" />
+                        </Suspense>
+                      }
+                      errorElement={<ErrorPage />}
+                    />
+                    <Route
                       path="campaigns"
                       element={
                         <Suspense fallback={<LoadingSpinner type="page" />}>
