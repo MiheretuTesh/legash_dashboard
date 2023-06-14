@@ -8,6 +8,8 @@ import LoadingSpinner from "./components/LoadingSpinner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ProtectedRoutes from "./components/ProtectedRoutes";
 import SelectRolePage from "./pages/SelectRolePage";
+import firebase from "./utils/firebaseConfig";
+// import Landing from "./Landing/src/screens/Landing";
 
 const RootRouter = React.lazy(() => import("./routers/RootRouter"));
 const AccountRouter = React.lazy(() => import("./routers/AccountRouter"));
@@ -21,6 +23,7 @@ const AdminHomePage = React.lazy(() => import("./pages/AdminHomePage"));
 
 const AddNewHospital = React.lazy(() => import("./pages/AddNewHospital"));
 const AddNewCampaign = React.lazy(() => import("./pages/AddNewCampaign"));
+const AddCampaignForm = React.lazy(() => import("./pages/AddCampaignForm"));
 
 const AddHospitalForm = React.lazy(() => import("./pages/AddHospitalForm"));
 
@@ -166,6 +169,15 @@ function App() {
                     }
                     errorElement={<ErrorPage />}
                   />
+                  {/* <Route
+                    path="home"
+                    element={
+                      <Suspense fallback={<LoadingSpinner type="page" />}>
+                        <Landing />
+                      </Suspense>
+                    }
+                    errorElement={<ErrorPage />}
+                  /> */}
                   <Route
                     path="forgot-password"
                     element={
@@ -265,7 +277,7 @@ function App() {
                       path="new-hospitals"
                       element={
                         <Suspense fallback={<LoadingSpinner type="page" />}>
-                          <AddNewHospital parentRoute="account-admin" />
+                          <AddHospitalForm parentRoute="account-admin" />
                         </Suspense>
                       }
                       errorElement={<ErrorPage />}
@@ -279,7 +291,7 @@ function App() {
                       }
                       errorElement={<ErrorPage />}
                     />
-                    <Route
+                    {/* <Route
                       path="campaigns"
                       element={
                         <Suspense fallback={<LoadingSpinner type="page" />}>
@@ -287,7 +299,7 @@ function App() {
                         </Suspense>
                       }
                       errorElement={<ErrorPage />}
-                    />
+                    /> */}
                     <Route
                       path="campaign/:id"
                       element={
@@ -301,7 +313,7 @@ function App() {
                       path="new-campaign"
                       element={
                         <Suspense fallback={<LoadingSpinner type="page" />}>
-                          <AddNewCampaign parentRoute="account-admin" />
+                          <AddCampaignForm parentRoute="account-admin" />
                         </Suspense>
                       }
                       errorElement={<ErrorPage />}
@@ -436,6 +448,15 @@ function App() {
                       errorElement={<ErrorPage />}
                     />
                     <Route
+                      path="new-hospitals"
+                      element={
+                        <Suspense fallback={<LoadingSpinner type="page" />}>
+                          <AddHospitalForm parentRoute="hospital-admin" />
+                        </Suspense>
+                      }
+                      errorElement={<ErrorPage />}
+                    />
+                    <Route
                       path="campaigns"
                       element={
                         <Suspense fallback={<LoadingSpinner type="page" />}>
@@ -457,7 +478,7 @@ function App() {
                       path="new-campaign"
                       element={
                         <Suspense fallback={<LoadingSpinner type="page" />}>
-                          <AddNewCampaign parentRoute="account-admin" />
+                          <AddCampaignForm parentRoute="account-admin" />
                         </Suspense>
                       }
                       errorElement={<ErrorPage />}
@@ -607,7 +628,7 @@ function App() {
                       index
                       element={
                         <Suspense fallback={<LoadingSpinner type="page" />}>
-                          <FundAssetManagerHomePage parentRoute="user" />
+                          <AdminHomePage />
                         </Suspense>
                       }
                       errorElement={<ErrorPage />}

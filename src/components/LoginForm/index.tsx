@@ -12,6 +12,13 @@ import { LoginFormValues } from "../../types";
 import ErrorModal from "../ErrorModal";
 import AxiosInstance from "../../api/AxiosInstance";
 import { loginRequest } from "../../utils/MicrosoftRedirect/authConfig";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
+import firebase from "../../utils/firebaseConfig";
 
 const LoginForm = () => {
   const initialValues = {
@@ -27,8 +34,8 @@ const LoginForm = () => {
   const [errorText, setErrorText] = useState("");
 
   const onLoginSuccess = (data: any) => {
-    localStorage.setItem("token", data.data.token.authToken);
-    sessionStorage.setItem("token", data.data.token.authToken);
+    localStorage.setItem("token", data.data.token);
+    sessionStorage.setItem("token", data.data.token);
     /*navigate("/account");*/
   };
 
@@ -38,6 +45,8 @@ const LoginForm = () => {
   };
 
   /*const userCode = useGetCode();*/
+
+  const auth: any = getAuth(firebase);
 
   const { mutate, isLoading, isSuccess, data } = useLogin({
     onSuccess: (data) => onLoginSuccess(data),
@@ -92,8 +101,40 @@ const LoginForm = () => {
   });
 
   const onSubmitHandler = (values: LoginFormValues) => {
-    console.log(values, "values  values values");
-    mutate(values);
+    // console.log(values, "values  values values");
+    //
+
+    const auth: any = getAuth(firebase);
+
+    signInWithEmailAndPassword(auth, values.email, values.password)
+      .then((data) => {
+        console.log(data.user.uid, "data");
+        if (data.user?.uid) mutate(data.user?.uid);
+
+        // // * check email is verified ?
+        // if (!auth.currentUser.emailVerified) {
+        //   sendEmailVerification(auth.currentUser)
+        //     .then((response) => {
+        //       console.log(response, "Hello");
+        //     })
+        //     .catch((err) => {
+        //       console.log("BYE");
+        //     });
+
+        //   return null;
+        // } else {
+        //   return data;
+        // }
+      })
+      .then((data) => {})
+      .catch((err) => {
+        console.error(err);
+        if (err.message === "Firebase: Error (auth/wrong-password).") {
+        } else if (err.message === "Firebase: Error (auth/user-not-found).") {
+        }
+
+        return null;
+      });
     // navigate("/account-admin");
 
     // if (isAmbioAuthenticated) {
@@ -130,57 +171,6 @@ const LoginForm = () => {
   //    }
   //
   //  }, [userCode, instance, isPatrizia, navigate]);
-
-  //   useEffect(()=>{
-  //     instance
-  //         .acquireTokenSilent({
-  //           ...loginRequest,
-  //           account: accounts[0],
-  //         })
-  //         .then((response) => {
-  //               const callApi = async () => {
-
-  //                   setIsPageLoading(true);
-
-  //                   const {data} = await AxiosInstance.post("users/validate_microsoft_token/", {token: response.idToken});
-  //                   if(data.access){
-  //                     localStorage.setItem("token", data.access);
-  //                     localStorage.setItem("type", data.type);
-  //                     sessionStorage.setItem("token", data.access);
-
-  //                     /*setIsPageLoading(false);*/
-
-  //                     if (data.new_user) {
-  //                       setTimeout(() => {
-  //                         navigate('/selectrole')
-  //                       }, 1000);
-
-  //                     } else {
-  //                       switch (data.type) {
-  //                         case "FUND_ASSET_MANAGER":
-  //                           navigate('/account');
-  //                           break;
-  //                         case "FUND_ASSET_MANAGER_ADMIN":
-  //                           navigate('/account-fund-admin');
-  //                           break;
-  //                         case "ENGINEER":
-  //                           navigate('/account-consultant');
-  //                           break;
-  //                         case "ADMIN":
-  //                           navigate('/account-admin');
-  //                           break;
-  //                       }
-  //                     }
-  //                   }
-
-  //               };
-
-  //   callApi();
-  // }
-  // ).catch((err) => {
-  // });
-
-  // },[inProgress, accounts, instance, navigate]);
 
   return (
     <>

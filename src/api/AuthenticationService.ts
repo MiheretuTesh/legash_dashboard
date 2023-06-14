@@ -1,24 +1,15 @@
+import React, { useState } from "react";
 import { LoginFormValues, RegistrationFormValues } from "../types";
 import { transformRoleName } from "../utils/functions";
 import AxiosInstance from "./AxiosInstance";
 
-export const register = (obj: RegistrationFormValues) => {
-  return AxiosInstance.post("auth/signup", {
-    email: obj.email,
-    firstName: obj.firstName,
-    lastName: obj.lastName,
-    role: transformRoleName(obj.role),
-    password: obj.password,
-    phonenumber: obj.phonenumber,
-    gender: obj.gender,
-    dateOfBirth: obj.dateOfBirth,
-  });
+export const register = (obj: any) => {
+  return AxiosInstance.post("auth/signup", obj);
 };
 
-export const login = (obj: LoginFormValues) => {
+export const login = (obj: any) => {
   return AxiosInstance.post("auth/login", {
-    email: obj.email,
-    password: obj.password,
+    uid: obj,
   });
 };
 

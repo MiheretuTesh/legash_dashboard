@@ -26,6 +26,36 @@ export const CITIES = [
   "Mojo",
 ];
 
+export const BANKS = ["CBE", "COOP", "Birhane", "Abyssinia", "Awash"];
+
+export const AM_CITIES = [
+  "አዲስ አበባ",
+  "ድሬዳዋ",
+  "አዳማ",
+  "ጎንደር",
+  "ባህር ዳር",
+  "መቀሌ",
+  "ሐዋሳ",
+  "ጅማ",
+  "ደሴ",
+  "አክሱም",
+  "ሐረር",
+  "ነቀምቴ",
+  "ደብረ ማርቆስ",
+  "ጅጅጋ",
+  "ሻሸማኔ",
+  "ቢሾፍቱ",
+  "አምቦ",
+  "አሶሳ",
+  "አዲግራት",
+  "ዲላ",
+  "አርባምንጭ",
+  "ወልድያ",
+  "ሮብ",
+  "ሀገረ ማርያም",
+  "ሞጆ",
+];
+
 export const STATES = [
   "Addis Ababa",
   "Afar",
@@ -38,6 +68,20 @@ export const STATES = [
   "Somali",
   "Southern Nations, Nationalities, and Peoples' Region (SNNPR)",
   "Tigray",
+];
+
+export const AM_STATE = [
+  "አዲስ አበባ",
+  "አፋር",
+  "አማራ",
+  "ቤኒሻንጉል ጉሙዝ",
+  "ድሬዳዋ",
+  "ጋምቤላ",
+  "ሀረሪ",
+  "ኦሮሚያ",
+  "ሶማሊ",
+  "ደቡብ ብሄሮች ብሄረሰቦችና ህዝቦች ክልል (ደቡብ ክልል)",
+  "ትግራይ",
 ];
 
 export const COUNTRIES = [
@@ -72,3 +116,5 @@ export const COUNTRIES = [
   //   name: "Sudan",
   // },
 ];
+
+export const AM_COUNTRY = ["ጅቡቲ", "ኤርትሪያ", "ኢትዮጵያ", "ሶማሊያ", "ሱዳን"];

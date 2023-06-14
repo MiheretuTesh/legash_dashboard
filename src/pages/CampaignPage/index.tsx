@@ -59,7 +59,7 @@ const CampaignPage = ({ parentRoute }: any) => {
   };
 
   useEffect(() => {
-    if (dataCampaigns?.data.campaigns.length > 0) {
+    if (dataCampaigns?.data?.campaigns?.length > 0) {
       const tableData: any[] = [];
 
       console.log(dataCampaigns?.data, "dataCampaigns?.data");

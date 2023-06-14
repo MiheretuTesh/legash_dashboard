@@ -286,6 +286,14 @@ const FormSelectField = ({
                     </MenuItem>
                   ))} */}
 
+                {isFormName === "user_register" &&
+                  options &&
+                  options.map((option, index) => (
+                    <MenuItem key={`${index}-${option}`} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+
                 {isFormName === "hospital_create" &&
                   options &&
                   options.map((option, index) => (
@@ -299,6 +307,22 @@ const FormSelectField = ({
                   options.map((option, index) => (
                     <MenuItem key={`${index}-${option.id}`} value={option.name}>
                       {option.name}
+                    </MenuItem>
+                  ))}
+
+                {isFormName === "campaign_create_1" &&
+                  options &&
+                  options.map((option, index) => (
+                    <MenuItem key={`${index}-${option}`} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+
+                {isFormName === "user" &&
+                  options &&
+                  options.map((option, index) => (
+                    <MenuItem key={`${index}-${option}`} value={option}>
+                      {option}
                     </MenuItem>
                   ))}
 

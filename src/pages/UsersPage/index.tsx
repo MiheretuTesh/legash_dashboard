@@ -17,14 +17,13 @@ import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
 import moment from "moment";
 import { useGetAllUsers } from "../../hooks/useGetAllUsers";
 import { useEditUsers } from "../../hooks/useEditUsers";
-// import { useGetUserSearch } from "../../hooks/useGetUserSearch"
 
 const UsersPage = ({ parentRoute }: any) => {
   const dataGridStyles = useStyles();
   const [currentOffset, setCurrentOffset] = useState(0);
   const [totalSelected, setTotalSelected] = useState(0);
   const [searchValue, setSearchValue] = useState("");
-  const [tableRows, setTableRows] = useState<UserTableRow[]>([]);
+  const [tableRows, setTableRows] = useState<any[]>([]);
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const [isUserDeleteModalOpen, setIsUserDeleteModalOpen] = useState(false);
   const [userModalType, setUserModalType] = useState("add");
@@ -56,28 +55,18 @@ const UsersPage = ({ parentRoute }: any) => {
 
     { field: "email", headerName: "Email", minWidth: 250 },
     {
+      field: "gender",
+      headerName: "Gender",
+      minWidth: 150,
+    },
+    {
       field: "role",
       headerName: "Role",
-      minWidth: 250,
-      // renderCell: (params: any) => {
-      //   const row = params.row;
-      //   return (
-      //     <div>
-      //       {row.role === Roles.FundAssetManager
-      //         ? "Fund Asset Manager"
-      //         : "Engineer"}
-      //     </div>
-      //   );
-      // },
+      minWidth: 200,
     },
     {
       field: "updated_at",
       headerName: "Last Edited At",
-      minWidth: 180,
-    },
-    {
-      field: "edited_by",
-      headerName: "Last Edited By",
       minWidth: 180,
     },
     {
@@ -228,14 +217,19 @@ const UsersPage = ({ parentRoute }: any) => {
     if (dataUsers?.data.length > 0) {
       const tableData: any[] = [];
 
+      console.log(
+        dataUsers?.data,
+        "dataUsers?.data dataUsers?.data dataUsers?.data"
+      );
+
       dataUsers?.data.forEach((data: any) => {
         tableData.push({
-          id: data.id,
+          id: data._id,
           name: `${data.firstName} ${data.lastName}`,
           email: data.email,
-          role: data.role,
+          role: data.role?.roleName ? data.role?.roleName : "User",
           updated_at: moment(data.updatedAt).format("MMM D, YYYY HH:mm"),
-          lastEditBy: "",
+          gender: data.gender,
         });
       });
       setTableRows(tableData);

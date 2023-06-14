@@ -124,16 +124,13 @@ const SideNavbar = ({
       </div>
       <nav className={styles.navBarContainer}>
         {TABS.map((tab, index) => {
-          if (
-            (userType === "report-admin" && tab === "Dashboard") ||
-            (userType === "report-admin" && tab === "Hospitals") ||
-            (userType === "report-admin" && tab === "Campaigns")
-          ) {
+          if (userType === "admin" && tab === "Campaigns") {
+            return null;
+          } else if (userType === "hospital-admin" && tab === "Users") {
             return null;
           } else if (
             (userType === "user" && tab === "Hospitals") ||
             (userType === "user" && tab === "Campaigns")
-            // (userType === "user" && tab === "Dashboards")
           ) {
             return null;
           } else {

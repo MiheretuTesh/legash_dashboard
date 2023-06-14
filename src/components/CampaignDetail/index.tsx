@@ -160,10 +160,21 @@ const CampaignEdit = ({ profileData, handleProfileEdit }: any) => {
                 />
               </div>
             </div>
-            <div className={styles.actionBtnContainer}>
-              <FormButton buttonType="submit" buttonVariant="contained">
-                {isLoading ? <LoadingSpinner type="button" /> : "Update"}
-              </FormButton>
+            <div style={{ display: "flex" }}>
+              <div className={styles.actionBtnContainer}>
+                <FormButton buttonType="submit" buttonVariant="contained">
+                  {isLoading ? <LoadingSpinner type="button" /> : "Update"}
+                </FormButton>
+              </div>
+              <div className={styles.actionBtnContainer}>
+                <FormButton
+                  buttonType="button"
+                  buttonVariant="contained"
+                  customStyle={styles.terminateBtn}
+                >
+                  {isLoading ? <LoadingSpinner type="button" /> : "Terminate"}
+                </FormButton>
+              </div>
             </div>
           </Form>
         </>

@@ -205,6 +205,7 @@ const UserModal = ({
                     initialValues.role === "" ? "none" : initialValues.role
                   }
                   placeholder={"Select a role"}
+                  isFormName="user"
                 />
                 {/* <FormSelectField
                   fieldName="assets"
