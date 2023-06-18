@@ -27,6 +27,7 @@ const UsersPage = ({ parentRoute }: any) => {
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const [isUserDeleteModalOpen, setIsUserDeleteModalOpen] = useState(false);
   const [userModalType, setUserModalType] = useState("add");
+  const [editUserEmail, setEditUserEmail] = useState("");
   const [rowForEdit, setRowForEdit] = useState({
     id: 0,
     firstName: "",
@@ -65,6 +66,8 @@ const UsersPage = ({ parentRoute }: any) => {
         const onEditHandler = () => {
           setUserModalType("edit");
           const nameSplit = params.row.name.split(" ");
+
+          setEditUserEmail(params.row.email);
 
           const rowData = {
             id: params.row.id,
@@ -168,7 +171,9 @@ const UsersPage = ({ parentRoute }: any) => {
           id: data._id,
           name: `${data.firstName} ${data.lastName}`,
           email: data.email,
-          role: data.role?.roleName ? data.role?.roleName : "User",
+          role: data.occupation?.occupationType
+            ? data.occupation?.occupationType
+            : "User",
           updated_at: moment(data.updatedAt).format("MMM D, YYYY HH:mm"),
           gender: data.gender,
         });
@@ -235,6 +240,7 @@ const UsersPage = ({ parentRoute }: any) => {
         setSelectionModel={setSelectionModelPersonal}
         setSelectedRows={setSelectedUsers}
         setTotalSelected={setTotalSelected}
+        editUserEmail={editUserEmail}
       />
       <DeleteModal
         isModalOpen={isUserDeleteModalOpen}

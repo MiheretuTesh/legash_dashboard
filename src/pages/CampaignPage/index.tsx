@@ -75,6 +75,7 @@ const CampaignPage = ({ parentRoute }: any) => {
           startDate: data.startDate,
           endDate: data.endDate,
           coverImage: data.coverImage,
+          campaignTitle: data.campaignTitle,
         });
       });
       setTableRows(tableData);
@@ -233,9 +234,7 @@ const CampaignPage = ({ parentRoute }: any) => {
                   }}
                 />
               </div>
-              <p style={{ fontSize: "16px", fontWeight: 600 }}>
-                Target Fund: {campaign.targetFunding}
-              </p>
+
               <p
                 style={{
                   display: "inline-block",
@@ -247,7 +246,10 @@ const CampaignPage = ({ parentRoute }: any) => {
                   fontWeight: 500,
                 }}
               >
-                Treatment Required: {campaign.treatmentRequired}
+                Title: {campaign.campaignTitle}
+              </p>
+              <p style={{ fontSize: "16px", fontWeight: 600 }}>
+                Target Fund: {campaign.targetFunding}
               </p>
               <p style={{ fontSize: "16px", fontWeight: 500 }}>
                 <div

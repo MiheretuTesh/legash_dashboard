@@ -5,7 +5,7 @@ export enum Roles {
   User = "user",
 }
 
-export const ROLES_NAMES = ["Admin", "Hospital Admin", "Report Admin", "User"];
+export const ROLES_NAMES = ["Admin", "Hospital Admin", "Patient", "user"];
 
 export const GENDER = ["Male", "Female"];
 

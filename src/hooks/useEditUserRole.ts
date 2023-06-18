@@ -1,14 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { editUser } from "../api/UserServicesAll";
+import { editUserRole } from "../api/UserServicesAll";
 
-export const useEditUser = ({
+export const useEditUserRole = ({
   onEditUserSuccess,
   onEditUserError,
 }: {
   onEditUserSuccess?: () => void;
   onEditUserError?: (error: any) => void;
 }) => {
-  return useMutation(editUser, {
+  return useMutation(editUserRole, {
     onSuccess: () => {
       onEditUserSuccess && onEditUserSuccess();
     },

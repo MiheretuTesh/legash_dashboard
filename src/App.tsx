@@ -9,6 +9,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ProtectedRoutes from "./components/ProtectedRoutes";
 import SelectRolePage from "./pages/SelectRolePage";
 import firebase from "./utils/firebaseConfig";
+import Notification from "./components/Notification";
 
 const RootRouter = React.lazy(() => import("./routers/RootRouter"));
 const AccountRouter = React.lazy(() => import("./routers/AccountRouter"));

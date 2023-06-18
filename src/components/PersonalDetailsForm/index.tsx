@@ -4,11 +4,11 @@ import { useStyles } from "./index.style";
 import * as Yup from "yup";
 import FormEditableField from "../FormEditableField";
 import FormButton from "../FormButton";
-import { reverseTransformRole } from "../../utils/functions";
 import PersonalDetailImageUpload from "../PersonalDetailImageUpload";
 import { ProfilePictureExample } from "../../assets";
 import FormField from "../FormField";
-
+import { useEditUser } from "../../hooks/useEditUser";
+import ImageUpload from "../ImageUpload";
 interface Values {
   name: string;
   email: string;
@@ -22,37 +22,65 @@ const PersonalDetailsSchema = Yup.object().shape({
     .min(2, "Too Short!")
     .max(70, "Too Long!")
     .required("*Required"),
-  email: Yup.string().email("Invalid email").required("*Required"),
-  role: Yup.string().required("*Required"),
-  company: Yup.string().required("*Required"),
+  // email: Yup.string().email("Invalid email").required("*Required"),
+  // role: Yup.string().required("*Required"),
+  phonenumber: Yup.string().required("*Required"),
 });
 const PersonalDetailsForm = ({ profileData, handleProfileEdit }: any) => {
   const styles = useStyles();
   const [isProfileEdited, setIsProfileEdited] = useState(false);
   const [uploadedPhoto, setUploadedPhoto] = useState("");
 
+  const [imageUploadUrl, setImagUploadUrl] = useState("");
+  const [imageUrlGenerated, setImageUrlGenerated] = useState(false);
+
+  const {
+    mutate: updateUser,
+    isLoading: updateUserLoading,
+    isSuccess: updateUserSuccess,
+  } = useEditUser({});
+
   const initialValues = {
     name: `${profileData?.firstName} ${profileData?.lastName}`,
     email: profileData?.email,
-    // role: reverseTransformRole(profileData?.role.roleName),
-    role: profileData?.role.roleName,
+    role: profileData?.occupation?.occupationType,
     phonenumber: profileData?.phonenumber,
   };
 
-  const onSubmitHandler = (values: Values) => {
-    handleProfileEdit(values);
-  };
+  const onSubmitHandler = (values: any) => {
+    const formData: any = {
+      am_et: {
+        firstName: "አበራ",
+        lastName: "ሀብታሙ",
+        bankAccounts: [
+          {
+            accountHolderName: "አበራ ሀብታሙ",
+            accountNumber: "1000123456789",
+            bankName: "ንግድ ባንክ",
+            country: "ኢትዮጵያ",
+          },
+        ],
+        gender: "ሴት",
+      },
+      en_us: {
+        firstName: profileData?.firstName,
+        lastName: profileData?.lastName,
+        bankAccounts: [
+          {
+            accountHolderName: profileData?.bankAccounts[0].accountHolderName,
+            accountNumber: profileData?.bankAccounts[0].accountNumber,
+            bankName: profileData?.bankAccounts[0].bankName,
+            country: "Ethiopia",
+          },
+        ],
+        gender: profileData?.gender,
+      },
+      email: values.email,
+      phonenumber: values.phonenumber,
+      profilePicture: imageUploadUrl,
+    };
 
-  const handleChangeImg = (e: any, setFieldValue: any) => {
-    const file = e.target.files[0];
-    if (file?.size / 1024 / 1024 < 5) {
-      let url = URL.createObjectURL(file);
-      setUploadedPhoto(url);
-      setFieldValue("img", file);
-      setIsProfileEdited(true);
-    } else {
-      console.log("Image size must be of 2MB or less");
-    }
+    updateUser({ formData: formData, id: profileData._id });
   };
 
   return (
@@ -65,30 +93,23 @@ const PersonalDetailsForm = ({ profileData, handleProfileEdit }: any) => {
         <>
           <Form className={styles.topContainer}>
             <div className={styles.profilePictureContainer}>
+              <ImageUpload
+                setImagUploadUrl={setImagUploadUrl}
+                setImageUrlGenerated={setImageUrlGenerated}
+              />
               {/* <img
-                className={styles.pictureContainer}
-                src={
-                  uploadedPhoto
-                    ? uploadedPhoto
-                    : profileData?.photo !== null
-                    ? profileData.photo
-                    : ProfilePictureExample
-                }
-                alt="profile"
-              /> */}
-              <img
                 className={styles.pictureContainer}
                 src={ProfilePictureExample}
                 alt="profile"
-              />
-              <PersonalDetailImageUpload
+              /> */}
+              {/* <PersonalDetailImageUpload
                 customStyle={styles.uploadBtn}
                 onChange={handleChangeImg}
                 fieldName="img"
                 isUploaded={uploadedPhoto}
               >
                 Upload photo
-              </PersonalDetailImageUpload>
+              </PersonalDetailImageUpload> */}
             </div>
 
             <div className={styles.formContainer}>

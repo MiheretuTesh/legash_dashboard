@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import CampaignDetails from "../../components/CampaignDetails";
 import { useLocation } from "react-router";
 
-const TABS = ["Personal Details", "Change Password"];
-const CONSULTANT_TABS = ["Personal Details", "Change Password"];
-const ADMIN_TABS = ["Personal Details", "Reset Password", "Admin Logs"];
+const TABS = ["Personal Details"];
+const CONSULTANT_TABS = ["Personal Details"];
+const ADMIN_TABS = ["Personal Details"];
 
 interface CampaignDetailsPageProps {
   userType: string;

@@ -30,7 +30,12 @@ export const addUser = ({
   });
 };
 
-export const editUser = (obj: any) => {
+export const editUser = ({ formData, id }: any) => {
+  console.log(formData);
+  return AxiosInstance.patch(`/users/${id}`, formData);
+};
+
+export const editUserRole = (obj: any) => {
   console.log(obj);
   return AxiosInstance.patch(`restricted/updateRole`, {
     email: obj.email,

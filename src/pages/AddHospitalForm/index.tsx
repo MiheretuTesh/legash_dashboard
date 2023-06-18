@@ -103,7 +103,6 @@ const AddHospitalForm = ({ parentRoute }: { parentRoute: any }) => {
   const [lastFormData, setLastFormData] = useState(false);
   const [isError, setIsError] = useState(false);
   const [errorText, setErrorText] = useState("");
-
   const hospitalHandler = () => {};
 
   const onAddHospitalError = () => {
@@ -159,12 +158,6 @@ const AddHospitalForm = ({ parentRoute }: { parentRoute: any }) => {
       navigate(`/${parentRoute}/hospitals`);
     }
   }, [isSubmitted, isError, isErrorUpdate, formData, navigate, parentRoute]);
-
-  // useEffect(() => {
-  //   if (savedAsset !== null) {
-  //     setAssetValue(savedAsset);
-  //   }
-  // }, [savedAsset, setAssetValue]);
 
   const initialValues = {
     name: "",
@@ -229,6 +222,7 @@ const AddHospitalForm = ({ parentRoute }: { parentRoute: any }) => {
         website: data.website,
         hospitalAdmins: [hospitalAdminId],
         services: [],
+        images: [imgUploadUrl],
         bankAccounts: [
           {
             accountNumber: data.accountNumber,

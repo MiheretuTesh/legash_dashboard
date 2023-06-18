@@ -43,9 +43,9 @@ const TerminatedCampaigns = ({ parentRoute }: any) => {
     isSuccess: campaignStatusUpdateSuccess,
   } = useEditCampaignStatus({});
 
-  useEffect(() => {
-    dataCampaigns();
-  }, [campaignStatusUpdateSuccess]);
+  // useEffect(() => {
+  //   dataCampaigns();
+  // }, [campaignStatusUpdateSuccess]);
 
   const { dataAssetsSubmittedForms, isDataAssetsSubmittedFormsLoading } =
     useGetAssetsSubmittedForms({

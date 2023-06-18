@@ -42,6 +42,7 @@ const PersonalDetails = () => {
     setIsUploading(true);
     mutate(fd);
   };
+  console.log(profileData, "--------------------");
 
   const styles = useStyles();
   return (

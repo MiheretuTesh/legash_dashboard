@@ -45,14 +45,125 @@ const CampaignDataForm2 = ({
   useEffect(() => {
     if (dataUsers?.data.length > 0) {
       const tableData: any[] = [];
+      console.log(dataUsers, "dataUsers dataUsers dataUsers");
 
       dataUsers?.data.forEach((data: any) => {
-        if (data?.role?.roleName === "user") {
+        if (data?.occupation?.occupationType === "Patient") {
           tableData.push({
             id: data._id,
             name: `${data.firstName} ${data.lastName}`,
             email: data.email,
           });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          
         }
       });
       setAllUsers(tableData);
