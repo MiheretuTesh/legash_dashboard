@@ -4,9 +4,15 @@ import PageTabsHeader from "../../components/PageTabsHeader";
 import StartANewForm from "../../components/StartANewForm";
 import DraftForms from "../../components/DraftForms";
 import SubmittedForms from "../../components/SubmittedForms";
+import TerminatedCampaigns from "../../components/TerminatedCampaigns";
 import { useLocation } from "react-router";
 
-const TABS = ["Start A New Form", "Draft Forms", "Submitted Forms"];
+const TABS = [
+  // "Campaigns Review",
+  "Draft Campaigns",
+  "Submitted Campaigns",
+  "Suspended Campaigns",
+];
 
 const AddNewHospital = ({ parentRoute }: { parentRoute: string }) => {
   const styles = useStyles();
@@ -27,12 +33,14 @@ const AddNewHospital = ({ parentRoute }: { parentRoute: string }) => {
 
   const ShowSelectedTab = () => {
     switch (selectedTab) {
-      case "Start A New Form":
-        return <StartANewForm parentRoute={parentRoute} />;
-      case "Draft Forms":
+      // case "Campaigns Review":
+      //   return <StartANewForm parentRoute={parentRoute} />;
+      case "Draft Campaigns":
         return <DraftForms parentRoute={parentRoute} />;
-      case "Submitted Forms":
+      case "Submitted Campaigns":
         return <SubmittedForms parentRoute={parentRoute} />;
+      case "Suspended Campaigns":
+        return <TerminatedCampaigns parentRoute={parentRoute} />;
     }
   };
 

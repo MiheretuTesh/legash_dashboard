@@ -15,25 +15,32 @@ import { OptionsIcon } from "../../assets";
 import Menu from "@mui/material/Menu/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import DeleteModal from "../DeleteModal";
-// import { useGetAssetFormSearch } from "../../hooks/useGetAssetFormSearch"
+import { useGetCampaigns } from "../../hooks/useGetCampaigns";
+import { useEditCampaignStatus } from "../../hooks/useEditCampaignStatus";
 
 const DraftForms = ({ parentRoute }: any) => {
   const dataGridStyles = useStyles();
   const [searchValue, setSearchValue] = useState("");
   const [tableRows, setTableRows] = useState<DraftFormsTableRow[]>([]);
-  // const [, startTransition] = useTransition();
   const [currentOffset, setCurrentOffset] = useState(0);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [campaignId, setCampaignId] = useState("");
 
-  const { setAssetValue } = useContext(NewOnsiteChecklistContext);
   const [selectedForm, setSelectedForm] = useState<any>(null);
+  const { dataCampaigns, isLoadingCampaigns } = useGetCampaigns({});
+
+  const {
+    mutate: campaignStatusMutate,
+    isLoading: campaignStatusUpdateLoading,
+    isSuccess: campaignStatusUpdateSuccess,
+  } = useEditCampaignStatus({});
 
   const navigate = useNavigate();
 
   const columns = [
     {
-      field: "building_name",
-      headerName: "Building Name",
+      field: "campaign_name",
+      headerName: "Campaign Name",
       minWidth: 260,
       flex: 1,
     },
@@ -43,7 +50,7 @@ const DraftForms = ({ parentRoute }: any) => {
       minWidth: 240,
       flex: 1,
     },
-    { field: "type", headerName: "Form type", minWidth: 240, flex: 1 },
+    { field: "created_at", headerName: "Created Date", minWidth: 240, flex: 1 },
     {
       field: "action",
       headerName: "",
@@ -51,30 +58,10 @@ const DraftForms = ({ parentRoute }: any) => {
       disableColumnMenu: true,
       renderCell: (params: any) => {
         const onEditHandler = () => {
-          setAssetValue(params.row.asset);
-          navigate(
-            `/${parentRoute}/${
-              params.row.type === "ASSUMPTIONS"
-                ? "new-onsite-checklist"
-                : "consultant-form"
-            }`,
-            {
-              state: {
-                initialStep:
-                  params.row.last_step === null ? 2 : params.row.last_step,
-                savedValues: params.row.data,
-                savedAsset: params.row.asset,
-                isDrafted: params.row.is_draft,
-                draftId: params.row.id,
-                fromDraft: true,
-              },
-            }
-          );
+          setCampaignId(params.row.id);
+          campaignStatusMutate({ status: "Active", id: params.row.id });
         };
-        const onDeleteHandler = () => {
-          setSelectedForm(params.row.id);
-          setIsDeleteModalOpen(true);
-        };
+        const onDeleteHandler = () => {};
 
         return (
           <PopupState variant="popover" popupId="demo-popup-menu">
@@ -93,7 +80,7 @@ const DraftForms = ({ parentRoute }: any) => {
                       onEditHandler();
                     }}
                   >
-                    Edit
+                    Approve
                   </MenuItem>
                   <MenuItem
                     onClick={() => {
@@ -101,7 +88,7 @@ const DraftForms = ({ parentRoute }: any) => {
                       onDeleteHandler();
                     }}
                   >
-                    Delete
+                    Terminate
                   </MenuItem>
                 </Menu>
               </React.Fragment>
@@ -113,146 +100,32 @@ const DraftForms = ({ parentRoute }: any) => {
     },
   ];
 
-  const { dataAssetsDraftForms, isDataAssetsDraftFormsLoading } =
-    useGetAssetsDraftForms({
-      limit: TABLE_LIMIT,
-      offset: currentOffset,
-      isDraft: true,
-      type:
-        parentRoute === "account-admin"
-          ? undefined
-          : parentRoute === "account-consultant"
-          ? "ONSITE_CHECKLIST"
-          : "ASSUMPTIONS",
-    });
-
   useEffect(() => {
-    if (dataAssetsDraftForms) {
-      const tableData: any = [];
-      dataAssetsDraftForms.results.forEach((data: any) => {
-        tableData.push({
-          name: "",
-          lastEditedAt: "",
-          id: data.id,
-          building: data.building_name,
-          asset: data.asset_id,
-          building_name: data.building_name,
-          created_at: data.created_at,
-          data: data.data,
-          is_draft: data.is_draft,
-          last_step: data.last_step,
-          type: data.type,
-          updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
-        });
+    if (dataCampaigns) {
+      const tableData: any[] = [];
+
+      dataCampaigns?.data.forEach((data: any) => {
+        if (data.status !== "Active") {
+          tableData.push({
+            campaign_name: data.campaignDescription,
+            created_at: data.createdAt,
+            updated_at: moment(data.updatedAt).format("MMM D, YYYY HH:mm"),
+            id: data._id,
+          });
+        }
       });
+
       setTableRows(tableData);
     }
-  }, [dataAssetsDraftForms]);
+  }, [dataCampaigns, campaignStatusUpdateSuccess]);
 
-  // const {
-  //   assetFormData,
-  //   // assetFormLoading,
-  //   assetFormSuccess,
-  //   assetFormRefetch
-  // } = useGetAssetFormSearch({search_value: searchValue});
-
-  // useEffect(() => {
-  //   if(searchValue === ""){
-  //     if (dataAssetsDraftForms) {
-  //       const tableData: any = [];
-  //       dataAssetsDraftForms.results.forEach((data: any) => {
-  //         tableData.push({
-  //           name: "",
-  //           lastEditedAt: "",
-  //           id: data.id,
-  //           building: data.building_name,
-  //           asset: data.asset,
-  //           building_name: data.building_name,
-  //           created_at: data.created_at,
-  //           data: data.data,
-  //           is_draft: data.is_draft,
-  //           last_step: data.last_step,
-  //           type: data.type,
-  //           updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
-  //         });
-  //       });
-  //       setTableRows(tableData);
-  //     }
-  //   }
-  //   if(assetFormSuccess === true && assetFormData !== undefined){
-  //     if (assetFormData?.data.results) {
-  //       const tableData: any = [];
-  //       assetFormData?.data.results.forEach((data: any) => {
-  //         tableData.push({
-  //           name: "",
-  //           lastEditedAt: "",
-  //           id: data.id,
-  //           building: data.building_name,
-  //           asset: data.asset,
-  //           building_name: data.building_name,
-  //           created_at: data.created_at,
-  //           data: data.data,
-  //           is_draft: data.is_draft,
-  //           last_step: data.last_step,
-  //           type: data.type,
-  //           updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
-  //         });
-  //       });
-  //       setTableRows(tableData);
-  //     }
-  //   }
-  // }, [assetFormSuccess, assetFormData, dataAssetsDraftForms, searchValue]);
-
-  const handleOnSearchFieldChange = (e: any) => {
-    setSearchValue((prevName) => e.target.value);
-    fetch(``, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((users: any) => {
-        const tableData: any = [];
-        users?.results.forEach((data: any) => {
-          tableData.push({
-            name: "",
-            lastEditedAt: "",
-            id: data.id,
-            building: data.building_name,
-            asset: data.asset_id,
-            building_name: data.building_name,
-            data: data.data,
-            is_draft: data.is_draft,
-            last_step: data.last_step,
-            type: data.type,
-            updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
-            created_at: moment(data.created_at).format("MMM D, YYYY HH:mm"),
-          });
-        });
-        setTableRows(tableData);
-      })
-      .catch((error) => {
-        // console.log(error);
-      });
+  const handleOnSearchFieldChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = e.target.value;
+    setSearchValue(value);
+    // Perform the necessary search logic here
   };
-
-  // const onSearchHandler = (searchValue: string) => {
-  //   console.log(searchValue, "searchValue searchValue")
-  //   setSearchValue(searchValue);
-  //   assetFormRefetch();
-  //   // startTransition(() => {
-  //   //   setTableRows(
-  //   //     tableRows.filter(
-  //   //       (item: DraftFormsTableRow) =>
-  //   //         item.building.includes(e.target.value) ||
-  //   //         item.lastEditedAt.includes(e.target.value)
-  //   //     )
-  //   //   );
-  //   // });
-  // };
 
   const { windowSize } = useContext(NewOnsiteChecklistContext);
   const [rowHeight, setRowHeight] = useState(60);
@@ -286,7 +159,7 @@ const DraftForms = ({ parentRoute }: any) => {
         searchValue={searchValue}
         setSearchValue={setSearchValue}
         handleOnSearchFieldChange={handleOnSearchFieldChange}
-        disabled={isDataAssetsDraftFormsLoading}
+        disabled={isLoadingCampaigns}
       />
       <div className={dataGridStyles.tableContainer}>
         <DataGrid
@@ -297,21 +170,7 @@ const DraftForms = ({ parentRoute }: any) => {
           rowsPerPageOptions={[5]}
           disableSelectionOnClick
           hideFooter
-          loading={isDataAssetsDraftFormsLoading}
-        />
-        <TablePagination
-          nextDisabled={
-            dataAssetsDraftForms?.next === null || isDataAssetsDraftFormsLoading
-          }
-          previousDisabled={
-            dataAssetsDraftForms?.previous === null ||
-            isDataAssetsDraftFormsLoading
-          }
-          onPreviousHandler={onPreviousHandler}
-          onNextHandler={onNextHandler}
-          currentPage={currentOffset / TABLE_LIMIT + 1}
-          setCurrentOffset={setCurrentOffset}
-          total={dataAssetsDraftForms?.count}
+          loading={isLoadingCampaigns}
         />
       </div>
     </>

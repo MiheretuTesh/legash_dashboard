@@ -65,7 +65,7 @@ const AccountPageHeader = ({
             <div className={styles.profileContainer}>
               <div className={styles.nameRoleContainer}>
                 <p className={styles.roleTxt}>
-                  {reverseTransformRole(data?.data.data.role.roleName)}
+                  {reverseTransformRole(data?.data.data.role)}
                 </p>
                 <p className={styles.nameTxt}>
                   {data?.data.data.firstName} {data?.data.data.lastName}
@@ -81,7 +81,7 @@ const AccountPageHeader = ({
               ) : ( */}
               <img
                 className={styles.profilePicture}
-                src={ProfilePictureExample}
+                src="https://t4.ftcdn.net/jpg/04/17/02/97/360_F_417029760_68s9omoxN9o8UX1ipcJX9t1viOlXSCSP.jpg"
                 alt="profile"
                 onClick={handleProfile}
               />

@@ -129,10 +129,15 @@ const HospitalPage = ({ parentRoute }: any) => {
   };
 
   useEffect(() => {
-    if (dataHospitals?.data.hospitals.length > 0) {
+    if (dataHospitals?.data.length > 0) {
       const tableData: any[] = [];
 
-      dataHospitals?.data.hospitals.forEach((data: any) => {
+      console.log(
+        dataHospitals?.data,
+        "dataHospitals?.data dataHospitals?.data dataHospitals?.data"
+      );
+
+      dataHospitals?.data.forEach((data: any) => {
         tableData.push({
           id: data._id,
           name: data.name,
@@ -140,11 +145,12 @@ const HospitalPage = ({ parentRoute }: any) => {
           role: data.type,
           updated_at: moment(data.updatedAt).format("MMM D, YYYY HH:mm"),
           phone: data.phone,
-          location: `${data.location.address}, ${data.location.city}`,
+          location: `${data.location?.address}, ${data.location?.city}`,
           locationA: data.location,
           status: "Active",
-          bankAccounts: data.bankAccounts[0].accountNumber,
-          website: data.website,
+          bankAccounts: data.bankAccounts[0]?.accountNumber,
+          website: data?.website,
+          images: data?.images[0],
         });
       });
       setHospitalsData(tableData);
@@ -296,7 +302,9 @@ const HospitalPage = ({ parentRoute }: any) => {
             >
               <div>
                 <img
-                  src={hospital.img ? `${hospital.img}` : hospitalImg[index]}
+                  src={
+                    hospital.images ? `${hospital.images}` : hospitalImg[index]
+                  }
                   width="295px"
                   style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
                 />

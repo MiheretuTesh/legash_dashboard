@@ -18,6 +18,8 @@ import DeleteModal from "../DeleteModal";
 import { DownloadIcon } from "../../assets";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useEditCampaignStatus } from "../../hooks/useEditCampaignStatus";
+import { useGetCampaigns } from "../../hooks/useGetCampaigns";
 
 const SubmittedForms = ({ parentRoute }: any) => {
   const dataGridStyles = useStyles();
@@ -27,9 +29,19 @@ const SubmittedForms = ({ parentRoute }: any) => {
   const navigate = useNavigate();
   const { setAssetValue } = useContext(NewOnsiteChecklistContext);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedForm, setSelectedForm] = useState();
 
   const [selectedAssets] = useState<GridSelectionModel>();
+
+  const [campaignId, setCampaignId] = useState("");
+
+  const [selectedForm, setSelectedForm] = useState<any>(null);
+  const { dataCampaigns, isLoadingCampaigns } = useGetCampaigns({});
+
+  const {
+    mutate: campaignStatusMutate,
+    isLoading: campaignStatusUpdateLoading,
+    isSuccess: campaignStatusUpdateSuccess,
+  } = useEditCampaignStatus({});
 
   const { dataAssetsSubmittedForms, isDataAssetsSubmittedFormsLoading } =
     useGetAssetsSubmittedForms({
@@ -180,8 +192,8 @@ const SubmittedForms = ({ parentRoute }: any) => {
 
   const columns = [
     {
-      field: "building_name",
-      headerName: "Building Name",
+      field: "campaign_name",
+      headerName: "Campaign Name",
       minWidth: 270,
       flex: 1,
     },
@@ -197,37 +209,17 @@ const SubmittedForms = ({ parentRoute }: any) => {
       minWidth: 240,
       flex: 1,
     },
-    { field: "type", headerName: "Form type", minWidth: 240, flex: 1 },
     {
       field: "action",
       headerName: "",
       sortable: false,
       disableColumnMenu: true,
       renderCell: (params: any) => {
-        const onEditHandler = () => {
-          setAssetValue(params.row.asset);
-          navigate(
-            `/${parentRoute}/${
-              params.row.type === "ASSUMPTIONS"
-                ? "new-onsite-checklist"
-                : "consultant-form"
-            }`,
-            {
-              state: {
-                initialStep:
-                  params.row.last_step === null ? 2 : params.row.last_step,
-                savedValues: params.row.data,
-                savedAsset: params.row.asset,
-                isDrafted: params.row.is_draft,
-                draftId: params.row.id,
-                fromSubmitted: true,
-              },
-            }
-          );
+        const onPendingCampaign = () => {
+          campaignStatusMutate({ status: "Pending", id: params.row.id });
         };
-        const onDeleteHandler = () => {
-          setSelectedForm(params.row.id);
-          setIsDeleteModalOpen(true);
+        const onCampaignTerminate = () => {
+          campaignStatusMutate({ status: "Suspended", id: params.row.id });
         };
 
         return (
@@ -244,68 +236,19 @@ const SubmittedForms = ({ parentRoute }: any) => {
                   <MenuItem
                     onClick={() => {
                       popupState.close();
-                      onEditHandler();
+                      onPendingCampaign();
                     }}
                   >
-                    Edit
-                  </MenuItem>
-                  {params.row.type === "ONSITE_CHECKLIST" && (
-                    <MenuItem
-                      onClick={() => {
-                        handleAssetImageDownload(
-                          params.row.asset,
-                          params.row.building_name
-                        );
-                        popupState.close();
-                      }}
-                      // disabled={true}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <div>
-                          <DownloadIcon />
-                        </div>
-                        <div style={{ padding: 5 }} />
-                        <div>Images</div>
-                      </div>
-                    </MenuItem>
-                  )}
-                  <MenuItem
-                    onClick={() => {
-                      handleFormDataDownload(
-                        params.row.id,
-                        params.row.building_name
-                      );
-                      popupState.close();
-                    }}
-                    // disabled={true}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
-                    >
-                      <div>
-                        <DownloadIcon />
-                      </div>
-                      <div style={{ padding: 5 }} />
-                      <div>Data</div>
-                    </div>
+                    Pending
                   </MenuItem>
 
                   <MenuItem
                     onClick={() => {
                       popupState.close();
-                      onDeleteHandler();
+                      onCampaignTerminate();
                     }}
                   >
-                    Delete
+                    Suspend
                   </MenuItem>
                 </Menu>
               </React.Fragment>
@@ -316,6 +259,25 @@ const SubmittedForms = ({ parentRoute }: any) => {
       flex: 0.01,
     },
   ];
+
+  useEffect(() => {
+    if (dataCampaigns) {
+      const tableData: any[] = [];
+
+      dataCampaigns?.data.forEach((data: any) => {
+        if (data.status === "Active") {
+          tableData.push({
+            campaign_name: data.campaignDescription,
+            created_at: data.createdAt,
+            updated_at: moment(data.updatedAt).format("MMM D, YYYY HH:mm"),
+            id: data._id,
+          });
+        }
+      });
+
+      setTableRows(tableData);
+    }
+  }, [dataCampaigns, campaignStatusUpdateSuccess]);
 
   useEffect(() => {
     if (windowSize.innerHeight <= 660 || windowSize.innerWidth <= 1200) {
@@ -357,9 +319,9 @@ const SubmittedForms = ({ parentRoute }: any) => {
           rowsPerPageOptions={[5]}
           disableSelectionOnClick
           hideFooter
-          loading={isDataAssetsSubmittedFormsLoading}
+          loading={isLoadingCampaigns}
         />
-        <TablePagination
+        {/* <TablePagination
           nextDisabled={
             dataAssetsSubmittedForms?.next === null ||
             isDataAssetsSubmittedFormsLoading
@@ -373,20 +335,8 @@ const SubmittedForms = ({ parentRoute }: any) => {
           currentPage={currentOffset / TABLE_LIMIT + 1}
           setCurrentOffset={setCurrentOffset}
           total={dataAssetsSubmittedForms?.count}
-        />
+        /> */}
       </div>
-      <ToastContainer
-        position="bottom-right"
-        autoClose={1500}
-        hideProgressBar={true}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
     </>
   );
 };

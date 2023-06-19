@@ -63,8 +63,8 @@ const HospitalEdit = ({ profileData, handleProfileEdit }: any) => {
   const handleEditHospital = () => {};
 
   const { mutate, isLoading, data, isSuccess } = useEditHospital({
-    onEditUserSuccess: handleEditHospital,
-    onEditUserError: handleEditHospital,
+    onEditHospitalSuccess: handleEditHospital,
+    onEditHospitalError: handleEditHospital,
   });
 
   useEffect(() => {

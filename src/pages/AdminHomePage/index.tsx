@@ -30,15 +30,15 @@ const AdminHomePage = () => {
   // const { isLoading, data } = useGetAdminAssetMetrics();
 
   const homePageCardContent = [
-    { title: "Daily Donation", number: "12,000", percent: false },
+    { title: "Daily Donation", number: "12,499", percent: false },
     {
       title: "Weekly Donation",
-      number: "100,000",
+      number: "20,499",
       percent: false,
     },
     {
       title: "Total Donation",
-      number: "400,000",
+      number: "102,099",
       percent: false,
     },
   ];

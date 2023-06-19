@@ -3,7 +3,7 @@ import { AssumtionFormValues } from "../../types";
 import SideLabelFormField from "../SideLabelFormField";
 import SideLabelFormSelectField from "../SideLabelFormSelectField";
 import { useStyles } from "./index.style";
-import { CITIES, STATES, COUNTRIES } from "../../constants/constant";
+import { CITIES, BANKS, COUNTRIES } from "../../constants/constant";
 
 interface HospitalAdminFormProps {
   formikChangeHandler: {
@@ -25,24 +25,42 @@ const HospitalAdminForm = ({
   return (
     <div className={styles.container}>
       <div className={styles.fieldsContainer}>
+        <SideLabelFormField
+          fieldLabel="Bank Account"
+          fieldName="accountNumber"
+          fieldPlaceholder="1000255788983"
+        />
+        <SideLabelFormField
+          fieldLabel="Account Holder Name"
+          fieldName="accountHolderName"
+          fieldPlaceholder="Yekatit 12"
+        />
         <SideLabelFormSelectField
           formikChangeHandler={formikChangeHandler}
-          fieldLabel="City"
-          fieldName="city"
+          fieldLabel="Bank Name"
+          fieldName="bankName"
           initialValue={
             assumptionFormValues?.developmentState !== ""
               ? assumptionFormValues?.developmentState
               : "none"
           }
-          fieldPlaceholder="Select a city"
-          options={CITIES}
+          fieldPlaceholder="Select a bank"
+          options={BANKS}
           isFormName="hospital_create"
         />
-        {/* <SideLabelFormField
-          fieldLabel="Bank Account"
-          fieldName="bankAccounts"
-          fieldPlaceholder="1000255788983"
-        /> */}
+        <SideLabelFormSelectField
+          formikChangeHandler={formikChangeHandler}
+          fieldLabel="country"
+          fieldName="bankCountry"
+          initialValue={
+            assumptionFormValues?.developmentState !== ""
+              ? assumptionFormValues?.developmentState
+              : "none"
+          }
+          fieldPlaceholder="Select a country"
+          options={COUNTRIES}
+          isFormName="hospital_create"
+        />
       </div>
     </div>
   );

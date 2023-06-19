@@ -19,4 +19,22 @@ export const useStyles = makeStyles({
       },
     },
   },
+  terminateContainer: {
+    width: "100%",
+    height: "51px",
+    "&.MuiButton-contained": {
+      textTransform: "none",
+      background: "#ab0707",
+      boxShadow: "none",
+      borderRadius: "10px",
+      fontFamily: "Roboto",
+      fontSize: "18px",
+      color: "#fff",
+      "&:hover": {
+        background: "#ab0707",
+        boxShadow: "none",
+        color: "#FEFEFE",
+      },
+    },
+  },
 });

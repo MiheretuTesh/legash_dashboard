@@ -2,14 +2,15 @@ import { makeStyles } from "@mui/styles";
 
 export const useStyles = makeStyles({
   tableContainer: {
-    height: "385px",
+    height: "500px",
     width: "100%",
     marginTop: "30px",
+    overflowY: "scroll",
     "@media (max-height: 667px)": {
-      height: "285px",
+      height: "500px",
     },
     "@media (max-width: 1200px)": {
-      height: "285px",
+      height: "500px",
     },
     "& .MuiDataGrid-root": {
       padding: "5px 25px",

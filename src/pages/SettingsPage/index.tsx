@@ -5,9 +5,9 @@ import ChangePassword from "../../components/ChangePassword";
 import AdminLogs from "../../components/AdminLogs";
 import { useLocation } from "react-router";
 
-const TABS = ["Personal Details", "Change Password"];
-const CONSULTANT_TABS = ["Personal Details", "Change Password"];
-const ADMIN_TABS = ["Personal Details", "Reset Password", "Admin Logs"];
+const TABS = ["Personal Details"];
+const CONSULTANT_TABS = ["Personal Details"];
+const ADMIN_TABS = ["Personal Details"];
 
 interface SettingsPageProps {
   userType: string;

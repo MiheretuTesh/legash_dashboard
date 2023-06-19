@@ -6,34 +6,22 @@ export const getAllCampaigns = async () => {
 };
 
 export const getCampaign = async (obj: { id: number }) => {
-  const { data } = await AxiosInstance.get(`hospitals/${obj.id}`);
+  const { data } = await AxiosInstance.get(`campaigns/fetchCampaign/${obj.id}`);
   return data;
 };
 
 export const addCampaign = (obj: any) => {
-  return AxiosInstance.post("campaigns", {
-    patientId: obj.patientId,
-    hospitalId: obj.hospitalId,
-    targetFunding: obj.targetFunding,
-    treatmentRequired: obj.treatmentRequired,
-    diagnosis: obj.diagnosis,
-    startDate: obj.startDate,
-    endDate: obj.endDate,
-    currentFundedAmount: obj.currentFundedAmount,
-    coverImage: obj.coverImage,
-  });
+  return AxiosInstance.post("campaigns", obj);
 };
 
 export const editCampaign = ({ obj, id }: any) => {
-  console.log(obj, id, "OBJ ID");
-  return AxiosInstance.patch(`campaigns/${id}`, {
-    targetFunding: obj.targetFunding,
-    currentFundedAmount: obj.currentFundedAmount,
-    diagnosis: obj.diagnosis,
-    status: obj.status,
-    coverImage: obj.coverImage,
-    treatmentRequired: obj.treatmentRequired,
-  });
+  console.log(obj, "obj", id, "ID");
+  return AxiosInstance.patch(`campaigns/${id}`, obj);
+};
+
+export const editCampaignStatus = ({ status, id }: any) => {
+  console.log(status, "obj", id, "ID");
+  return AxiosInstance.post(`campaigns/${id}`, { status: status });
 };
 
 export const deleteCampaign = (obj: { ids: number[] }) => {

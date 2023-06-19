@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "@mui/material/Modal";
 import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -14,6 +14,9 @@ import LoadingSpinner from "../LoadingSpinner";
 import { useEditUsers } from "../../hooks/useEditUsers";
 import { GridSelectionModel } from "@mui/x-data-grid";
 import ErrorModal from "../ErrorModal";
+import FormSelectFieldID from "../FormSelectFieldID";
+import { useEditUserRole } from "../../hooks/useEditUserRole";
+import { useGetHospitals } from "../../hooks/useGetHospitals";
 
 interface UserFormValues {
   firstName: string;
@@ -34,6 +37,7 @@ interface UserModalProps {
   >;
   setSelectionModel: React.Dispatch<React.SetStateAction<GridSelectionModel>>;
   setTotalSelected: React.Dispatch<React.SetStateAction<number>>;
+  editUserEmail?: string;
 }
 
 const UserFormSchema = Yup.object().shape({
@@ -52,11 +56,46 @@ const UserModal = ({
   setSelectedRows,
   setSelectionModel,
   setTotalSelected,
+  editUserEmail,
 }: UserModalProps) => {
   const styles = useStyles();
 
   const [isError, setIsError] = useState(false);
   const [errorText, setErrorText] = useState("");
+  const [allHospitals, setAllHospitals]: any = useState([]);
+
+  const { dataHospitals, isLoadingHospitals } = useGetHospitals({});
+
+  const [patientId, setPatientId] = useState(null);
+  const [hospitalId, setHospitalId] = useState(null);
+
+  const {
+    mutate: editUserRole,
+    isLoading: editUserRoleLoading,
+    isSuccess: editUserRoleSuccess,
+  } = useEditUserRole({});
+
+  useEffect(() => {
+    if (dataHospitals?.data.length > 0) {
+      const tableData: any[] = [];
+
+      dataHospitals?.data.forEach((data: any) => {
+        tableData.push({
+          id: data._id,
+          name: data.name,
+          email: data.email,
+        });
+      });
+      setAllHospitals(tableData);
+    } else {
+      setAllHospitals([]);
+    }
+    return () => {
+      setAllHospitals([]);
+    };
+  }, [dataHospitals]);
+
+  console.log(allHospitals, "allHospitals allHospitals allHospitals");
 
   const onAddUserSuccessHandler = () => {
     setTotalSelected(0);
@@ -122,38 +161,61 @@ const UserModal = ({
     setIsModalOpen(false);
   };
 
-  const onSubmitHandler = (values: UserFormValues) => {
-    console.log(values, "values values");
-    const selectedRole =
-      values.role === "Admin"
-        ? Roles.Admin
-        : values.role === "Hospital Admin"
-        ? Roles.HospitalAdmin
-        : values.role === "Report Admin"
-        ? Roles.ReportAdmin
-        : Roles.User;
-
-    if (type === "add") {
-      addMutate({
-        obj: {
-          firstName: values.firstName,
-          lastName: values.lastName,
-          email: values.email,
-          role: selectedRole,
-        },
-      });
-    } else {
-      editMutate({
-        id: oldValues.id,
-        obj: {
-          firstName: values.firstName,
-          lastName: values.lastName,
-          email: values.email,
-          // role: selectedRole,
-          role: "645e44069e60637d858a265f",
-        },
-      });
+  const roleMapId = (role: string) => {
+    switch (role) {
+      case "Admin":
+        return "645e44069e60637d858a265f";
+      case "Patient":
+        return "645e46d74c3d647470f67dfa";
+      case "Hospital Admin":
+        return "645e47174c3d647470f67dfe";
+      case "user":
+        return "645f98312f249d56cc70bf73";
+      default:
+        return;
     }
+  };
+
+  const onSubmitHandler = (values: UserFormValues) => {
+    const formData = {
+      email: editUserEmail,
+      hospitalId: hospitalId,
+      occupationType: values.role,
+      workPlaceId: roleMapId(values.role),
+    };
+
+    console.log(formData, "formData formData formData");
+    editUserRole(formData);
+    setIsModalOpen(false);
+    // const selectedRole =
+    //   values.role === "Admin"
+    //     ? Roles.Admin
+    //     : values.role === "Hospital Admin"
+    //     ? Roles.HospitalAdmin
+    //     : values.role === "Report Admin"
+    //     ? Roles.ReportAdmin
+    //     : Roles.User;
+    // if (type === "add") {
+    //   addMutate({
+    //     obj: {
+    //       firstName: values.firstName,
+    //       lastName: values.lastName,
+    //       email: values.email,
+    //       role: selectedRole,
+    //     },
+    //   });
+    // } else {
+    //   editMutate({
+    //     id: oldValues.id,
+    //     obj: {
+    //       firstName: values.firstName,
+    //       lastName: values.lastName,
+    //       email: values.email,
+    //       // role: selectedRole,
+    //       role: "645e44069e60637d858a265f",
+    //     },
+    //   });
+    // }
   };
 
   return (
@@ -205,24 +267,19 @@ const UserModal = ({
                     initialValues.role === "" ? "none" : initialValues.role
                   }
                   placeholder={"Select a role"}
+                  isFormName="user"
                 />
-                {/* <FormSelectField
-                  fieldName="assets"
-                  fieldLabel="Buildings"
-                  fastField
+                <FormSelectFieldID
+                  fieldName="hospitalId"
+                  fieldLabel="Hospital"
                   formikChangeHandler={handleChange}
-                  options={[]}
-                  initialValue={
-                    initialValues.assets.length === 0
-                      ? []
-                      : initialValues.assets
-                  }
-                  multiple
-                  isAssetSelect
-                  placeholder={"Assign building"}
-                  customDropDownMenuContainerStyle={styles.dropdownMenu}
-                  addingUser={true}
-                /> */}
+                  options={allHospitals}
+                  initialValue={"none"}
+                  placeholder={"Select hospital"}
+                  isFormName="campaign_create_hospital"
+                  setHospitalId={setHospitalId}
+                  setPatientId={setPatientId}
+                />
                 <FormButton buttonVariant="contained" buttonType="submit">
                   {isLoadingAddUser || isLoadingEditUser ? (
                     <LoadingSpinner type="button" />

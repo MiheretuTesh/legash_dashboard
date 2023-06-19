@@ -5,7 +5,7 @@ import { DataGrid, GridSelectionModel } from "@mui/x-data-grid";
 import { OptionsIcon } from "../../assets";
 import { UserTableRow } from "../../types";
 import UserModal from "../../components/UserModal";
-import { useGetUsers } from "../../hooks/useGetUsers";
+// import { useGetUsers } from "../../hooks/useGetUsers";
 import { useGetCampaigns } from "../../hooks/useGetCampaigns";
 import { Roles, TABLE_LIMIT } from "../../constants";
 import DeleteModal from "../../components/DeleteModal";
@@ -18,7 +18,7 @@ import { useStyles } from "../../styles/DataGrid.style";
 import moment from "moment";
 import { data } from "jquery";
 import LoadingSpinner from "../../components/LoadingSpinner";
-// import { useGetUserSearch } from "../../hooks/useGetUserSearch"
+import { useGetCampaign } from "../../hooks/useGetCampaign";
 
 const CampaignPage = ({ parentRoute }: any) => {
   const styles = useStyles();
@@ -45,8 +45,8 @@ const CampaignPage = ({ parentRoute }: any) => {
 
   const { dataCampaigns, isLoadingCampaigns } = useGetCampaigns({});
 
-  const { dataUsers: dataAllUsers, isLoadingUsers: isLoadingAllUsers } =
-    useGetUsers({});
+  // const { dataUsers: dataAllUsers, isLoadingUsers: isLoadingAllUsers } =
+  //   useGetUsers({});
 
   const exportTableToPdf = () => {};
 
@@ -59,12 +59,10 @@ const CampaignPage = ({ parentRoute }: any) => {
   };
 
   useEffect(() => {
-    if (dataCampaigns?.data.campaigns.length > 0) {
+    if (dataCampaigns?.data?.length > 0) {
       const tableData: any[] = [];
 
-      console.log(dataCampaigns?.data, "dataCampaigns?.data");
-
-      dataCampaigns?.data.campaigns.forEach((data: any) => {
+      dataCampaigns?.data.forEach((data: any) => {
         tableData.push({
           id: data._id,
           currentFundedAmount: data.currentFundedAmount,
@@ -77,6 +75,7 @@ const CampaignPage = ({ parentRoute }: any) => {
           startDate: data.startDate,
           endDate: data.endDate,
           coverImage: data.coverImage,
+          campaignTitle: data.campaignTitle,
         });
       });
       setTableRows(tableData);
@@ -165,11 +164,11 @@ const CampaignPage = ({ parentRoute }: any) => {
         setIsModalOpen={setIsUserModalOpen}
         setIsDeleteModalOpen={setIsUserDeleteModalOpen}
         totalRowsSelected={totalSelected}
-        data={dataAllUsers?.results}
+        data={[]}
         setTableRows={setTableRows}
         tableType={"Campaign"}
         setActionType={setUserModalType}
-        isLoading={isLoadingCampaigns || isLoadingAllUsers}
+        isLoading={isLoadingCampaigns}
         exportTableToPdf={exportTableToPdf}
         handleOnSearchFieldChange={handleOnSearchFieldChange}
         parentRoute={parentRoute}
@@ -228,14 +227,29 @@ const CampaignPage = ({ parentRoute }: any) => {
                       : campaignsImg[index]
                   }
                   width="295px"
-                  style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
+                  style={{
+                    borderTopLeftRadius: 10,
+                    borderTopRightRadius: 10,
+                    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+                  }}
                 />
               </div>
+
+              <p
+                style={{
+                  display: "inline-block",
+                  maxWidth: "100%",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  fontSize: "16px",
+                  fontWeight: 500,
+                }}
+              >
+                Title: {campaign.campaignTitle}
+              </p>
               <p style={{ fontSize: "16px", fontWeight: 600 }}>
                 Target Fund: {campaign.targetFunding}
-              </p>
-              <p style={{ fontSize: "16px", fontWeight: 500 }}>
-                Treatment Required: {campaign.treatmentRequired}
               </p>
               <p style={{ fontSize: "16px", fontWeight: 500 }}>
                 <div
@@ -259,7 +273,7 @@ const CampaignPage = ({ parentRoute }: any) => {
                     >
                       {campaign.status}
                     </div>
-                  ) : (
+                  ) : campaign.status === "Pending" ? (
                     <div
                       style={{
                         backgroundColor: "#FFB84C",
@@ -271,7 +285,43 @@ const CampaignPage = ({ parentRoute }: any) => {
                     >
                       {campaign.status}
                     </div>
-                  )}
+                  ) : campaign.status === "Suspended" ? (
+                    <div
+                      style={{
+                        backgroundColor: "#FF3838",
+                        padding: "5px",
+                        borderRadius: 8,
+                        color: "white",
+                        marginLeft: "5px",
+                      }}
+                    >
+                      {campaign.status}
+                    </div>
+                  ) : campaign.status === "Inactive" ? (
+                    <div
+                      style={{
+                        backgroundColor: "#A4B0BE",
+                        padding: "5px",
+                        borderRadius: 8,
+                        color: "white",
+                        marginLeft: "5px",
+                      }}
+                    >
+                      {campaign.status}
+                    </div>
+                  ) : campaign.status === "Archived" ? (
+                    <div
+                      style={{
+                        backgroundColor: "#6C757D",
+                        padding: "5px",
+                        borderRadius: 8,
+                        color: "white",
+                        marginLeft: "5px",
+                      }}
+                    >
+                      {campaign.status}
+                    </div>
+                  ) : null}
                 </div>
               </p>
             </div>

@@ -21,19 +21,36 @@ export const transformRoleName = (roleName: string) => {
 
 export const reverseTransformRole = (roleName: string) => {
   switch (roleName) {
-    case Roles.Admin: {
+    case "645e44069e60637d858a265f": {
       return "Admin";
     }
-    case Roles.HospitalAdmin: {
+    case "645e47174c3d647470f67dfe": {
       return "Hospital Admin";
     }
-    case Roles.ReportAdmin: {
-      return "Report Admin";
-    }
-    case Roles.User: {
-      return "User";
+    case "645e46d74c3d647470f67dfa": {
+      return "Patient";
     }
     default:
       return "User";
   }
 };
+
+// export const reverseTransformRole = (roleName: string) => {
+//   console.log(roleName, "roleName roleName roleName roleName");
+//   switch (roleName) {
+//     case Roles.Admin: {
+//       return "Admin";
+//     }
+//     case Roles.HospitalAdmin: {
+//       return "Hospital Admin";
+//     }
+//     case Roles.ReportAdmin: {
+//       return "Report Admin";
+//     }
+//     case Roles.User: {
+//       return "User";
+//     }
+//     default:
+//       return "User";
+//   }
+// };

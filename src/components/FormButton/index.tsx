@@ -22,7 +22,11 @@ const FormButton = ({
   const styles = useStyles();
   return (
     <Button
-      className={`${styles.btnContainer} ${customStyle}`}
+      className={
+        buttonType === "button"
+          ? `${styles.terminateContainer} ${customStyle}`
+          : `${styles.btnContainer} ${customStyle}`
+      }
       variant={buttonVariant}
       type={buttonType}
       onClick={onButtonClick}

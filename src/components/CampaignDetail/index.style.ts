@@ -68,4 +68,7 @@ export const useStyles = makeStyles({
     margin: "0",
     marginBottom: "10px",
   },
+  terminateBtn: {
+    backgroundColor: "red",
+  },
 });

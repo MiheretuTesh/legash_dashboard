@@ -64,7 +64,7 @@ const AddNewCampaignForm = () => {
   const { dataHospitals, isLoadingHospitals } = useGetHospitals({});
 
   useEffect(() => {
-    if (dataUsers?.data.length > 0) {
+    if (dataUsers?.data?.length > 0) {
       const tableData: any[] = [];
 
       dataUsers?.data.forEach((data: any) => {
@@ -87,7 +87,7 @@ const AddNewCampaignForm = () => {
   }, [dataUsers]);
 
   useEffect(() => {
-    if (dataHospitals?.data.hospitals.length > 0) {
+    if (dataHospitals?.data.hospitals?.length > 0) {
       const tableData: any[] = [];
 
       dataHospitals?.data.hospitals.forEach((data: any) => {

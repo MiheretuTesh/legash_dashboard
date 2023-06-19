@@ -17,17 +17,17 @@ import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
 import moment from "moment";
 import { useGetAllUsers } from "../../hooks/useGetAllUsers";
 import { useEditUsers } from "../../hooks/useEditUsers";
-// import { useGetUserSearch } from "../../hooks/useGetUserSearch"
 
 const UsersPage = ({ parentRoute }: any) => {
   const dataGridStyles = useStyles();
   const [currentOffset, setCurrentOffset] = useState(0);
   const [totalSelected, setTotalSelected] = useState(0);
   const [searchValue, setSearchValue] = useState("");
-  const [tableRows, setTableRows] = useState<UserTableRow[]>([]);
+  const [tableRows, setTableRows] = useState<any[]>([]);
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const [isUserDeleteModalOpen, setIsUserDeleteModalOpen] = useState(false);
   const [userModalType, setUserModalType] = useState("add");
+  const [editUserEmail, setEditUserEmail] = useState("");
   const [rowForEdit, setRowForEdit] = useState({
     id: 0,
     firstName: "",
@@ -39,45 +39,22 @@ const UsersPage = ({ parentRoute }: any) => {
   });
 
   const columns = [
-    // {
-    //   field: "name",
-    //   headerName: "Name",
-    //   flex: 0.3,
-    //   renderCell: (params: any) => {
-    //     const row = params.row;
-    //     return (
-    //       <div>
-    //         {row.first_name}&nbsp;{row.last_name}
-    //       </div>
-    //     );
-    //   },
-    // },
     { field: "name", headerName: "Name", minWidth: 250 },
 
     { field: "email", headerName: "Email", minWidth: 250 },
     {
+      field: "gender",
+      headerName: "Gender",
+      minWidth: 150,
+    },
+    {
       field: "role",
       headerName: "Role",
-      minWidth: 250,
-      // renderCell: (params: any) => {
-      //   const row = params.row;
-      //   return (
-      //     <div>
-      //       {row.role === Roles.FundAssetManager
-      //         ? "Fund Asset Manager"
-      //         : "Engineer"}
-      //     </div>
-      //   );
-      // },
+      minWidth: 200,
     },
     {
       field: "updated_at",
       headerName: "Last Edited At",
-      minWidth: 180,
-    },
-    {
-      field: "edited_by",
-      headerName: "Last Edited By",
       minWidth: 180,
     },
     {
@@ -89,6 +66,8 @@ const UsersPage = ({ parentRoute }: any) => {
         const onEditHandler = () => {
           setUserModalType("edit");
           const nameSplit = params.row.name.split(" ");
+
+          setEditUserEmail(params.row.email);
 
           const rowData = {
             id: params.row.id,
@@ -153,52 +132,6 @@ const UsersPage = ({ parentRoute }: any) => {
 
   const { dataUsers, isLoadingUsers, isSuccess } = useGetAllUsers({});
 
-  const handleUserEdit = () => {};
-
-  // const {
-  //   userSearchData,
-  //   // userSearchIsLoading,
-  //   userSearchIsSuccess,
-  //   userSearchRefetch
-  // } = useGetUserSearch({search_value: searchValue});
-
-  // useEffect(() => {
-  //   if(searchValue === ""){
-  //     if (dataAssets) {
-  //       const tableData: UserTableRow[] = [];
-  //       dataUsers?.results.forEach((data: any) => {
-  //         tableData.push({
-  //           assets: "",
-  //           id: data.id,
-  //           user: `${data.first_name} ${data.last_name}`,
-  //           email: data.email,
-  //           role: data.type,
-  //           updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
-  //           user_assets: data.user_assets.toString(),
-  //         });
-  //       });
-  //       setTableRows(tableData);
-  //     }
-  //   }
-  //   if(userSearchIsSuccess === true && userSearchData !== undefined){
-  //     if (userSearchData?.data.results) {
-  //       const tableData: UserTableRow[] = [];
-  //       userSearchData?.data.results.forEach((data: any) => {
-  //         tableData.push({
-  //           assets: "",
-  //           id: data.id,
-  //           user: `${data.first_name} ${data.last_name}`,
-  //           email: data.email,
-  //           role: data.type,
-  //           updated_at: moment(data.updated_at).format("MMM D, YYYY HH:mm"),
-  //           user_assets: data.user_assets.toString(),
-  //         });
-  //       });
-  //       setTableRows(tableData);
-  //     }
-  //   }
-  // }, [userSearchIsSuccess, userSearchData, dataAssets, searchValue, dataUsers]);
-
   const onSelectionChangeHandler = (
     selectionModel: GridSelectionModel,
     details: any
@@ -228,14 +161,21 @@ const UsersPage = ({ parentRoute }: any) => {
     if (dataUsers?.data.length > 0) {
       const tableData: any[] = [];
 
+      console.log(
+        dataUsers?.data,
+        "dataUsers?.data dataUsers?.data dataUsers?.data"
+      );
+
       dataUsers?.data.forEach((data: any) => {
         tableData.push({
-          id: data.id,
+          id: data._id,
           name: `${data.firstName} ${data.lastName}`,
           email: data.email,
-          role: data.role,
+          role: data.occupation?.occupationType
+            ? data.occupation?.occupationType
+            : "User",
           updated_at: moment(data.updatedAt).format("MMM D, YYYY HH:mm"),
-          lastEditBy: "",
+          gender: data.gender,
         });
       });
       setTableRows(tableData);
@@ -289,49 +229,6 @@ const UsersPage = ({ parentRoute }: any) => {
     }
   }, [windowSize]);
 
-  const users: UserTableRow[] = [
-    {
-      id: 1,
-      name: "Abebe Tesfa",
-      email: "abebe@gmail.com",
-      role: "Admin",
-      updated_at: "April 9, 2019",
-      edited_by: "Abebe Tesfa",
-    },
-    {
-      id: 2,
-      name: "Kebede Atnafu",
-      email: "kebede@gmail.com",
-      role: "Admin",
-      updated_at: "April 9, 2019",
-      edited_by: "Abebe Tesfa",
-    },
-    {
-      id: 3,
-      name: "Gezachew Aschenaki",
-      email: "geza@gmail.com",
-      role: "Hospital Admin",
-      updated_at: "April 9, 2019",
-      edited_by: "Abebe Tesfa",
-    },
-    {
-      id: 4,
-      name: "Kurabachew Getahun",
-      email: "kura@gmail.com",
-      role: "User",
-      updated_at: "April 9, 2019",
-      edited_by: "Abebe Tesfa",
-    },
-    {
-      id: 5,
-      name: "Genet Meshesha",
-      email: "geni@gmail.com",
-      role: "User",
-      updated_at: "April 9, 2019",
-      edited_by: "Abebe Tesfa",
-    },
-  ];
-
   return (
     <>
       <UserModal
@@ -343,6 +240,7 @@ const UsersPage = ({ parentRoute }: any) => {
         setSelectionModel={setSelectionModelPersonal}
         setSelectedRows={setSelectedUsers}
         setTotalSelected={setTotalSelected}
+        editUserEmail={editUserEmail}
       />
       <DeleteModal
         isModalOpen={isUserDeleteModalOpen}

@@ -11,6 +11,12 @@ import { RegistrationFormValues } from "../../types";
 import { useRegister } from "../../hooks/useRegister";
 import LoadingSpinner from "../LoadingSpinner";
 import ErrorModal from "../ErrorModal";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
+import firebase from "../../utils/firebaseConfig";
 
 const RegistrationSchema = Yup.object().shape({
   firstName: Yup.string()
@@ -60,10 +66,11 @@ const RegistrationForm = () => {
   };
 
   const onRegisterError = (error: any) => {
-    console.log(error, "ERROR Error");
     setErrorText("User already exists");
     setIsError(true);
   };
+
+  const auth: any = getAuth(firebase);
 
   const { data, mutate, isLoading, isSuccess } = useRegister({
     onSuccess: (_x: any, values: RegistrationFormValues) =>
@@ -78,25 +85,87 @@ const RegistrationForm = () => {
   }, [data, isSuccess]);
 
   const onSubmitHandler = async (values: RegistrationFormValues) => {
-    console.log(values, "Register From Values");
     const formData: any = {
-      firstName: values.firstName,
-      lastName: values.lastName,
-      role: "643fcc7d9cbbe5517bf42776",
+      am_et: {
+        firstName: "ትግስት",
+        lastName: "ለማ",
+        bankAccounts: [
+          {
+            accountHolderName: "ትግስት ለማ",
+            accountNumber: "1000234567890",
+            bankName: "ንግድ ባንክ",
+            country: "ኢትዮጵያ",
+          },
+        ],
+        gender: "ወንድ",
+        address: {
+          country: "ኢትዮጵያ",
+          city: "ኒው ዮርክ",
+          address: "የስራ ቦታ",
+        },
+        occupation: {
+          occupationType: "",
+          workPlaceId: "",
+        },
+      },
+      en_us: {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        bankAccounts: [
+          {
+            accountHolderName: `${values.firstName} ${values.lastName}`,
+            accountNumber: "1000234567890",
+            bankName: "CBE",
+            country: "Ethiopia",
+          },
+        ],
+        gender: values.gender,
+      },
       email: values.email,
       phonenumber: values.phonenumber,
-      password: values.password,
       dateOfBirth: values.dateOfBirth,
-      gender: values.gender,
+      password: values.password,
     };
-    mutate(formData);
+
+    const auth: any = getAuth(firebase);
+    const user = auth.currentUser;
+
+    createUserWithEmailAndPassword(auth, formData.email, formData.password)
+      .then((data: any) => {
+        const user = data?.user;
+        // if (data.user?.uid) mutate(data.user?.uid);
+
+        // if (!auth.currentUser.emailVerified) {
+        sendEmailVerification(auth.currentUser)
+          .then((response) => {
+            formData.firebaseUserId = data.user?.uid;
+            mutate(formData);
+          })
+          .catch((err) => {
+            console.log("BYE");
+          });
+
+        //   return null;
+        // } else {
+        //   return data;
+        // }
+      })
+      .then((data) => {})
+      .catch((err) => {
+        console.error(err);
+        if (err.message === "Firebase: Error (auth/wrong-password).") {
+        } else if (err.message === "Firebase: Error (auth/user-not-found).") {
+        }
+
+        return null;
+      });
   };
 
   return (
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmitHandler}
-      validationSchema={RegistrationSchema}
+      // validationSchema={RegistrationSchema}
     >
       {({ handleChange }) => (
         <>
@@ -131,7 +200,8 @@ const RegistrationForm = () => {
               <FormField
                 fieldName="dateOfBirth"
                 fieldLabel="Date of Birth"
-                // fieldPlaceholder="johnmiller@gmail.com"
+                fieldPlaceholder="2022-10-23"
+                formikChangeHandler={handleChange}
               />
               <FormButton buttonVariant="contained" buttonType="submit">
                 {isLoading ? <LoadingSpinner type="button" /> : "Submit"}
@@ -145,6 +215,7 @@ const RegistrationForm = () => {
                 options={GENDER}
                 initialValue={"none"}
                 placeholder={"Select a gender"}
+                isFormName="user_register"
               />
               <FormSelectField
                 fieldName="role"
@@ -153,6 +224,7 @@ const RegistrationForm = () => {
                 options={ROLES_NAMES}
                 initialValue={"none"}
                 placeholder={"Select a role"}
+                isFormName="user_register"
               />
               <FormField
                 fieldName="password"

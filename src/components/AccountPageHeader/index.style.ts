@@ -96,10 +96,10 @@ export const useStyles = makeStyles({
     },
   },
   profilePicture: {
-    width: "44px",
+    width: "50px",
     height: "44px",
     borderRadius: "44px",
     marginLeft: "15px",
-    cursor: "pointer"
+    cursor: "pointer",
   },
 });

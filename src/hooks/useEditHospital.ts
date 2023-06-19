@@ -2,17 +2,16 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { editHospital } from "../api/HospitalService";
 
 export const useEditHospital = ({
-  onEditUserSuccess,
-  onEditUserError,
+  onEditHospitalSuccess,
+  onEditHospitalError,
 }: {
-  onEditUserSuccess?: () => void;
-  onEditUserError?: (error: any) => void;
+  onEditHospitalSuccess?: () => void;
+  onEditHospitalError?: (error: any) => void;
 }) => {
-  const queryClient = useQueryClient();
   return useMutation(editHospital, {
     onSuccess: () => {
-      onEditUserSuccess && onEditUserSuccess();
+      onEditHospitalSuccess && onEditHospitalSuccess();
     },
-    onError: onEditUserError,
+    onError: onEditHospitalError,
   });
 };
